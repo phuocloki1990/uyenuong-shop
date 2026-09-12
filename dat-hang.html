@@ -19,28 +19,31 @@
   <nav>
     <a href="/index.html#san-pham">Sản phẩm</a>
     <a href="/san-pham/banh-phu-the-hue-tphcm.html">Bánh phu thê</a>
-    <a class="cart-link" href="/gio-hang.html">Giỏ hàng (<span data-cart-count="">0</span>)</a>
   </nav>
 </div></header>
 <main class="container section">
   <h1>Đặt hàng</h1>
-  <div class="product-layout">
+  <div class="card" style="padding:24px">
     <form id="order-form">
       <div class="form-grid">
         <div><label>Họ và tên</label><input required name="name"></div>
         <div><label>Số điện thoại</label><input required name="phone" inputmode="tel"></div>
+        <div>
+          <label>Loại bánh</label>
+          <select required name="product_type">
+            <option value="">-- Chọn loại bánh --</option>
+            <option value="Lá dừa (800.000đ / 65 bánh)">Bánh lá dừa – 800.000đ (65 bánh)</option>
+            <option value="Hộp giấy (750.000đ / 65 bánh)">Bánh hộp giấy – 750.000đ (65 bánh)</option>
+          </select>
+        </div>
+        <div><label>Số lượng (số mâm/phần)</label><input required type="number" min="1" value="1" name="quantity"></div>
         <div><label>Ngày cần nhận bánh</label><input required type="date" name="receive_date"></div>
         <div><label>Địa chỉ nhận bánh</label><input required name="address"></div>
       </div>
       <div style="margin-top:16px"><label>Ghi chú</label><textarea name="note" placeholder="Ví dụ: thời gian giao mong muốn, yêu cầu thêm..."></textarea></div>
-      <div class="notice">Đây là bản thử nghiệm. Bước sau chúng ta sẽ kết nối nút này với hệ thống lưu đơn hàng và gửi thông báo về điện thoại.</div>
+      <div class="notice">Sau khi gửi, shop sẽ gọi điện xác nhận đơn hàng và báo giá chính xác trong ít phút.</div>
       <button class="btn" type="submit">Gửi đơn đặt hàng</button>
     </form>
-    <aside class="summary">
-      <h2>Đơn hàng của bạn</h2>
-      <div id="checkout-summary"></div>
-    </aside>
   </div>
 </main>
-<script src="/assets/js/app.js"></script>
 </body></html>
