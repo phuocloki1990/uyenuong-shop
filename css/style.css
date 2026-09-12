@@ -1,6 +1,5 @@
 /* =========================================
    UYÊN ƯƠNG SHOP
-   Giao diện đỏ - trắng - phong cách cưới Huế
    ========================================= */
 
 :root {
@@ -15,10 +14,6 @@
     --shadow: 0 8px 25px rgba(120, 20, 30, 0.10);
     --radius: 16px;
 }
-
-/* =========================================
-   RESET
-   ========================================= */
 
 * {
     box-sizing: border-box;
@@ -52,9 +47,19 @@ a:hover {
     color: var(--red-dark);
 }
 
-/* =========================================
-   HEADER
-   ========================================= */
+/* ==== KHUNG CHỨA CHUNG (rất quan trọng, dùng ở mọi trang) ==== */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.section {
+    padding: 45px 0;
+}
+
+/* ==== HEADER ==== */
 
 header {
     background: var(--white);
@@ -65,26 +70,19 @@ header {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
-header > *,
-nav {
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-header h1,
-header .logo {
-    color: var(--red);
-    font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
-    font-weight: 700;
-}
-
-nav {
+header .nav {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 10px 16px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+header .nav nav {
+    display: flex;
+    gap: 15px;
     flex-wrap: wrap;
 }
 
@@ -100,9 +98,24 @@ nav a:hover {
     color: var(--red);
 }
 
-/* =========================================
-   MAIN
-   ========================================= */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--red);
+}
+
+.brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ==== MAIN (dùng ở trang giỏ hàng / đặt hàng) ==== */
 
 main {
     width: min(1200px, calc(100% - 30px));
@@ -110,13 +123,9 @@ main {
     padding: 25px 0 50px;
 }
 
-/* =========================================
-   TIÊU ĐỀ
-   ========================================= */
+/* ==== TIÊU ĐỀ ==== */
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
     font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
     color: var(--red-dark);
     line-height: 1.3;
@@ -142,334 +151,23 @@ p {
     color: var(--text-light);
 }
 
-/* =========================================
-   HERO / PHẦN GIỚI THIỆU
-   ========================================= */
+/* ==== HERO ==== */
 
-main > section:first-child,
 .hero {
-    background: linear-gradient(
-        135deg,
-        var(--red-dark),
-        var(--red)
-    );
+    background: linear-gradient(135deg, var(--red-dark), var(--red));
     color: var(--white);
     border-radius: 24px;
     padding: 40px 25px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     box-shadow: var(--shadow);
 }
 
-.hero h1,
-.hero h2,
-.hero h3,
-main > section:first-child h1,
-main > section:first-child h2 {
+.hero h1, .hero h2, .hero h3 {
     color: var(--white);
 }
 
-.hero p,
-main > section:first-child p {
+.hero p {
     color: rgba(255, 255, 255, 0.9);
-}
-
-/* =========================================
-   LINK / NÚT
-   ========================================= */
-
-button,
-.btn,
-a.button,
-a.btn {
-    display: inline-block;
-    border: none;
-    background: var(--red);
-    color: var(--white);
-    padding: 12px 20px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-button:hover,
-.btn:hover,
-a.button:hover,
-a.btn:hover {
-    background: var(--red-dark);
-    color: var(--white);
-    transform: translateY(-1px);
-}
-
-/* =========================================
-   HÌNH ẢNH SẢN PHẨM
-   ========================================= */
-
-main img {
-    border-radius: var(--radius);
-    background: #f5eeee;
-    object-fit: cover;
-}
-
-.product-image,
-.product img {
-    width: 100%;
-    border-radius: var(--radius);
-}
-
-/* =========================================
-   CARD
-   ========================================= */
-
-.card,
-.product-card,
-.product,
-article {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-}
-
-.card:hover,
-.product-card:hover,
-.product:hover {
-    transform: translateY(-2px);
-    transition: 0.2s ease;
-}
-
-/* =========================================
-   GIÁ SẢN PHẨM
-   ========================================= */
-
-.price {
-    color: var(--red);
-    font-size: 23px;
-    font-weight: 800;
-    margin: 10px 0 15px;
-}
-
-.product-price {
-    color: var(--red);
-    font-size: 23px;
-    font-weight: 800;
-}
-
-/* =========================================
-   DANH SÁCH SẢN PHẨM
-   ========================================= */
-
-.products,
-.product-list,
-.product-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-}
-
-/* =========================================
-   GIỎ HÀNG
-   ========================================= */
-
-.cart {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-}
-
-.cart-item {
-    border-bottom: 1px solid var(--border);
-    padding: 15px 0;
-}
-
-.cart-total {
-    color: var(--red);
-    font-size: 24px;
-    font-weight: 800;
-    margin-top: 20px;
-}
-
-/* =========================================
-   FORM ĐẶT HÀNG
-   ========================================= */
-
-form {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-}
-
-label {
-    display: block;
-    font-weight: 700;
-    margin: 15px 0 6px;
-}
-
-input,
-textarea,
-select {
-    width: 100%;
-    padding: 13px 15px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: #fff;
-    color: var(--text);
-    font-size: 16px;
-    outline: none;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px rgba(181, 18, 27, 0.10);
-}
-
-textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-/* =========================================
-   FOOTER
-   ========================================= */
-
-footer {
-    background: #3b1719;
-    color: white;
-    text-align: center;
-    padding: 30px 20px;
-    margin-top: 40px;
-}
-
-footer p,
-footer a {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-/* =========================================
-   MOBILE
-   ========================================= */
-
-@media (max-width: 600px) {
-
-    header {
-        position: sticky;
-        top: 0;
-    }
-
-    header h1,
-    header .logo {
-        text-align: center;
-        padding: 12px 10px 5px;
-        font-size: 27px;
-    }
-
-    nav {
-        overflow-x: auto;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
-        padding: 5px 10px 10px;
-    }
-
-    nav a {
-        white-space: nowrap;
-        font-size: 14px;
-    }
-
-    main {
-        width: calc(100% - 20px);
-        padding-top: 15px;
-    }
-
-    main > section:first-child,
-    .hero {
-        border-radius: 18px;
-        padding: 30px 20px;
-    }
-
-    h1 {
-        font-size: 32px;
-    }
-
-    h2 {
-        font-size: 27px;
-    }
-
-    .card,
-    .product-card,
-    .product,
-    article {
-        padding: 14px;
-    }
-
-    button,
-    .btn,
-    a.button,
-    a.btn {
-        width: 100%;
-        text-align: center;
-    }
-}
-
-/* =========================================
-   TABLET
-   ========================================= */
-
-@media (min-width: 601px) and (max-width: 900px) {
-
-    main {
-        width: calc(100% - 40px);
-    }
-
-    .products,
-    .product-list,
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* =========================================
-   DESKTOP
-   ========================================= */
-
-@media (min-width: 901px) {
-
-    .products,
-    .product-list,
-    .product-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    main {
-        padding-top: 35px;
-    }
-}
-/* ==== Bổ sung cho các phần tử chưa có style ==== */
-
-.brand {
-    font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
-    font-weight: 700;
-    font-size: 22px;
-    color: var(--red);
-}
-
-header .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-header .nav nav {
-    display: flex;
-    gap: 15px;
 }
 
 .eyebrow {
@@ -506,6 +204,71 @@ header .nav nav {
     object-fit: cover;
 }
 
+/* ==== NÚT ==== */
+
+button, .btn, a.button, a.btn {
+    display: inline-block;
+    border: none;
+    background: var(--red);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover, .btn:hover, a.button:hover, a.btn:hover {
+    background: var(--red-dark);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+/* ==== ẢNH TRONG NỘI DUNG CHUNG ==== */
+
+main img {
+    border-radius: var(--radius);
+    background: #f5eeee;
+    object-fit: cover;
+}
+
+/* ==== CARD / KHUNG SẢN PHẨM ==== */
+
+.card, .product-card, article {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card:hover, .product-card:hover {
+    transform: translateY(-2px);
+    transition: 0.2s ease;
+}
+
+.product-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 901px) {
+    .product-card {
+        grid-template-columns: 200px 1fr;
+        align-items: center;
+    }
+}
+
+.product-card > img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius);
+}
+
 .badges {
     display: flex;
     flex-wrap: wrap;
@@ -522,85 +285,40 @@ header .nav nav {
     font-size: 14px;
 }
 
-.product-card {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-}
+/* ==== FORM (trang đặt hàng) ==== */
 
-@media (min-width: 901px) {
-    .product-card {
-        grid-template-columns: 200px 1fr;
-        align-items: center;
-    }
-}
-.product-card > img {
-    width: 200px;
-    height: 200px;
-    object-fit: cover;
+form {
+    background: var(--white);
     border-radius: var(--radius);
-}
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
 }
 
-.brand img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 50%;
-}
-/* ==== Bảng giỏ hàng ==== */
-
-.cart-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.cart-table th,
-.cart-table td {
-    padding: 12px 10px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-.cart-table th {
-    background: var(--red-light);
-    color: var(--red-dark);
+label {
+    display: block;
     font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
+    margin: 15px 0 6px;
 }
 
-.cart-table tbody tr:hover {
-    background: var(--cream);
+input, textarea, select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
 }
 
-@media (max-width: 600px) {
-    .cart-table {
-        font-size: 14px;
-    }
-
-    .cart-table th,
-    .cart-table td {
-        padding: 8px 6px;
-    }
-}
-/* ==== Trang đặt hàng ==== */
-
-.product-layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
+input:focus, textarea:focus, select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(181, 18, 27, 0.10);
 }
 
-@media (min-width: 901px) {
-    .product-layout {
-        grid-template-columns: 1.3fr 0.7fr;
-        align-items: start;
-    }
+textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
 .form-grid {
@@ -624,19 +342,33 @@ header .nav nav {
     margin: 20px 0;
 }
 
-.summary {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-    height: fit-content;
-}
-/* ==== Trang chi tiết sản phẩm SEO ==== */
+/* ==== BẢNG GIỎ HÀNG ==== */
 
-.section {
-    padding: 45px 0;
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
 }
+
+.cart-table th, .cart-table td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.cart-table th {
+    background: var(--red-light);
+    color: var(--red-dark);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.cart-table tbody tr:hover {
+    background: var(--cream);
+}
+
+/* ==== TRANG CHI TIẾT SẢN PHẨM SEO ==== */
+
 .breadcrumb {
     padding: 14px 0 0;
     font-size: 14px;
@@ -692,4 +424,61 @@ header .nav nav {
 .faq-item h3 {
     font-size: 18px;
     margin-bottom: 6px;
+}
+
+/* ==== FOOTER ==== */
+
+footer {
+    background: #3b1719;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 40px;
+}
+
+footer p, footer a {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* ==== MOBILE ==== */
+
+@media (max-width: 600px) {
+    header .nav {
+        justify-content: center;
+        text-align: center;
+    }
+
+    header .nav nav {
+        overflow-x: auto;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+
+    nav a {
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .hero {
+        border-radius: 18px;
+        padding: 30px 20px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 27px;
+    }
+
+    .card, .product-card, article {
+        padding: 14px;
+    }
+
+    button, .btn, a.button, a.btn {
+        width: 100%;
+        text-align: center;
+    }
 }
