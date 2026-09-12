@@ -634,6 +634,9 @@ header .nav nav {
 }
 /* ==== Trang chi tiết sản phẩm SEO ==== */
 
+.section {
+    padding: 45px 0;
+}
 .breadcrumb {
     padding: 14px 0 0;
     font-size: 14px;
@@ -671,8 +674,14 @@ header .nav nav {
 }
 
 .content-block img {
-    max-width: 500px;
-    margin: 15px 0;
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 25px auto;
 }
 
 .faq-item {
