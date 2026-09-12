@@ -552,3 +552,39 @@ header .nav nav {
     object-fit: cover;
     border-radius: 50%;
 }
+/* ==== Bảng giỏ hàng ==== */
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.cart-table th {
+    background: var(--red-light);
+    color: var(--red-dark);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.cart-table tbody tr:hover {
+    background: var(--cream);
+}
+
+@media (max-width: 600px) {
+    .cart-table {
+        font-size: 14px;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        padding: 8px 6px;
+    }
+}
