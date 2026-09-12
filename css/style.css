@@ -632,3 +632,55 @@ header .nav nav {
     box-shadow: var(--shadow);
     height: fit-content;
 }
+/* ==== Trang chi tiết sản phẩm SEO ==== */
+
+.breadcrumb {
+    padding: 14px 0 0;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.breadcrumb span {
+    color: var(--red);
+    font-weight: 600;
+}
+
+.features {
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.features li {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-weight: 600;
+}
+
+.features li::before {
+    content: "✓ ";
+    color: var(--red);
+    font-weight: 900;
+}
+
+.content-block p {
+    max-width: 800px;
+    margin-bottom: 18px;
+}
+
+.content-block img {
+    max-width: 500px;
+    margin: 15px 0;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+}
+
+.faq-item h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+}
