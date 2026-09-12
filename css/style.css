@@ -450,3 +450,84 @@ footer a {
         padding-top: 35px;
     }
 }
+/* ==== Bổ sung cho các phần tử chưa có style ==== */
+
+.brand {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--red);
+}
+
+header .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+header .nav nav {
+    display: flex;
+    gap: 15px;
+}
+
+.eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--red);
+    margin-bottom: 10px;
+}
+
+.hero .eyebrow {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    align-items: center;
+}
+
+@media (min-width: 901px) {
+    .hero-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+    }
+}
+
+.hero-image img {
+    border-radius: var(--radius);
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.badge {
+    background: var(--red-light);
+    color: var(--red-dark);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.product-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 901px) {
+    .product-card {
+        grid-template-columns: 1fr 1.3fr;
+        align-items: center;
+    }
+}
