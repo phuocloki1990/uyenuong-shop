@@ -540,3 +540,15 @@ header .nav nav {
     object-fit: cover;
     border-radius: var(--radius);
 }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
