@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Đặt hàng | Uyên Ương</title>
+  <meta name="robots" content="noindex,follow">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header><div class="container nav">
+  <a class="brand" href="index.html">UYÊN ƯƠNG</a>
+  <nav><a href="index.html">Trang chủ</a><a class="cart-link" href="gio-hang.html">Giỏ hàng (<span data-cart-count>0</span>)</a></nav>
+</div></header>
+<main class="container section">
+  <h1>Đặt hàng</h1>
+  <div class="product-layout">
+    <form id="order-form">
+      <div class="form-grid">
+        <div><label>Họ và tên</label><input required name="name"></div>
+        <div><label>Số điện thoại</label><input required name="phone" inputmode="tel"></div>
+        <div><label>Ngày cần nhận bánh</label><input required type="date" name="receive_date"></div>
+        <div><label>Địa chỉ nhận bánh</label><input required name="address"></div>
+      </div>
+      <div style="margin-top:16px"><label>Ghi chú</label><textarea name="note" placeholder="Ví dụ: thời gian giao mong muốn, yêu cầu thêm..."></textarea></div>
+      <div class="notice">Đây là bản thử nghiệm. Bước sau chúng ta sẽ kết nối nút này với hệ thống lưu đơn hàng và gửi thông báo về điện thoại.</div>
+      <button class="btn" type="submit">Gửi đơn đặt hàng</button>
+    </form>
+    <aside class="summary">
+      <h2>Đơn hàng của bạn</h2>
+      <div id="checkout-summary"></div>
+    </aside>
+  </div>
+</main>
+<script src="assets/js/app.js"></script>
+</body></html>
