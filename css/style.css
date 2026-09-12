@@ -1,1 +1,452 @@
+/* =========================================
+   UYÊN ƯƠNG SHOP
+   Giao diện đỏ - trắng - phong cách cưới Huế
+   ========================================= */
 
+:root {
+    --red: #b5121b;
+    --red-dark: #8f0d14;
+    --red-light: #fff1f2;
+    --white: #ffffff;
+    --cream: #fffaf8;
+    --text: #2b2020;
+    --text-light: #756666;
+    --border: #eadede;
+    --shadow: 0 8px 25px rgba(120, 20, 30, 0.10);
+    --radius: 16px;
+}
+
+/* =========================================
+   RESET
+   ========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: var(--red);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--red-dark);
+}
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+header > *,
+nav {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header h1,
+header .logo {
+    color: var(--red);
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 16px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: var(--text);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 10px;
+}
+
+nav a:hover {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+/* =========================================
+   MAIN
+   ========================================= */
+
+main {
+    width: min(1200px, calc(100% - 30px));
+    margin: 0 auto;
+    padding: 25px 0 50px;
+}
+
+/* =========================================
+   TIÊU ĐỀ
+   ========================================= */
+
+h1,
+h2,
+h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--red-dark);
+    line-height: 1.3;
+}
+
+h1 {
+    font-size: clamp(30px, 6vw, 52px);
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: clamp(25px, 5vw, 36px);
+    margin: 35px 0 18px;
+}
+
+h3 {
+    font-size: 21px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 14px;
+    color: var(--text-light);
+}
+
+/* =========================================
+   HERO / PHẦN GIỚI THIỆU
+   ========================================= */
+
+main > section:first-child,
+.hero {
+    background: linear-gradient(
+        135deg,
+        var(--red-dark),
+        var(--red)
+    );
+    color: var(--white);
+    border-radius: 24px;
+    padding: 40px 25px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.hero h1,
+.hero h2,
+.hero h3,
+main > section:first-child h1,
+main > section:first-child h2 {
+    color: var(--white);
+}
+
+.hero p,
+main > section:first-child p {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* =========================================
+   LINK / NÚT
+   ========================================= */
+
+button,
+.btn,
+a.button,
+a.btn {
+    display: inline-block;
+    border: none;
+    background: var(--red);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover,
+.btn:hover,
+a.button:hover,
+a.btn:hover {
+    background: var(--red-dark);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+/* =========================================
+   HÌNH ẢNH SẢN PHẨM
+   ========================================= */
+
+main img {
+    border-radius: var(--radius);
+    background: #f5eeee;
+    object-fit: cover;
+}
+
+.product-image,
+.product img {
+    width: 100%;
+    border-radius: var(--radius);
+}
+
+/* =========================================
+   CARD
+   ========================================= */
+
+.card,
+.product-card,
+.product,
+article {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+}
+
+.card:hover,
+.product-card:hover,
+.product:hover {
+    transform: translateY(-2px);
+    transition: 0.2s ease;
+}
+
+/* =========================================
+   GIÁ SẢN PHẨM
+   ========================================= */
+
+.price {
+    color: var(--red);
+    font-size: 23px;
+    font-weight: 800;
+    margin: 10px 0 15px;
+}
+
+.product-price {
+    color: var(--red);
+    font-size: 23px;
+    font-weight: 800;
+}
+
+/* =========================================
+   DANH SÁCH SẢN PHẨM
+   ========================================= */
+
+.products,
+.product-list,
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* =========================================
+   GIỎ HÀNG
+   ========================================= */
+
+.cart {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.cart-item {
+    border-bottom: 1px solid var(--border);
+    padding: 15px 0;
+}
+
+.cart-total {
+    color: var(--red);
+    font-size: 24px;
+    font-weight: 800;
+    margin-top: 20px;
+}
+
+/* =========================================
+   FORM ĐẶT HÀNG
+   ========================================= */
+
+form {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+label {
+    display: block;
+    font-weight: 700;
+    margin: 15px 0 6px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(181, 18, 27, 0.10);
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+footer {
+    background: #3b1719;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 40px;
+}
+
+footer p,
+footer a {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    header {
+        position: sticky;
+        top: 0;
+    }
+
+    header h1,
+    header .logo {
+        text-align: center;
+        padding: 12px 10px 5px;
+        font-size: 27px;
+    }
+
+    nav {
+        overflow-x: auto;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        padding: 5px 10px 10px;
+    }
+
+    nav a {
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    main {
+        width: calc(100% - 20px);
+        padding-top: 15px;
+    }
+
+    main > section:first-child,
+    .hero {
+        border-radius: 18px;
+        padding: 30px 20px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 27px;
+    }
+
+    .card,
+    .product-card,
+    .product,
+    article {
+        padding: 14px;
+    }
+
+    button,
+    .btn,
+    a.button,
+    a.btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (min-width: 601px) and (max-width: 900px) {
+
+    main {
+        width: calc(100% - 40px);
+    }
+
+    .products,
+    .product-list,
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =========================================
+   DESKTOP
+   ========================================= */
+
+@media (min-width: 901px) {
+
+    .products,
+    .product-list,
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    main {
+        padding-top: 35px;
+    }
+}
