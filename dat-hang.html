@@ -23,22 +23,70 @@
 </div></header>
 <main class="container section">
   <h1>Đặt hàng</h1>
+  <p style="margin-bottom:20px">Tick chọn món anh/chị cần, có thể chọn nhiều món trong cùng 1 đơn.</p>
+
   <div class="card" style="padding:24px">
     <form id="order-form">
-      <div class="form-grid">
-        <div><label>Họ và tên</label><input required name="name"></div>
-        <div><label>Số điện thoại</label><input required name="phone" inputmode="tel"></div>
-        <div>
-          <label>Loại bánh</label>
-          <select required name="product_type">
-            <option value="">-- Chọn loại bánh --</option>
-            <option value="Lá dừa">Bánh lá dừa</option>
-            <option value="Hộp giấy">Bánh hộp giấy</option>
+
+      <div class="order-item">
+        <label class="checkbox-label">
+          <input type="checkbox" name="want_mamqua">
+          <span>Mâm quả cưới <em>(giá liên hệ)</em></span>
+        </label>
+        <div class="order-item-fields">
+          <label>Số mâm</label>
+          <select name="mamqua_option">
+            <option value="">-- Chọn số mâm --</option>
+            <option value="4 mâm">4 mâm</option>
+            <option value="6 mâm">6 mâm</option>
           </select>
         </div>
-        <div><label>Số lượng (số bánh cần đặt)</label><input required type="number" min="1" placeholder="Ví dụ: 65" name="quantity"></div>
-        <div><label>Ngày cần nhận bánh</label><input required type="date" name="receive_date"></div>
-        <div><label>Địa chỉ nhận bánh</label><input required name="address"></div>
+      </div>
+
+      <div class="order-item">
+        <label class="checkbox-label">
+          <input type="checkbox" name="want_phuthe">
+          <span>Bánh phu thê</span>
+        </label>
+        <div class="order-item-fields">
+          <label>Chọn vùng miền</label>
+          <select name="phuthe_region">
+            <option value="">-- Chọn vùng miền --</option>
+            <option value="Huế">Huế</option>
+            <option value="Miền Bắc">Miền Bắc</option>
+          </select>
+          <label>Chọn loại gói</label>
+          <select name="phuthe_wrap">
+            <option value="">-- Chọn loại gói --</option>
+            <option value="Lá dừa">Lá dừa</option>
+            <option value="Hộp giấy">Hộp giấy</option>
+          </select>
+          <label>Số lượng bánh</label>
+          <input type="number" min="1" name="phuthe_qty" placeholder="Ví dụ: 65">
+        </div>
+      </div>
+
+      <div class="order-item">
+        <label class="checkbox-label">
+          <input type="checkbox" name="want_phuclinh">
+          <span>Bánh phục linh</span>
+        </label>
+        <div class="order-item-fields">
+          <label>Chọn gói</label>
+          <select name="phuclinh_package">
+            <option value="">-- Chọn gói --</option>
+            <option value="2 vị (trắng, lá dứa) - 30 cái - 180.000đ">2 vị (trắng, lá dứa) – 30 cái – 180.000đ</option>
+            <option value="2 vị (trắng, lá dứa) - 50 cái - 230.000đ">2 vị (trắng, lá dứa) – 50 cái – 230.000đ</option>
+            <option value="5 vị (trắng, ca cao, củ dền, cà rốt, lá dứa) - 50 cái - Giá liên hệ">5 vị (trắng, ca cao, củ dền, cà rốt, lá dứa) – 50 cái – Giá liên hệ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:10px">
+        <div><label>Họ và tên</label><input required name="name"></div>
+        <div><label>Số điện thoại</label><input required name="phone" inputmode="tel"></div>
+        <div><label>Ngày cần nhận</label><input required type="date" name="receive_date"></div>
+        <div><label>Địa chỉ nhận hàng</label><input required name="address"></div>
       </div>
       <div style="margin-top:16px"><label>Ghi chú</label><textarea name="note" placeholder="Ví dụ: thời gian giao mong muốn, yêu cầu thêm..."></textarea></div>
       <div class="notice">Sau khi gửi, shop sẽ gọi điện xác nhận đơn hàng và báo giá chính xác trong ít phút.</div>
