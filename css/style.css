@@ -47,7 +47,7 @@ a:hover {
     color: var(--red-dark);
 }
 
-/* ==== KHUNG CHỨA CHUNG (rất quan trọng, dùng ở mọi trang) ==== */
+/* ==== KHUNG CHỨA CHUNG ==== */
 
 .container {
     max-width: 1200px;
@@ -115,7 +115,7 @@ nav a:hover {
     border-radius: 50%;
 }
 
-/* ==== MAIN (dùng ở trang giỏ hàng / đặt hàng) ==== */
+/* ==== MAIN ==== */
 
 main {
     width: min(1200px, calc(100% - 30px));
@@ -225,7 +225,7 @@ button:hover, .btn:hover, a.button:hover, a.btn:hover {
     transform: translateY(-1px);
 }
 
-/* ==== ẢNH TRONG NỘI DUNG CHUNG ==== */
+/* ==== ẢNH CHUNG ==== */
 
 main img {
     border-radius: var(--radius);
@@ -233,7 +233,7 @@ main img {
     object-fit: cover;
 }
 
-/* ==== CARD / KHUNG SẢN PHẨM ==== */
+/* ==== CARD / SẢN PHẨM ==== */
 
 .card, .product-card, article {
     background: var(--white);
@@ -285,7 +285,7 @@ main img {
     font-size: 14px;
 }
 
-/* ==== FORM (trang đặt hàng) ==== */
+/* ==== FORM CHUNG ==== */
 
 form {
     background: var(--white);
@@ -342,7 +342,51 @@ textarea {
     margin: 20px 0;
 }
 
-/* ==== BẢNG GIỎ HÀNG ==== */
+/* ==== FORM ĐẶT HÀNG NHIỀU SẢN PHẨM (tick chọn) ==== */
+
+.order-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 15px;
+}
+
+.checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 17px;
+    cursor: pointer;
+    margin: 0 !important;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--red);
+    flex-shrink: 0;
+}
+
+.order-item-fields {
+    display: none;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    padding-left: 30px;
+}
+
+.order-item.is-open .order-item-fields {
+    display: grid;
+}
+
+@media (min-width: 601px) {
+    .order-item-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ==== BẢNG GIỎ HÀNG (trang gio-hang.html cũ, không dùng nữa nhưng để lại phòng khi cần) ==== */
 
 .cart-table {
     width: 100%;
