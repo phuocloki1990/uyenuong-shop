@@ -23,7 +23,7 @@
 </div></header>
 <main class="container section">
   <h1>Đặt hàng</h1>
-  <p style="margin-bottom:20px">Tick chọn món anh/chị cần, có thể chọn nhiều món trong cùng 1 đơn.</p>
+  <p style="margin-bottom:20px">Tick chọn món anh/chị cần — ô chi tiết sẽ hiện ra sau khi tick. Có thể chọn nhiều món trong cùng 1 đơn.</p>
 
   <div class="card" style="padding:24px">
     <form id="order-form">
@@ -94,4 +94,18 @@
     </form>
   </div>
 </main>
+
+<script>
+document.querySelectorAll('.order-item').forEach(function (item) {
+  var checkbox = item.querySelector('input[type="checkbox"]');
+  checkbox.addEventListener('change', function () {
+    if (checkbox.checked) {
+      item.classList.add('is-open');
+    } else {
+      item.classList.remove('is-open');
+    }
+  });
+});
+</script>
+
 </body></html>
