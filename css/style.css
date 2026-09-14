@@ -125,7 +125,9 @@ main {
 
 /* ==== TIÊU ĐỀ ==== */
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     font-family: 'Playfair Display', Georgia, "Times New Roman", serif;
     color: var(--red-dark);
     line-height: 1.3;
@@ -162,7 +164,9 @@ p {
     box-shadow: var(--shadow);
 }
 
-.hero h1, .hero h2, .hero h3 {
+.hero h1,
+.hero h2,
+.hero h3 {
     color: var(--white);
 }
 
@@ -191,22 +195,32 @@ p {
     align-items: center;
 }
 
+.hero-image {
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius);
+}
+
+.hero-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: var(--radius);
+}
+
 @media (min-width: 901px) {
     .hero-grid {
         grid-template-columns: 1.1fr 0.9fr;
     }
 }
 
-.hero-image img {
-    border-radius: var(--radius);
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-}
-
 /* ==== NÚT ==== */
 
-button, .btn, a.button, a.btn {
+button,
+.btn,
+a.button,
+a.btn {
     display: inline-block;
     border: none;
     background: var(--red);
@@ -219,7 +233,10 @@ button, .btn, a.button, a.btn {
     transition: 0.2s ease;
 }
 
-button:hover, .btn:hover, a.button:hover, a.btn:hover {
+button:hover,
+.btn:hover,
+a.button:hover,
+a.btn:hover {
     background: var(--red-dark);
     color: var(--white);
     transform: translateY(-1px);
@@ -230,12 +247,13 @@ button:hover, .btn:hover, a.button:hover, a.btn:hover {
 main img {
     border-radius: var(--radius);
     background: #f5eeee;
-    object-fit: cover;
 }
 
 /* ==== CARD / SẢN PHẨM ==== */
 
-.card, .product-card, article {
+.card,
+.product-card,
+article {
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -244,30 +262,135 @@ main img {
     box-shadow: var(--shadow);
 }
 
-.card:hover, .product-card:hover {
-    transform: translateY(-2px);
-    transition: 0.2s ease;
+.card,
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.card:hover,
+.product-card:hover {
+    transform: translateY(-2px);
+}
+
+/* 
+   Danh sách sản phẩm dạng từng dòng.
+   Ảnh luôn cùng kích thước để không bị cái dài cái ngắn.
+*/
 
 .product-card {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
-}
-
-@media (min-width: 901px) {
-    .product-card {
-        grid-template-columns: 200px 1fr;
-        align-items: center;
-    }
+    align-items: stretch;
 }
 
 .product-card > img {
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    height: 240px;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
+    object-position: center;
     border-radius: var(--radius);
 }
+
+/* Phần nội dung trong card */
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.product-info .btn {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+/* Desktop: ảnh bên trái, nội dung bên phải */
+
+@media (min-width: 901px) {
+    .product-card {
+        grid-template-columns: 220px minmax(0, 1fr);
+        align-items: stretch;
+    }
+
+    .product-card > img {
+        width: 220px;
+        height: 220px;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+/* ==== LƯỚI SẢN PHẨM TRANG CHỦ ==== */
+
+/*
+   Nếu HTML trang chủ có class product-grid,
+   các sản phẩm sẽ tự xếp đều 3 cột.
+*/
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+/*
+   Khi product-card nằm trong product-grid:
+   chuyển thành card dọc để 3 sản phẩm đều nhau.
+*/
+
+.product-grid .product-card,
+.product-grid .card {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.product-grid .product-card > img,
+.product-grid .card > img {
+    width: 100%;
+    height: 220px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 0;
+    flex-shrink: 0;
+}
+
+.product-grid .product-info {
+    padding: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-grid .product-info h3 {
+    margin-bottom: 10px;
+}
+
+.product-grid .product-info .btn {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* Tablet */
+
+@media (max-width: 900px) {
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .product-grid .product-card > img,
+    .product-grid .card > img {
+        height: 220px;
+    }
+}
+
+/* ==== BADGE ==== */
 
 .badges {
     display: flex;
@@ -300,7 +423,9 @@ label {
     margin: 15px 0 6px;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
     width: 100%;
     padding: 13px 15px;
     border: 1px solid var(--border);
@@ -311,7 +436,9 @@ input, textarea, select {
     outline: none;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     border-color: var(--red);
     box-shadow: 0 0 0 3px rgba(181, 18, 27, 0.10);
 }
@@ -342,7 +469,7 @@ textarea {
     margin: 20px 0;
 }
 
-/* ==== FORM ĐẶT HÀNG NHIỀU SẢN PHẨM (tick chọn) ==== */
+/* ==== FORM ĐẶT HÀNG NHIỀU SẢN PHẨM ==== */
 
 .order-item {
     border: 1px solid var(--border);
@@ -386,14 +513,15 @@ textarea {
     }
 }
 
-/* ==== BẢNG GIỎ HÀNG (trang gio-hang.html cũ, không dùng nữa nhưng để lại phòng khi cần) ==== */
+/* ==== BẢNG GIỎ HÀNG ==== */
 
 .cart-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.cart-table th, .cart-table td {
+.cart-table th,
+.cart-table td {
     padding: 12px 10px;
     text-align: left;
     border-bottom: 1px solid var(--border);
@@ -449,12 +577,19 @@ textarea {
     margin-bottom: 18px;
 }
 
+/*
+   Ảnh trong bài SEO giữ riêng.
+   Không bị ảnh hưởng bởi phần ảnh sản phẩm trang chủ.
+*/
+
 .content-block img {
     display: block;
     width: 100%;
     max-width: 420px;
     aspect-ratio: 1 / 1;
+    height: auto;
     object-fit: cover;
+    object-position: center;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     margin: 25px auto;
@@ -480,13 +615,15 @@ footer {
     margin-top: 40px;
 }
 
-footer p, footer a {
+footer p,
+footer a {
     color: rgba(255, 255, 255, 0.85);
 }
 
 /* ==== MOBILE ==== */
 
 @media (max-width: 600px) {
+
     header .nav {
         justify-content: center;
         text-align: center;
@@ -506,7 +643,11 @@ footer p, footer a {
 
     .hero {
         border-radius: 18px;
-        padding: 30px 20px;
+        padding: 28px 18px;
+    }
+
+    .hero-image img {
+        height: 220px;
     }
 
     h1 {
@@ -517,12 +658,63 @@ footer p, footer a {
         font-size: 27px;
     }
 
-    .card, .product-card, article {
+    /*
+       Mobile: sản phẩm thành card dọc.
+       Ảnh giữ cùng chiều cao.
+    */
+
+    .product-card {
+        grid-template-columns: 1fr;
         padding: 14px;
     }
 
-    button, .btn, a.button, a.btn {
+    .product-card > img {
+        width: 100%;
+        height: 220px;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+
+    /*
+       Product grid trên điện thoại chỉ còn 1 cột.
+    */
+
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .product-grid .product-card,
+    .product-grid .card {
+        padding: 0;
+    }
+
+    .product-grid .product-card > img,
+    .product-grid .card > img {
+        width: 100%;
+        height: 220px;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+    }
+
+    .product-grid .product-info {
+        padding: 16px;
+    }
+
+    .card,
+    article {
+        padding: 14px;
+    }
+
+    button,
+    .btn,
+    a.button,
+    a.btn {
         width: 100%;
         text-align: center;
+    }
+
+    .product-grid .product-info .btn {
+        width: 100%;
     }
 }
