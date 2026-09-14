@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bánh phu thê Huế tại TPHCM (Bánh su sê) – Shop Uyên Ương</title>
+<meta name="description" content="Đặt bánh phu thê (su sê) sợi dừa vị Huế tại TPHCM. Bánh mới mỗi ngày, có 2 size 45g và 85g, gói lá dừa hoặc hộp giấy đẹp mắt cho mâm quả cưới hỏi.">
+<style>
+  /* Base Variables & Reset */
+  :root { --primary: #d32f2f; --bg: #f5f6f8; --text: #333; --white: #fff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--text); background: var(--bg); line-height: 1.55; }
+  a { text-decoration: none; color: inherit; }
+  
+  /* Layout & Box Settings */
+  .container { max-width: 850px; margin: 0 auto; padding: 0 15px; }
+  .section-box { background: var(--white); margin: 15px 0; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); padding: 25px; overflow: hidden; }
+  
+  /* Header & Navigation */
+  header { background: var(--white); position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; max-width: 850px; margin: 0 auto; }
+  .brand { font-weight: bold; font-size: 1.15rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+  .brand img { height: 38px; width: 38px; border-radius: 50%; object-fit: cover; border: 1px solid #eee; }
+  nav a { margin-left: 20px; font-weight: 500; font-size: 0.95rem; transition: 0.2s; }
+  nav a:hover { color: var(--primary); }
+  
+  /* Typography */
+  h1 { font-size: 1.6rem; color: var(--primary); margin-bottom: 12px; line-height: 1.35; }
+  h2 { font-size: 1.25rem; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  h2::before { content: ""; display: inline-block; width: 5px; height: 20px; background: var(--primary); border-radius: 3px; }
+  h3 { font-size: 1.05rem; margin-bottom: 6px; font-weight: 600; color: #222; }
+  p { margin-bottom: 12px; color: #444; }
+  
+  /* Breadcrumb */
+  .breadcrumb { font-size: 0.85rem; color: #777; margin: 15px auto; padding: 0 15px; max-width: 850px; }
+  .breadcrumb strong { color: var(--text); font-weight: 600; }
+  
+  /* Hero / Banner Area */
+  .hero-grid { display: flex; flex-direction: column-reverse; gap: 20px; align-items: center; }
+  @media (min-width: 650px) { .hero-grid { flex-direction: row; } }
+  .hero-content { flex: 1.2; }
+  .hero-img { flex: 0.8; width: 100%; text-align: center; }
+  .hero-img img { width: 100%; max-width: 350px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  
+  /* Badges & Buttons */
+  .badge-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .badge { background: #ffebee; color: var(--primary); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; background: var(--primary); color: var(--white); padding: 12px 28px; border-radius: 30px; font-weight: bold; font-size: 1rem; text-align: center; border: none; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 8px rgba(211,47,47,0.25); width: 100%; max-width: 260px; }
+  .btn:hover { background: #b71c1c; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(211,47,47,0.3); }
+  .btn-center { display: flex; justify-content: center; margin-top: 15px; }
+  
+  /* Two-column Layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 650px) { .grid-2 { grid-template-columns: 1fr 1fr; align-items: center; } }
+  
+  /* Features List */
+  ul.features { list-style: none; margin-bottom: 10px; }
+  ul.features li { position: relative; padding-left: 28px; margin-bottom: 12px; color: #444; }
+  ul.features li::before { content: '✓'; position: absolute; left: 0; color: #4caf50; font-weight: bold; font-size: 1.1rem; line-height: 1.2; }
+  
+  /* Content Images */
+  .content-img { width: 100%; max-width: 320px; margin: 0 auto; display: block; border-radius: 8px; }
+  
+  /* FAQ Box */
+  .faq-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+  @media (min-width: 650px) { .faq-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .faq-item { background: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #eaeaea; height: 100%; transition: 0.2s; }
+  .faq-item:hover { border-color: #ffd4d4; background: #fffafb; }
+  .faq-item h3 { color: var(--primary); margin-bottom: 6px; font-size: 1rem; }
+  .faq-item p { margin-bottom: 0; font-size: 0.95rem; color: #555; }
+  
+  footer { text-align: center; padding: 25px 15px; color: #777; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="brand" href="https://uyenuong-shop.pages.dev/index.html">
+      <img src="./Bánh phu thê Huế tại TPHCM – Shop Uyên Ương_files/logo.jpg" alt="Shop Uyên Ương">
+      UYÊN ƯƠNG
+    </a>
+    <nav>
+      <a href="https://uyenuong-shop.pages.dev/index.html#san-pham">Sản phẩm</a>
+    </nav>
+  </div>
+</header>
+
+<div class="breadcrumb">
+  <a href="https://uyenuong-shop.pages.dev/index.html">Trang chủ</a> › <strong>Bánh phu thê Huế</strong>
+</div>
+
+<!-- Cụm 1: Giới thiệu chính (Gọn gàng, đập vào mắt ngay nhu cầu) -->
+<div class="container">
+  <section class="section-box hero-grid">
+    <div class="hero-content">
+      <div class="badge-group">
+        <span class="badge">Bánh cưới truyền thống</span>
+        <span class="badge">Giao hàng TPHCM</span>
+      </div>
+      <h1>Bánh phu thê Huế (Bánh su sê) tại TPHCM</h1>
+      <p>Bánh phu thê dẻo thơm, nhân đậu xanh sên êm dịu, dừa sợi giòn sần sật. Uyên Ương chuyên nhận đặt bánh cho mâm quả cưới hỏi, lễ dạm ngõ hoặc làm quà biếu với tiêu chí: bánh làm mới mỗi ngày, ngọt thanh vừa vặn.</p>
+      <div class="btn-center" style="justify-content: flex-start;">
+        <a class="btn" href="https://uyenuong-shop.pages.dev/dat-hang.html">Đặt hàng ngay</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="./Bánh phu thê Huế tại TPHCM – Shop Uyên Ương_files/Banner1.jpg" alt="Bánh phu thê Huế mâm quả cưới TPHCM">
+    </div>
+  </section>
+</div>
+
+<!-- Cụm 2: Thông tin chi tiết & Kích cỡ -->
+<div class="container">
+  <section class="section-box">
+    <h2>Điểm nổi bật của bánh nhà Uyên Ương</h2>
+    <div class="grid-2">
+      <div>
+        <ul class="features">
+          <li><strong>Trọng lượng chuẩn:</strong> Bên shop có 2 cỡ bánh để khách dễ chọn: bánh nhỏ (45g) xinh xắn và bánh lớn (85g) đầy đặn, cực kỳ đẹp mắt khi xếp lên mâm quả.</li>
+          <li><strong>Đóng gói đa dạng:</strong> Khách có thể chọn gói lá dừa truyền thống (lá bánh tẻ xanh mướt) hoặc vô hộp giấy hiện đại, lịch sự.</li>
+          <li><strong>Nguyên liệu tươi mới:</strong> Dừa sợi được bào tay và làm mới từng mẻ, vỏ bánh dai dẻo không bị khô hay ngọt gắt cổ như các loại bánh công nghiệp.</li>
+          <li><strong>Linh hoạt số lượng:</strong> Khách mua vài chục cái để biếu shop vẫn nhận, không ép buộc phải mua nguyên mâm số lượng lớn.</li>
+        </ul>
+      </div>
+      <div style="text-align: center;">
+        <img src="./Bánh phu thê Huế tại TPHCM – Shop Uyên Ương_files/Anh1.jpg" alt="Chi tiết bánh phu thê gói lá dừa" class="content-img">
+        <p style="font-size: 0.85rem; color: #777; margin-top: 10px;">(Bánh tươi, giao tận tay khách luôn giữ được độ dẻo thơm)</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Cụm 3: Giải đáp thắc mắc mua hàng (Tối ưu SEO FAQ) -->
+<div class="container">
+  <section class="section-box">
+    <h2>Câu hỏi thường gặp (FAQ)</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h3>Bánh phù hợp cho những dịp nào?</h3>
+        <p>Bánh rất hợp cho lễ ăn hỏi, đám cưới, dạm ngõ hoặc bày mâm quả gia tiên hai họ. Nhiều khách cũng đặt vài chục cái để làm quà biếu người thân.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Cần đặt bánh trước bao lâu?</h3>
+        <p>Khách cứ báo trước ít nhất 1 ngày là có bánh nha. Nếu đơn lớn (từ 100 cái lên mâm), nên báo trước 2-3 ngày để shop lo chuẩn bị nguyên liệu chu đáo nhất.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Bánh bảo quản được mấy ngày?</h3>
+        <p>Vì bánh nhà làm hoàn toàn trong ngày, không xài chất bảo quản nên khách dùng ngon nhất trong khoảng 3 - 4 ngày ở nhiệt độ thường nhé.</p>
+      </div>
+      <div class="faq-item">
+        <h3>Shop có giao tận nơi ở TPHCM không?</h3>
+        <p>Dạ có, shop nhận giao hoả tốc các quận nội thành TPHCM. Với đơn mâm quả cưới, shop luôn sắp xếp giao sớm trước giờ hẹn ít nhất 2 tiếng để khách kịp chuẩn bị.</p>
+      </div>
+    </div>
+    <div class="btn-center" style="margin-top: 25px;">
+      <a class="btn" href="https://uyenuong-shop.pages.dev/dat-hang.html">Liên hệ / Đặt bánh ngay</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    <strong>Uyên Ương – Bánh Phu Thê & Mâm Quả Cưới TPHCM</strong>
+    <p style="margin-top: 8px;">Website thử nghiệm – Thông tin liên hệ sẽ được cập nhật thêm sau.</p>
+  </div>
+</footer>
+
+</body>
+</html>
