@@ -1,6 +1,6 @@
 {
   "id": "phuclinh",
-  "name": "Bánh phục linh",
+  "name": "Bánh phục linh nước cốt dừa",
   "slug": "banh-phuc-linh-tphcm",
   "category": "banh-phuc-linh",
   "status": "published",
@@ -23,18 +23,47 @@
     {
       "key": "flavor",
       "label": "Số vị",
-      "values": ["2 vị", "5 vị"]
+      "values": [
+        "2 vị",
+        "5 vị"
+      ]
     }
   ],
   "price_rules": [
-    {"label": "2 vị - 30 cái", "when": {"flavor": "2 vị", "qty": 30}, "price": 180000},
-    {"label": "2 vị - 50 cái", "when": {"flavor": "2 vị", "qty": 50}, "price": 230000}
+    {
+      "label": "2 vị - 30 cái",
+      "when": {
+        "flavor": "2 vị",
+        "qty": 30
+      },
+      "price": 180000
+    },
+    {
+      "label": "2 vị - 50 cái",
+      "when": {
+        "flavor": "2 vị",
+        "qty": 50
+      },
+      "price": 230000
+    }
   ],
   "details": [
-    {"label": "Số vị", "value": "2 vị hoặc 5 vị"},
-    {"label": "Số lượng", "value": "Khách tự nhập"},
-    {"label": "Giá", "value": "Chỉ hiện khi trùng đúng quy cách đã có giá"},
-    {"label": "Khu vực", "value": "TPHCM"}
+    {
+      "label": "Số vị",
+      "value": "2 vị hoặc 5 vị"
+    },
+    {
+      "label": "Số lượng",
+      "value": "Khách tự nhập"
+    },
+    {
+      "label": "Giá",
+      "value": "Chỉ hiện khi trùng đúng quy cách đã có giá"
+    },
+    {
+      "label": "Khu vực",
+      "value": "TPHCM"
+    }
   ],
   "features": [
     "Dòng bánh riêng: tách riêng với nhóm bánh cưới hỏi trên menu.",
@@ -43,9 +72,18 @@
     "Phù hợp đặt riêng: thích hợp cho nhu cầu ngoài cưới hỏi."
   ],
   "faq": [
-    {"question": "Có bắt buộc mua 30 hoặc 50 cái không?", "answer": "Không. Khách có thể nhập số lượng khác; Shop sẽ xác nhận giá nếu chưa có quy cách tương ứng."},
-    {"question": "Khi nào website hiển thị giá?", "answer": "Website chỉ hiển thị giá khi số vị và số lượng trùng đúng quy cách đã được Shop thiết lập giá."},
-    {"question": "Có thể mua nhiều gói cùng lúc không?", "answer": "Có. Bạn có thể thêm vào giỏ hoặc đặt ngay theo nhu cầu."}
+    {
+      "question": "Có bắt buộc mua 30 hoặc 50 cái không?",
+      "answer": "Không. Khách có thể nhập số lượng khác; Shop sẽ xác nhận giá nếu chưa có quy cách tương ứng."
+    },
+    {
+      "question": "Khi nào website hiển thị giá?",
+      "answer": "Website chỉ hiển thị giá khi số vị và số lượng trùng đúng quy cách đã được Shop thiết lập giá."
+    },
+    {
+      "question": "Có thể mua nhiều gói cùng lúc không?",
+      "answer": "Có. Bạn có thể thêm vào giỏ hoặc đặt ngay theo nhu cầu."
+    }
   ],
   "seo": {
     "title": "Bánh phục linh tại TPHCM | Shop Uyên Ương",
