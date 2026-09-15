@@ -1,0 +1,358 @@
+media:
+  input: assets/images
+  output: /assets/images
+
+components:
+  seo:
+    type: object
+    label: SEO
+    fields:
+      - name: title
+        label: SEO title
+        type: string
+        required: true
+      - name: description
+        label: Meta description
+        type: text
+        required: true
+
+content:
+  - name: products_group
+    label: Sản phẩm
+    type: group
+    items:
+      - name: products
+        label: Quản lý sản phẩm
+        type: collection
+        path: content/products
+        format: json
+        filename:
+          template: "{slug}.json"
+          field: create
+        view:
+          primary: name
+          fields: [name, category, status, featured]
+          sort: [featured_order, name]
+          search: [name, slug, category]
+        fields:
+          - name: id
+            label: Mã nội bộ
+            type: string
+            required: true
+            description: "Không dùng khoảng trắng. Ví dụ: phuthehue, mamqua."
+          - name: name
+            label: Tên sản phẩm
+            type: string
+            required: true
+          - name: slug
+            label: Đường dẫn / Slug
+            type: string
+            required: true
+            pattern:
+              regex: "^[a-z0-9-]+$"
+              message: Chỉ dùng chữ thường không dấu, số và dấu gạch ngang.
+          - name: category
+            label: Chuyên mục
+            type: reference
+            required: true
+            options:
+              collection: categories
+              value: "{slug}"
+              label: "{title}"
+              search: "title,slug"
+          - name: status
+            label: Trạng thái
+            type: select
+            required: true
+            options:
+              values:
+                - name: published
+                  label: Đang hiển thị
+                - name: draft
+                  label: Bản nháp
+                - name: hidden
+                  label: Tạm ẩn
+          - name: featured
+            label: Hiển thị ở Sản phẩm nổi bật
+            type: boolean
+            default: false
+          - name: featured_order
+            label: Thứ tự nổi bật
+            type: number
+            default: 99
+          - name: image
+            label: Ảnh đại diện
+            type: image
+            required: true
+          - name: short_description
+            label: Mô tả ngắn
+            type: text
+            required: true
+          - name: lead
+            label: Mô tả đầu trang chi tiết
+            type: text
+            required: true
+          - name: price_mode
+            label: Cách hiển thị giá
+            type: select
+            required: true
+            options:
+              values:
+                - name: contact
+                  label: Giá liên hệ
+                - name: fixed
+                  label: Giá cố định
+                - name: hybrid
+                  label: Có giá cho một số quy cách
+          - name: price_text
+            label: Giá hiển thị mặc định
+            type: string
+            required: true
+            description: "Ví dụ: Giá liên hệ hoặc Từ 180.000đ."
+          - name: quantity
+            label: Số lượng đặt
+            type: object
+            fields:
+              - name: label
+                label: Tên trường số lượng
+                type: string
+                required: true
+              - name: unit
+                label: Đơn vị
+                type: string
+                required: true
+              - name: min
+                label: Số lượng tối thiểu
+                type: number
+                required: true
+              - name: default
+                label: Số lượng mặc định
+                type: number
+                required: true
+              - name: step
+                label: Bước tăng
+                type: number
+                required: true
+              - name: hint
+                label: Ghi chú dưới ô số lượng
+                type: text
+          - name: option_groups
+            label: Các lựa chọn của sản phẩm
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{label}"
+            fields:
+              - name: key
+                label: Mã lựa chọn
+                type: string
+                required: true
+                description: "Ví dụ wrap, flavor, package."
+              - name: label
+                label: Tên hiển thị
+                type: string
+                required: true
+              - name: values
+                label: Các giá trị
+                type: string
+                list: true
+                required: true
+          - name: price_rules
+            label: Bảng giá theo quy cách
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{label}"
+            fields:
+              - name: label
+                label: Tên quy tắc
+                type: string
+                required: true
+              - name: when
+                label: Điều kiện
+                type: object
+                fields:
+                  - name: flavor
+                    label: Số vị / Giá trị lựa chọn
+                    type: string
+                    description: Có thể để trống nếu không dùng.
+                  - name: qty
+                    label: Số lượng chính xác
+                    type: number
+              - name: price
+                label: Giá
+                type: number
+                required: true
+          - name: details
+            label: Thông tin nhanh
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{label}: {value}"
+            fields:
+              - name: label
+                label: Nhãn
+                type: string
+                required: true
+              - name: value
+                label: Nội dung
+                type: string
+                required: true
+          - name: features
+            label: Điểm cần biết trước khi đặt
+            type: text
+            list: true
+          - name: faq
+            label: Câu hỏi thường gặp
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{question}"
+            fields:
+              - name: question
+                label: Câu hỏi
+                type: string
+                required: true
+              - name: answer
+                label: Trả lời
+                type: text
+                required: true
+          - name: seo
+            component: seo
+
+  - name: editorial_group
+    label: Bài viết & SEO
+    type: group
+    items:
+      - name: articles
+        label: Bài viết
+        type: collection
+        path: content/articles
+        format: json
+        filename:
+          template: "{slug}.json"
+          field: create
+        view:
+          primary: title
+          fields: [title, category, status, featured]
+          sort: [featured_order, title]
+          search: [title, slug, category]
+        fields:
+          - name: title
+            label: Tiêu đề bài viết
+            type: string
+            required: true
+          - name: slug
+            label: Đường dẫn / Slug
+            type: string
+            required: true
+            pattern:
+              regex: "^[a-z0-9-]+$"
+              message: Chỉ dùng chữ thường không dấu, số và dấu gạch ngang.
+          - name: category
+            label: Chuyên mục / Chuyên mục con
+            type: reference
+            required: true
+            options:
+              collection: categories
+              value: "{slug}"
+              label: "{title}"
+              search: "title,slug,parent"
+          - name: status
+            label: Trạng thái
+            type: select
+            required: true
+            options:
+              values:
+                - name: published
+                  label: Đã đăng
+                - name: draft
+                  label: Bản nháp
+                - name: hidden
+                  label: Tạm ẩn
+          - name: featured
+            label: Hiển thị ở trang chủ
+            type: boolean
+            default: false
+          - name: featured_order
+            label: Thứ tự trang chủ
+            type: number
+            default: 99
+          - name: thumbnail
+            label: Ảnh đại diện
+            type: image
+            required: true
+          - name: excerpt
+            label: Mô tả ngắn
+            type: text
+            required: true
+          - name: body
+            label: Nội dung bài viết
+            type: rich-text
+            required: true
+            options:
+              format: html
+              media: false
+              switcher: true
+          - name: seo
+            component: seo
+
+      - name: categories
+        label: Chuyên mục
+        type: collection
+        path: content/categories
+        format: json
+        filename:
+          template: "{slug}.json"
+          field: create
+        view:
+          primary: title
+          fields: [title, slug, parent, status]
+          sort: [title]
+          search: [title, slug, parent]
+        fields:
+          - name: title
+            label: Tên chuyên mục
+            type: string
+            required: true
+          - name: slug
+            label: Slug
+            type: string
+            required: true
+            pattern: "^[a-z0-9-]+$"
+          - name: parent
+            label: Slug chuyên mục cha
+            type: string
+            description: Để trống nếu là chuyên mục cấp 1. Ví dụ cam-nang-cuoi.
+          - name: description
+            label: Mô tả chuyên mục
+            type: text
+          - name: status
+            label: Trạng thái
+            type: select
+            required: true
+            options:
+              values:
+                - name: published
+                  label: Đang dùng
+                - name: hidden
+                  label: Tạm ẩn
+
+  - name: orders_placeholder
+    label: Đơn hàng
+    type: group
+    items:
+      - name: orders_note
+        label: Trạng thái phát triển
+        type: file
+        path: content/orders-note.json
+        format: json
+        fields:
+          - name: note
+            label: Ghi chú
+            type: text
+            readonly: true
