@@ -1,8 +1,11 @@
+
 (function(){
-  const CART_KEY='uyen_uong_cart_v2';
+  const CART_KEY='uyen_uong_cart_v3';
   const products={
     phuthe:{id:'phuthe',name:'Bánh phu thê',image:'/assets/images/Anh1.jpg'},
-    mamqua:{id:'mamqua',name:'Mâm quả cưới',image:'/assets/images/mam-qua-cuoi-1.jpg'},
+    phuthehue:{id:'phuthehue',name:'Bánh phu thê Huế',image:'/assets/images/Anh1.jpg'},
+    phuthebac:{id:'phuthebac',name:'Bánh phu thê miền Bắc',image:'/assets/images/Banner.jpg'},
+    mamqua:{id:'mamqua',name:'Mâm quả cưới hỏi',image:'/assets/images/mam-qua-cuoi-1.jpg'},
     phuclinh:{id:'phuclinh',name:'Bánh phục linh',image:'/assets/images/banh-phuc-linh-1.jpg'}
   };
   function money(n){return Number(n||0).toLocaleString('vi-VN')+'đ'}
@@ -20,16 +23,16 @@
   document.addEventListener('click',e=>{const menu=document.getElementById('mobileMenu'),btn=document.querySelector('.menu-btn');if(innerWidth<=740&&menu?.classList.contains('open')&&!menu.contains(e.target)&&!btn?.contains(e.target))menu.classList.remove('open')});
 
   document.querySelectorAll('[data-thumb]').forEach(btn=>btn.addEventListener('click',()=>{const main=document.getElementById('mainProductImage');if(main)main.src=btn.dataset.thumb;document.querySelectorAll('[data-thumb]').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}));
-  document.querySelectorAll('[data-qty-minus]').forEach(b=>b.addEventListener('click',()=>{const input=b.parentElement.querySelector('input');input.value=Math.max(1,(Number(input.value)||1)-1)}));
-  document.querySelectorAll('[data-qty-plus]').forEach(b=>b.addEventListener('click',()=>{const input=b.parentElement.querySelector('input');input.value=(Number(input.value)||1)+1}));
+  document.querySelectorAll('[data-qty-minus]').forEach(b=>b.addEventListener('click',()=>{const input=b.parentElement.querySelector('input');const min=Number(input.min||1);input.value=Math.max(min,(Number(input.value)||min)-1)}));
+  document.querySelectorAll('[data-qty-plus]').forEach(b=>b.addEventListener('click',()=>{const input=b.parentElement.querySelector('input');const min=Number(input.min||1);input.value=Math.max(min,(Number(input.value)||min)+1)}));
 
   const productForm=document.getElementById('product-purchase');
   if(productForm){
     function buildItem(){
-      const fd=new FormData(productForm),id=productForm.dataset.product,base=products[id],qty=Math.max(1,Number(fd.get('qty'))||1);
-      if(id==='phuthe'){
-        const size=fd.get('size'),wrap=fd.get('wrap');
-        return{id,name:base.name,image:base.image,size,wrap,variant:[size,wrap].join(' · '),qty,price:0,priceText:'Shop xác nhận theo số lượng'};
+      const fd=new FormData(productForm),id=productForm.dataset.product,base=products[id],qty=Math.max(Number(productForm.querySelector('input[name="qty"]')?.min||1),Number(fd.get('qty'))||1);
+      if(id==='phuthe' || id==='phuthehue' || id==='phuthebac'){
+        const wrap=fd.get('wrap');
+        return{id,name:base.name,image:base.image,wrap,variant:[wrap].filter(Boolean).join(' · ')||'Theo yêu cầu',qty,price:0,priceText:'Giá liên hệ'};
       }
       if(id==='mamqua'){
         const pkg=fd.get('package');
