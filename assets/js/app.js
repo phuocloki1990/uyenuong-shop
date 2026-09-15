@@ -1,5 +1,7 @@
 (function(){
   const CART_KEY='uyen_uong_cart_v3';
+  const TELEGRAM_BOT_TOKEN='8681052924:AAHp19-sUlvkV3OSoKLDx7lIxH8bMj8X7v0';
+  const TELEGRAM_CHAT_ID='779623814';
   const products={
     phuthe:{id:'phuthe',name:'Bánh phu thê',image:'/assets/images/Anh1.jpg'},
     phuthehue:{id:'phuthehue',name:'Bánh phu thê Huế',image:'/assets/images/Anh1.jpg'},
@@ -136,7 +138,22 @@
       lines.push('',`Khách hàng: ${fd.get('name')}`,`SĐT: ${fd.get('phone')}`,`Ngày nhận: ${fd.get('receive_date')}`,`Địa chỉ: ${fd.get('address')}`,`Ghi chú: ${fd.get('note')||'Không có'}`);
       const text=lines.join('\n'),preview=document.getElementById('order-preview');preview.textContent=text;preview.classList.add('show');
       const status=document.getElementById('copy-status');
-      try{await navigator.clipboard.writeText(text);status.textContent='Nội dung đã được sao chép. Bấm “Mở Zalo”, dán nội dung vào khung chat và gửi cho Shop.'}catch(err){status.textContent='Trình duyệt chưa cho phép tự sao chép. Hãy sao chép phần nội dung yêu cầu phía trên rồi gửi qua Zalo.'}
+
+      let telegramOk=false;
+      try{
+        const res=await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text})
+        });
+        telegramOk=res.ok;
+      }catch(err){telegramOk=false}
+
+      if(telegramOk){
+        status.textContent='Yêu cầu đã được gửi tự động đến Shop qua Telegram. Shop sẽ liên hệ lại để xác nhận.';
+      }else{
+        try{await navigator.clipboard.writeText(text);status.textContent='Không gửi tự động được. Nội dung đã được sao chép, hãy mở Zalo và gửi giúp shop nhé.'}catch(err){status.textContent='Không gửi tự động được. Hãy sao chép nội dung yêu cầu phía trên rồi gửi qua Zalo.'}
+      }
       document.getElementById('order-success').classList.add('show');
     });
   }
