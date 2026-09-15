@@ -1,0 +1,51 @@
+{
+  "id": "mamqua",
+  "name": "Mâm quả cưới hỏi",
+  "slug": "mam-qua-cuoi-tphcm",
+  "category": "mam-qua-cuoi",
+  "status": "published",
+  "featured": true,
+  "featured_order": 1,
+  "image": "/assets/images/mam-qua-cuoi-1.jpg",
+  "short_description": "Nhận chuẩn bị mâm quả cưới hỏi theo gói 4 mâm, 6 mâm, 8 mâm và theo yêu cầu.",
+  "lead": "Nhận chuẩn bị mâm quả cưới hỏi theo gói 4 mâm, 6 mâm, 8 mâm và theo yêu cầu. Thành phần có thể trao đổi lại với Shop trước khi xác nhận.",
+  "price_mode": "contact",
+  "price_text": "Giá liên hệ",
+  "quantity": {
+    "label": "Số lượng bộ",
+    "unit": "bộ",
+    "min": 1,
+    "default": 1,
+    "step": 1,
+    "hint": "Khách có thể thay đổi thành phần trong gói, Shop sẽ xác nhận lại khi tiếp nhận yêu cầu."
+  },
+  "option_groups": [
+    {
+      "key": "package",
+      "label": "Gói mâm quả",
+      "values": ["Gói 4 mâm", "Gói 6 mâm", "Gói 8 mâm", "Theo yêu cầu"]
+    }
+  ],
+  "price_rules": [],
+  "details": [
+    {"label": "Gói phổ biến", "value": "4 mâm, 6 mâm, 8 mâm"},
+    {"label": "Thành phần", "value": "Có thể thay đổi theo nhu cầu"},
+    {"label": "Đặt trước", "value": "Nên đặt trước 3–5 ngày"},
+    {"label": "Khu vực", "value": "TPHCM"}
+  ],
+  "features": [
+    "Nhiều gói lựa chọn: 4 mâm, 6 mâm, 8 mâm và theo yêu cầu.",
+    "Không khóa cứng thành phần: khách có thể trao đổi đổi bớt hoặc thay thành phần trong gói.",
+    "Đặt trước 3–5 ngày: giúp Shop chuẩn bị chu đáo hơn cho đơn hàng.",
+    "Phù hợp nhiều nhu cầu: có thể dùng cho cưới, hỏi hoặc các nhu cầu tương tự."
+  ],
+  "faq": [
+    {"question": "Có cần chọn màu hoặc chủ đề trên website không?", "answer": "Chưa. Giai đoạn đầu, khách chỉ cần liên hệ Shop để được hỗ trợ chọn mẫu hoặc màu phù hợp."},
+    {"question": "Có bán từng mâm riêng không?", "answer": "Có. Shop có thể hỗ trợ mâm lẻ theo nhu cầu thực tế."},
+    {"question": "Có bắt buộc đúng 4 mâm hay 6 mâm không?", "answer": "Không. Đây là các gói phổ biến để tham khảo, khách vẫn có thể trao đổi yêu cầu riêng."}
+  ],
+  "seo": {
+    "title": "Mâm quả cưới hỏi tại TPHCM | Shop Uyên Ương",
+    "description": "Shop Uyên Ương nhận chuẩn bị mâm quả cưới hỏi tại TPHCM với gói 4 mâm, 6 mâm, 8 mâm và theo yêu cầu."
+  }
+}

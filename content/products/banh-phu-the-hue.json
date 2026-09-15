@@ -1,0 +1,51 @@
+{
+  "id": "phuthehue",
+  "name": "Bánh phu thê Huế",
+  "slug": "banh-phu-the-hue-tphcm",
+  "category": "banh-cuoi-hoi",
+  "status": "published",
+  "featured": true,
+  "featured_order": 2,
+  "image": "/assets/images/Anh1.jpg",
+  "short_description": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh, nhận đặt từ 20 bánh.",
+  "lead": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh và có thể chọn hộp giấy hoặc lá dừa.",
+  "price_mode": "contact",
+  "price_text": "Giá liên hệ",
+  "quantity": {
+    "label": "Số lượng bánh",
+    "unit": "bánh",
+    "min": 20,
+    "default": 20,
+    "step": 1,
+    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận."
+  },
+  "option_groups": [
+    {
+      "key": "wrap",
+      "label": "Kiểu đóng gói",
+      "values": ["Hộp giấy", "Lá dừa"]
+    }
+  ],
+  "price_rules": [],
+  "details": [
+    {"label": "Trọng lượng", "value": "53g/bánh"},
+    {"label": "Đóng gói", "value": "Hộp giấy hoặc lá dừa"},
+    {"label": "Số lượng tối thiểu", "value": "20 bánh"},
+    {"label": "Khu vực", "value": "TPHCM"}
+  ],
+  "features": [
+    "53g/bánh: trọng lượng cố định, chỉ cần ghi trong chi tiết sản phẩm.",
+    "Hai kiểu đóng gói: hộp giấy hoặc lá dừa để khách lựa chọn.",
+    "Nhận từ 20 bánh: phù hợp cả đặt lễ cưới hỏi và đặt lẻ theo nhu cầu.",
+    "Shop xác nhận lại: với các số lượng đặc thù, CSKH sẽ liên hệ tư vấn thêm."
+  ],
+  "faq": [
+    {"question": "Có nhận 70, 80 hoặc 90 bánh không?", "answer": "Có. Shop vẫn tiếp nhận yêu cầu, sau đó CSKH sẽ liên hệ xác nhận khả năng nhận đơn."},
+    {"question": "Có bán lẻ ngoài mục đích cưới hỏi không?", "answer": "Có. Shop vẫn nhận từ 20 bánh trở lên."},
+    {"question": "Đặt hàng có cần chốt ngay trên website không?", "answer": "Không. Khách gửi yêu cầu trước, Shop liên hệ để xác nhận thông tin và báo giá."}
+  ],
+  "seo": {
+    "title": "Bánh phu thê Huế tại TPHCM | Shop Uyên Ương",
+    "description": "Đặt bánh phu thê Huế tại TPHCM. Vỏ bánh có sợi dừa, nhân đậu xanh, có hộp giấy và lá dừa, nhận từ 20 bánh."
+  }
+}
