@@ -1,0 +1,2227 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
+
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+
+  <title>
+    Quản trị | Shop Uyên Ương
+  </title>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+
+    :root{
+      --brand:#244c36;
+      --brand-dark:#183726;
+      --brand-soft:#edf5ef;
+
+      --gold:#b58a3c;
+      --gold-soft:#f7f1e4;
+
+      --bg:#f5f2eb;
+      --surface:#ffffff;
+      --surface-soft:#fbfaf6;
+
+      --text:#28312b;
+      --muted:#707872;
+
+      --line:#e2ddd2;
+
+      --danger:#b84336;
+      --danger-soft:#fff0ee;
+
+      --warning:#9b6d1e;
+      --warning-soft:#fff6df;
+
+      --success:#34774c;
+      --success-soft:#edf8f1;
+
+      --shadow:
+        0 14px 40px
+        rgba(28,43,33,.07);
+
+      --shadow-hover:
+        0 20px 50px
+        rgba(28,43,33,.12);
+
+      --radius:18px;
+    }
+
+
+    *{
+      box-sizing:border-box;
+    }
+
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+
+    body{
+      margin:0;
+
+      min-height:100vh;
+
+      font-family:
+        "Be Vietnam Pro",
+        Arial,
+        sans-serif;
+
+      color:var(--text);
+
+      background:
+        var(--bg);
+
+      -webkit-font-smoothing:
+        antialiased;
+    }
+
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+
+    button,
+    input{
+      font:inherit;
+    }
+
+
+    button{
+      cursor:pointer;
+    }
+
+
+    [hidden]{
+      display:none !important;
+    }
+
+
+    /* =========================
+       HEADER
+       ========================= */
+
+    .site-header{
+      position:sticky;
+
+      top:0;
+
+      z-index:50;
+
+      border-bottom:
+        1px solid var(--line);
+
+      background:
+        rgba(255,255,255,.94);
+
+      backdrop-filter:
+        blur(12px);
+    }
+
+
+    .header-inner{
+      width:
+        min(
+          1240px,
+          calc(100% - 40px)
+        );
+
+      min-height:72px;
+
+      margin:auto;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:
+        space-between;
+
+      gap:18px;
+    }
+
+
+    .brand{
+      display:flex;
+
+      align-items:center;
+
+      gap:11px;
+    }
+
+
+    .brand-mark{
+      width:44px;
+      height:44px;
+
+      display:grid;
+
+      place-items:center;
+
+      border-radius:50%;
+
+      background:
+        var(--brand);
+
+      color:#fff;
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size:21px;
+
+      font-weight:700;
+    }
+
+
+    .brand-text strong{
+      display:block;
+
+      color:
+        var(--brand-dark);
+
+      font-size:15px;
+    }
+
+
+    .brand-text span{
+      display:block;
+
+      margin-top:2px;
+
+      color:
+        var(--muted);
+
+      font-size:11px;
+    }
+
+
+    .header-actions{
+      display:flex;
+
+      gap:8px;
+
+      align-items:center;
+    }
+
+
+    /* =========================
+       BUTTON
+       ========================= */
+
+    .btn{
+      min-height:42px;
+
+      padding:
+        10px 15px;
+
+      display:inline-flex;
+
+      align-items:center;
+
+      justify-content:center;
+
+      gap:7px;
+
+      border:
+        1px solid transparent;
+
+      border-radius:11px;
+
+      background:#fff;
+
+      color:var(--text);
+
+      font-size:13px;
+
+      font-weight:700;
+
+      transition:
+        transform .15s ease,
+        background .15s ease,
+        border-color .15s ease;
+    }
+
+
+    .btn:hover{
+      transform:
+        translateY(-1px);
+    }
+
+
+    .btn-primary{
+      background:
+        var(--brand);
+
+      color:#fff;
+    }
+
+
+    .btn-primary:hover{
+      background:
+        var(--brand-dark);
+    }
+
+
+    .btn-secondary{
+      border-color:
+        var(--line);
+
+      background:#fff;
+    }
+
+
+    .btn-danger{
+      border-color:
+        #efd1cc;
+
+      background:
+        var(--danger-soft);
+
+      color:
+        var(--danger);
+    }
+
+
+    .btn-small{
+      min-height:36px;
+
+      padding:
+        7px 11px;
+
+      font-size:12px;
+    }
+
+
+    /* =========================
+       LAYOUT
+       ========================= */
+
+    .container{
+      width:
+        min(
+          1240px,
+          calc(100% - 40px)
+        );
+
+      margin:auto;
+    }
+
+
+    main{
+      padding:
+        34px 0 60px;
+    }
+
+
+    /* =========================
+       HERO
+       ========================= */
+
+    .hero{
+      margin-bottom:24px;
+
+      padding:
+        28px;
+
+      display:grid;
+
+      grid-template-columns:
+        1fr auto;
+
+      gap:24px;
+
+      align-items:center;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        22px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fffdf8,
+          #f4f7f1
+        );
+
+      box-shadow:
+        var(--shadow);
+    }
+
+
+    .eyebrow{
+      margin-bottom:7px;
+
+      color:
+        var(--gold);
+
+      font-size:11px;
+
+      font-weight:800;
+
+      letter-spacing:.09em;
+
+      text-transform:
+        uppercase;
+    }
+
+
+    h1{
+      margin:0;
+
+      color:
+        var(--brand-dark);
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size:
+        clamp(
+          31px,
+          5vw,
+          46px
+        );
+
+      line-height:1.08;
+    }
+
+
+    .hero p{
+      max-width:680px;
+
+      margin:
+        10px 0 0;
+
+      color:
+        var(--muted);
+
+      font-size:14px;
+
+      line-height:1.7;
+    }
+
+
+    .hero-status{
+      min-width:210px;
+
+      padding:17px;
+
+      border:
+        1px solid #d7e4da;
+
+      border-radius:15px;
+
+      background:
+        var(--brand-soft);
+    }
+
+
+    .hero-status-label{
+      display:block;
+
+      color:
+        var(--muted);
+
+      font-size:11px;
+
+      font-weight:700;
+    }
+
+
+    .hero-status-value{
+      display:flex;
+
+      align-items:center;
+
+      gap:7px;
+
+      margin-top:5px;
+
+      color:
+        var(--brand-dark);
+
+      font-size:13px;
+
+      font-weight:800;
+    }
+
+
+    .status-dot{
+      width:8px;
+      height:8px;
+
+      border-radius:50%;
+
+      background:
+        var(--warning);
+    }
+
+
+    .status-dot.connected{
+      background:
+        var(--success);
+    }
+
+
+    /* =========================
+       ORDER SUMMARY
+       ========================= */
+
+    .order-summary{
+      margin-bottom:24px;
+
+      display:grid;
+
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0,1fr)
+        );
+
+      gap:12px;
+    }
+
+
+    .summary-card{
+      min-height:118px;
+
+      padding:18px;
+
+      display:flex;
+
+      flex-direction:column;
+
+      justify-content:
+        space-between;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        15px;
+
+      background:
+        var(--surface);
+
+      box-shadow:
+        0 6px 20px
+        rgba(30,46,35,.04);
+    }
+
+
+    .summary-label{
+      color:
+        var(--muted);
+
+      font-size:12px;
+
+      font-weight:600;
+    }
+
+
+    .summary-value{
+      margin-top:10px;
+
+      color:
+        var(--brand-dark);
+
+      font-size:30px;
+
+      font-weight:800;
+
+      line-height:1;
+    }
+
+
+    .summary-card.new{
+      border-left:
+        4px solid var(--danger);
+    }
+
+
+    .summary-card.processing{
+      border-left:
+        4px solid var(--gold);
+    }
+
+
+    .summary-card.total{
+      border-left:
+        4px solid var(--brand);
+    }
+
+
+    /* =========================
+       SECTION
+       ========================= */
+
+    .section-head{
+      margin:
+        30px 0 13px;
+
+      display:flex;
+
+      align-items:flex-end;
+
+      justify-content:
+        space-between;
+
+      gap:15px;
+    }
+
+
+    .section-head h2{
+      margin:0;
+
+      color:
+        var(--brand-dark);
+
+      font-family:
+        "Playfair Display",
+        serif;
+
+      font-size:24px;
+    }
+
+
+    .section-head p{
+      margin:
+        4px 0 0;
+
+      color:
+        var(--muted);
+
+      font-size:12px;
+    }
+
+
+    /* =========================
+       ADMIN CARDS
+       ========================= */
+
+    .admin-grid{
+      display:grid;
+
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0,1fr)
+        );
+
+      gap:13px;
+    }
+
+
+    .admin-card{
+      position:relative;
+
+      min-height:185px;
+
+      padding:20px;
+
+      display:flex;
+
+      flex-direction:column;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        var(--radius);
+
+      background:
+        var(--surface);
+
+      box-shadow:
+        var(--shadow);
+
+      transition:
+        transform .17s ease,
+        box-shadow .17s ease,
+        border-color .17s ease;
+    }
+
+
+    .admin-card:hover{
+      transform:
+        translateY(-3px);
+
+      border-color:
+        #cfd8d1;
+
+      box-shadow:
+        var(--shadow-hover);
+    }
+
+
+    .admin-card.primary-card{
+      background:
+        linear-gradient(
+          145deg,
+          #244c36,
+          #173825
+        );
+
+      color:#fff;
+
+      border-color:
+        transparent;
+    }
+
+
+    .card-icon{
+      width:44px;
+      height:44px;
+
+      display:grid;
+
+      place-items:center;
+
+      margin-bottom:15px;
+
+      border-radius:
+        12px;
+
+      background:
+        var(--brand-soft);
+
+      color:
+        var(--brand-dark);
+
+      font-size:21px;
+    }
+
+
+    .primary-card .card-icon{
+      background:
+        rgba(255,255,255,.13);
+
+      color:#fff;
+    }
+
+
+    .card-title{
+      margin:0;
+
+      color:
+        var(--brand-dark);
+
+      font-size:16px;
+
+      font-weight:800;
+    }
+
+
+    .primary-card .card-title{
+      color:#fff;
+    }
+
+
+    .card-desc{
+      margin:
+        7px 0 20px;
+
+      color:
+        var(--muted);
+
+      font-size:12px;
+
+      line-height:1.65;
+    }
+
+
+    .primary-card .card-desc{
+      color:
+        rgba(255,255,255,.76);
+    }
+
+
+    .card-link{
+      margin-top:auto;
+
+      display:flex;
+
+      align-items:center;
+
+      justify-content:
+        space-between;
+
+      gap:10px;
+
+      color:
+        var(--brand);
+
+      font-size:12px;
+
+      font-weight:800;
+    }
+
+
+    .primary-card .card-link{
+      color:#fff;
+    }
+
+
+    .card-arrow{
+      font-size:17px;
+    }
+
+
+    /* =========================
+       CMS LABEL
+       ========================= */
+
+    .external-tag{
+      position:absolute;
+
+      top:17px;
+
+      right:17px;
+
+      padding:
+        5px 8px;
+
+      border-radius:
+        999px;
+
+      background:
+        var(--gold-soft);
+
+      color:
+        #836324;
+
+      font-size:9px;
+
+      font-weight:800;
+
+      text-transform:
+        uppercase;
+    }
+
+
+    /* =========================
+       KEY PANEL
+       ========================= */
+
+    .key-panel{
+      margin-top:28px;
+
+      padding:20px;
+
+      display:grid;
+
+      grid-template-columns:
+        1fr minmax(280px,430px);
+
+      gap:24px;
+
+      align-items:center;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        var(--radius);
+
+      background:
+        var(--surface);
+
+      box-shadow:
+        var(--shadow);
+    }
+
+
+    .key-panel h3{
+      margin:0;
+
+      color:
+        var(--brand-dark);
+
+      font-size:16px;
+    }
+
+
+    .key-panel p{
+      max-width:600px;
+
+      margin:
+        6px 0 0;
+
+      color:
+        var(--muted);
+
+      font-size:12px;
+
+      line-height:1.65;
+    }
+
+
+    .key-form{
+      display:flex;
+
+      gap:8px;
+    }
+
+
+    .key-form input{
+      min-width:0;
+
+      flex:1;
+
+      height:43px;
+
+      padding:
+        10px 12px;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        10px;
+
+      outline:none;
+
+      background:#fff;
+
+      color:
+        var(--text);
+    }
+
+
+    .key-form input:focus{
+      border-color:
+        var(--brand);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(36,76,54,.08);
+    }
+
+
+    .key-message{
+      min-height:18px;
+
+      margin-top:7px;
+
+      color:
+        var(--muted);
+
+      font-size:10px;
+    }
+
+
+    .key-message.error{
+      color:
+        var(--danger);
+    }
+
+
+    .key-message.success{
+      color:
+        var(--success);
+    }
+
+
+    /* =========================
+       FOOTER
+       ========================= */
+
+    footer{
+      padding:
+        20px 0 34px;
+
+      color:
+        var(--muted);
+
+      font-size:11px;
+
+      text-align:center;
+    }
+
+
+    /* =========================
+       RESPONSIVE
+       ========================= */
+
+    @media(max-width:900px){
+
+      .hero{
+        grid-template-columns:1fr;
+      }
+
+
+      .hero-status{
+        min-width:0;
+      }
+
+
+      .admin-grid{
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0,1fr)
+          );
+      }
+
+
+      .key-panel{
+        grid-template-columns:1fr;
+      }
+
+    }
+
+
+    @media(max-width:640px){
+
+      .container,
+      .header-inner{
+        width:
+          calc(100% - 24px);
+      }
+
+
+      .header-inner{
+        min-height:64px;
+      }
+
+
+      .brand-text span{
+        display:none;
+      }
+
+
+      .header-actions .btn span{
+        display:none;
+      }
+
+
+      main{
+        padding-top:20px;
+      }
+
+
+      .hero{
+        padding:20px;
+
+        border-radius:17px;
+      }
+
+
+      .order-summary{
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0,1fr)
+          );
+      }
+
+
+      .summary-card.total{
+        grid-column:
+          1 / -1;
+      }
+
+
+      .admin-grid{
+        grid-template-columns:1fr;
+      }
+
+
+      .admin-card{
+        min-height:160px;
+      }
+
+
+      .key-form{
+        flex-direction:column;
+      }
+
+
+      .key-form .btn{
+        width:100%;
+      }
+
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+     ========================= -->
+
+<header class="site-header">
+
+  <div class="header-inner">
+
+    <a
+      class="brand"
+      href="/admin/"
+    >
+
+      <div class="brand-mark">
+        U
+      </div>
+
+      <div class="brand-text">
+
+        <strong>
+          Shop Uyên Ương
+        </strong>
+
+        <span>
+          Trung tâm quản trị
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <div class="header-actions">
+
+      <a
+        class="btn btn-secondary btn-small"
+        href="/index.html"
+        target="_blank"
+        rel="noopener"
+      >
+        ↗
+        <span>
+          Mở website
+        </span>
+      </a>
+
+
+      <button
+        class="btn btn-danger btn-small"
+        type="button"
+        id="logout-btn"
+        hidden
+      >
+        Đăng xuất
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- =========================
+     MAIN
+     ========================= -->
+
+<main>
+
+  <div class="container">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <div>
+
+        <div class="eyebrow">
+          Quản trị Shop
+        </div>
+
+        <h1>
+          Xin chào
+        </h1>
+
+        <p>
+          Từ đây bạn có thể xử lý đơn hàng,
+          quản lý sản phẩm, bài viết và nội dung website
+          mà không cần nhớ nhiều đường dẫn khác nhau.
+        </p>
+
+      </div>
+
+
+      <div class="hero-status">
+
+        <span class="hero-status-label">
+          Hệ thống đơn hàng
+        </span>
+
+        <div class="hero-status-value">
+
+          <span
+            class="status-dot"
+            id="connection-dot"
+          ></span>
+
+          <span id="connection-text">
+            Chưa kết nối
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         ORDER SUMMARY
+         ========================= -->
+
+    <section
+      class="order-summary"
+      id="order-summary"
+    >
+
+      <a
+        class="summary-card new"
+        href="/admin/orders.html"
+      >
+
+        <span class="summary-label">
+          Đơn mới
+        </span>
+
+        <strong
+          class="summary-value"
+          id="new-count"
+        >
+          —
+        </strong>
+
+      </a>
+
+
+      <a
+        class="summary-card processing"
+        href="/admin/orders.html"
+      >
+
+        <span class="summary-label">
+          Đang xử lý
+        </span>
+
+        <strong
+          class="summary-value"
+          id="processing-count"
+        >
+          —
+        </strong>
+
+      </a>
+
+
+      <a
+        class="summary-card total"
+        href="/admin/orders.html"
+      >
+
+        <span class="summary-label">
+          Tổng số đơn
+        </span>
+
+        <strong
+          class="summary-value"
+          id="total-count"
+        >
+          —
+        </strong>
+
+      </a>
+
+    </section>
+
+
+    <!-- =========================
+         MANAGEMENT
+         ========================= -->
+
+    <div class="section-head">
+
+      <div>
+
+        <h2>
+          Quản lý
+        </h2>
+
+        <p>
+          Chọn khu vực bạn cần làm việc.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <section class="admin-grid">
+
+
+      <!-- ORDERS -->
+
+      <a
+        class="admin-card primary-card"
+        href="/admin/orders.html"
+      >
+
+        <div class="card-icon">
+          ◫
+        </div>
+
+        <h3 class="card-title">
+          Đơn hàng
+        </h3>
+
+        <p class="card-desc">
+          Xem đơn mới, thông tin khách,
+          sản phẩm đã đặt và chuyển trạng thái
+          Mới → Đang xử lý → Hoàn thành.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Quản lý đơn hàng
+          </span>
+
+          <span class="card-arrow">
+            →
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- PRODUCTS -->
+
+      <a
+        class="admin-card"
+        href="https://app.pagescms.org/"
+        target="_blank"
+        rel="noopener"
+      >
+
+        <span class="external-tag">
+          Pages CMS
+        </span>
+
+        <div class="card-icon">
+          ♢
+        </div>
+
+        <h3 class="card-title">
+          Sản phẩm
+        </h3>
+
+        <p class="card-desc">
+          Chỉnh tên sản phẩm, nội dung,
+          hình ảnh và các thông tin bán hàng
+          đang hiển thị trên website.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Mở quản lý sản phẩm
+          </span>
+
+          <span class="card-arrow">
+            ↗
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- ARTICLES -->
+
+      <a
+        class="admin-card"
+        href="https://app.pagescms.org/"
+        target="_blank"
+        rel="noopener"
+      >
+
+        <span class="external-tag">
+          Pages CMS
+        </span>
+
+        <div class="card-icon">
+          ✎
+        </div>
+
+        <h3 class="card-title">
+          Bài viết
+        </h3>
+
+        <p class="card-desc">
+          Tạo và chỉnh sửa nội dung Cẩm nang,
+          tiêu đề SEO và các bài viết
+          hỗ trợ khách hàng.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Mở quản lý bài viết
+          </span>
+
+          <span class="card-arrow">
+            ↗
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- CATEGORIES -->
+
+      <a
+        class="admin-card"
+        href="https://app.pagescms.org/"
+        target="_blank"
+        rel="noopener"
+      >
+
+        <span class="external-tag">
+          Pages CMS
+        </span>
+
+        <div class="card-icon">
+          ☷
+        </div>
+
+        <h3 class="card-title">
+          Chuyên mục
+        </h3>
+
+        <p class="card-desc">
+          Quản lý nhóm nội dung và chuyên mục
+          sử dụng cho Cẩm nang của website.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Mở chuyên mục
+          </span>
+
+          <span class="card-arrow">
+            ↗
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- MEDIA -->
+
+      <a
+        class="admin-card"
+        href="https://app.pagescms.org/"
+        target="_blank"
+        rel="noopener"
+      >
+
+        <span class="external-tag">
+          Pages CMS
+        </span>
+
+        <div class="card-icon">
+          ▧
+        </div>
+
+        <h3 class="card-title">
+          Hình ảnh & Media
+        </h3>
+
+        <p class="card-desc">
+          Quản lý hình ảnh dùng cho sản phẩm,
+          bài viết và các nội dung khác
+          trên website.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Mở Media
+          </span>
+
+          <span class="card-arrow">
+            ↗
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- WEBSITE -->
+
+      <a
+        class="admin-card"
+        href="/index.html"
+        target="_blank"
+        rel="noopener"
+      >
+
+        <div class="card-icon">
+          ↗
+        </div>
+
+        <h3 class="card-title">
+          Xem website
+        </h3>
+
+        <p class="card-desc">
+          Mở website Shop Uyên Ương
+          để kiểm tra nội dung sau khi
+          cập nhật sản phẩm hoặc bài viết.
+        </p>
+
+        <div class="card-link">
+
+          <span>
+            Mở trang khách hàng
+          </span>
+
+          <span class="card-arrow">
+            →
+          </span>
+
+        </div>
+
+      </a>
+
+    </section>
+
+
+    <!-- =========================
+         API KEY
+         ========================= -->
+
+    <section
+      class="key-panel"
+      id="key-panel"
+    >
+
+      <div>
+
+        <h3>
+          Kết nối quản lý đơn hàng
+        </h3>
+
+        <p id="key-description">
+          Nhập khóa quản trị một lần trong phiên làm việc.
+          Khóa chỉ được lưu trong phiên trình duyệt này
+          và không được ghi vào mã nguồn website.
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <form
+          class="key-form"
+          id="key-form"
+        >
+
+          <input
+            type="password"
+            id="admin-key"
+            placeholder="Nhập ADMIN_API_KEY"
+            autocomplete="current-password"
+            required
+          >
+
+          <button
+            class="btn btn-primary"
+            type="submit"
+            id="connect-btn"
+          >
+            Kết nối
+          </button>
+
+        </form>
+
+
+        <div
+          class="key-message"
+          id="key-message"
+        ></div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+<footer>
+
+  <div class="container">
+    © 2026 Shop Uyên Ương · Trang quản trị nội bộ
+  </div>
+
+</footer>
+
+
+<script>
+
+(function(){
+
+  'use strict';
+
+
+  /* =========================
+     CONFIG
+     ========================= */
+
+  const API_URL =
+    '/api/orders';
+
+
+  /*
+    Phải giống với orders.html
+    để nhập khóa tại Dashboard
+    thì không phải nhập lại khi
+    mở trang Đơn hàng.
+  */
+
+  const KEY_NAME =
+    'uyen_uong_admin_api_key';
+
+
+  /* =========================
+     ELEMENTS
+     ========================= */
+
+  const keyForm =
+    document.getElementById(
+      'key-form'
+    );
+
+
+  const keyInput =
+    document.getElementById(
+      'admin-key'
+    );
+
+
+  const connectBtn =
+    document.getElementById(
+      'connect-btn'
+    );
+
+
+  const keyMessage =
+    document.getElementById(
+      'key-message'
+    );
+
+
+  const connectionDot =
+    document.getElementById(
+      'connection-dot'
+    );
+
+
+  const connectionText =
+    document.getElementById(
+      'connection-text'
+    );
+
+
+  const logoutBtn =
+    document.getElementById(
+      'logout-btn'
+    );
+
+
+  const newCount =
+    document.getElementById(
+      'new-count'
+    );
+
+
+  const processingCount =
+    document.getElementById(
+      'processing-count'
+    );
+
+
+  const totalCount =
+    document.getElementById(
+      'total-count'
+    );
+
+
+  /* =========================
+     STORAGE
+     ========================= */
+
+  function getKey(){
+
+    return (
+      sessionStorage.getItem(
+        KEY_NAME
+      ) || ''
+    );
+
+  }
+
+
+  function setKey(key){
+
+    sessionStorage.setItem(
+      KEY_NAME,
+      key
+    );
+
+  }
+
+
+  function removeKey(){
+
+    sessionStorage.removeItem(
+      KEY_NAME
+    );
+
+  }
+
+
+  /* =========================
+     UI
+     ========================= */
+
+  function setConnectedUI(){
+
+    connectionDot
+      .classList
+      .add(
+        'connected'
+      );
+
+
+    connectionText.textContent =
+      'Đã kết nối';
+
+
+    logoutBtn.hidden =
+      false;
+
+
+    keyInput.value =
+      '';
+
+
+    keyInput.placeholder =
+      'Đã kết nối';
+
+
+    keyInput.disabled =
+      true;
+
+
+    connectBtn.hidden =
+      true;
+
+
+    showKeyMessage(
+      'Đã kết nối với hệ thống đơn hàng.',
+      'success'
+    );
+
+  }
+
+
+  function setDisconnectedUI(){
+
+    connectionDot
+      .classList
+      .remove(
+        'connected'
+      );
+
+
+    connectionText.textContent =
+      'Chưa kết nối';
+
+
+    logoutBtn.hidden =
+      true;
+
+
+    keyInput.disabled =
+      false;
+
+
+    keyInput.value =
+      '';
+
+
+    keyInput.placeholder =
+      'Nhập ADMIN_API_KEY';
+
+
+    connectBtn.hidden =
+      false;
+
+
+    newCount.textContent =
+      '—';
+
+
+    processingCount.textContent =
+      '—';
+
+
+    totalCount.textContent =
+      '—';
+
+  }
+
+
+  function showKeyMessage(
+    message,
+    type = ''
+  ){
+
+    keyMessage.textContent =
+      message;
+
+
+    keyMessage.className =
+      'key-message';
+
+
+    if(type){
+
+      keyMessage
+        .classList
+        .add(type);
+
+    }
+
+  }
+
+
+  /* =========================
+     API
+     ========================= */
+
+  async function testKey(
+    key
+  ){
+
+    const response =
+      await fetch(
+        `${API_URL}?limit=1&offset=0`,
+        {
+          headers:{
+            'Authorization':
+              `Bearer ${key}`
+          }
+        }
+      );
+
+
+    if(
+      response.status === 401
+    ){
+
+      throw new Error(
+        'Khóa quản trị không đúng.'
+      );
+
+    }
+
+
+    if(!response.ok){
+
+      throw new Error(
+        'Không thể kết nối hệ thống đơn hàng.'
+      );
+
+    }
+
+
+    return true;
+
+  }
+
+
+  async function loadOrderCounts(){
+
+    const key =
+      getKey();
+
+
+    if(!key){
+
+      setDisconnectedUI();
+
+      return;
+
+    }
+
+
+    try{
+
+      let offset = 0;
+
+      const limit = 100;
+
+      let total = 0;
+
+      let newOrders = 0;
+
+      let processingOrders = 0;
+
+
+      /*
+        API giới hạn tối đa
+        100 đơn mỗi lần.
+
+        Dashboard tự tải tiếp
+        nếu sau này có nhiều hơn
+        100 đơn.
+      */
+
+      while(true){
+
+        const response =
+          await fetch(
+            `${API_URL}?limit=${limit}&offset=${offset}`,
+            {
+              headers:{
+                'Authorization':
+                  `Bearer ${key}`
+              }
+            }
+          );
+
+
+        if(
+          response.status === 401
+        ){
+
+          removeKey();
+
+          setDisconnectedUI();
+
+          showKeyMessage(
+            'Khóa quản trị không còn hợp lệ. Vui lòng nhập lại.',
+            'error'
+          );
+
+          return;
+
+        }
+
+
+        if(!response.ok){
+
+          throw new Error(
+            'Không tải được dữ liệu đơn hàng.'
+          );
+
+        }
+
+
+        const result =
+          await response.json();
+
+
+        const orders =
+          Array.isArray(
+            result.orders
+          )
+            ? result.orders
+            : [];
+
+
+        total +=
+          orders.length;
+
+
+        orders.forEach(
+          order => {
+
+            if(
+              order.status ===
+              'new'
+            ){
+
+              newOrders++;
+
+            }
+
+
+            if(
+              order.status ===
+              'processing'
+            ){
+
+              processingOrders++;
+
+            }
+
+          }
+        );
+
+
+        if(
+          orders.length < limit
+        ){
+
+          break;
+
+        }
+
+
+        offset += limit;
+
+
+        /*
+          Chặn vòng lặp bất thường.
+        */
+
+        if(
+          offset >= 10000
+        ){
+
+          break;
+
+        }
+
+      }
+
+
+      newCount.textContent =
+        newOrders;
+
+
+      processingCount.textContent =
+        processingOrders;
+
+
+      totalCount.textContent =
+        total;
+
+
+      setConnectedUI();
+
+
+    }catch(error){
+
+      connectionText.textContent =
+        'Lỗi kết nối';
+
+
+      showKeyMessage(
+        error.message ||
+        'Không thể tải dữ liệu đơn hàng.',
+        'error'
+      );
+
+    }
+
+  }
+
+
+  /* =========================
+     CONNECT
+     ========================= */
+
+  keyForm.addEventListener(
+    'submit',
+    async event => {
+
+      event.preventDefault();
+
+
+      const key =
+        keyInput
+          .value
+          .trim();
+
+
+      if(!key){
+
+        return;
+
+      }
+
+
+      connectBtn.disabled =
+        true;
+
+
+      connectBtn.textContent =
+        'Đang kiểm tra...';
+
+
+      showKeyMessage(
+        'Đang kết nối...'
+      );
+
+
+      try{
+
+        await testKey(
+          key
+        );
+
+
+        setKey(
+          key
+        );
+
+
+        await loadOrderCounts();
+
+
+      }catch(error){
+
+        removeKey();
+
+
+        setDisconnectedUI();
+
+
+        showKeyMessage(
+          error.message ||
+          'Khóa quản trị không đúng.',
+          'error'
+        );
+
+
+        keyInput.focus();
+
+
+      }finally{
+
+        connectBtn.disabled =
+          false;
+
+
+        connectBtn.textContent =
+          'Kết nối';
+
+      }
+
+    }
+  );
+
+
+  /* =========================
+     LOGOUT
+     ========================= */
+
+  logoutBtn.addEventListener(
+    'click',
+    () => {
+
+      removeKey();
+
+
+      setDisconnectedUI();
+
+
+      showKeyMessage(
+        'Đã ngắt kết nối quản lý đơn hàng.'
+      );
+
+
+      keyInput.focus();
+
+    }
+  );
+
+
+  /* =========================
+     INIT
+     ========================= */
+
+  async function init(){
+
+    const key =
+      getKey();
+
+
+    if(!key){
+
+      setDisconnectedUI();
+
+      showKeyMessage(
+        'Chưa kết nối. Nhập khóa quản trị bên trên để xem số đơn.'
+      );
+
+      return;
+
+    }
+
+
+    connectionText.textContent =
+      'Đang kết nối...';
+
+
+    await loadOrderCounts();
+
+  }
+
+
+  init();
+
+})();
+
+</script>
+
+
+</body>
+</html>
