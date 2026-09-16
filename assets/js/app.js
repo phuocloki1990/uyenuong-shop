@@ -159,3 +159,96 @@
   }
   updateCartCount();
 })();
+(function () {
+  const form = document.getElementById('order-form');
+  if (!form) return;
+
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const successBox = document.getElementById('order-success');
+  const modal = document.getElementById('order-confirm-modal');
+  const closeBtn = document.getElementById('close-order-confirm');
+
+  let submitting = false;
+  let confirmed = false;
+
+  // Khóa ngay khi khách bấm gửi để tránh bấm liên tục
+  form.addEventListener('submit', function (event) {
+    if (submitting || confirmed) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+
+    submitting = true;
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang gửi yêu cầu...';
+    }
+  }, true);
+
+  function showOrderConfirmed() {
+    if (confirmed) return;
+
+    confirmed = true;
+    submitting = false;
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '✓ Yêu cầu đã được gửi';
+    }
+
+    // Xóa giỏ hàng sau khi đơn đã gửi thành công
+    localStorage.removeItem('uyen_uong_cart_v3');
+    sessionStorage.removeItem('uyen_uong_buy_now');
+
+    document.querySelectorAll('[data-cart-count]').forEach(function (el) {
+      el.textContent = '0';
+    });
+
+    if (modal) {
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('order-modal-open');
+    }
+  }
+
+  // Theo dõi box thành công hiện có.
+  // Telegram gửi thành công -> app.js hiện .show -> popup xuất hiện.
+  if (successBox) {
+    const observer = new MutationObserver(function () {
+      if (successBox.classList.contains('show')) {
+        showOrderConfirmed();
+      }
+    });
+
+    observer.observe(successBox, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    // Phòng trường hợp success đã hiện trước khi observer chạy
+    if (successBox.classList.contains('show')) {
+      showOrderConfirmed();
+    }
+  }
+
+  function closeModal() {
+    if (!modal) return;
+
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('order-modal-open');
+
+    // Sau khi đóng popup, kéo tới box xác nhận để khách vẫn thấy trạng thái
+    successBox?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  }
+
+  closeBtn?.addEventListener('click', closeModal);
+
+  modal?.querySelector('.order-confirm-backdrop')
+    ?.addEventListener('click', closeModal);
+})();
