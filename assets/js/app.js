@@ -18,54 +18,25 @@
       const ORDER_API_URL =
         'https://uyenuong-order-api.phuoc-loki1990.workers.dev';
 
-      const products = {
-        phuthe: {
-          id: 'phuthe',
-          name: 'Bánh phu thê',
-          image: '/assets/images/Anh1.jpg'
-        },
-
-        phuthehue: {
-          id: 'phuthehue',
-          name: 'Bánh phu thê Huế',
-          image: '/assets/images/Anh1.jpg'
-        },
-
-        phuthebac: {
-          id: 'phuthebac',
-          name: 'Bánh phu thê miền Bắc',
-          image: '/assets/images/Banner.jpg'
-        },
-
-        mamqua: {
-          id: 'mamqua',
-          name: 'Mâm quả cưới hỏi',
-          image: '/assets/images/mam-qua-cuoi-1.jpg'
-        },
-
-        phuclinh: {
-          id: 'phuclinh',
-          name: 'Bánh phục linh',
-          image: '/assets/images/banh-phuc-linh-1.jpg'
-        }
-      };
+      const products = window.UUCMS?.products || {};
+      const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      function itemChoices(item) {
+        if (item.options) return item.options;
+        return { wrap: item.wrap || '', flavor: item.flavor || '', package: item.variant || '' };
+      }
+      function itemTotal(item) {
+        const p = products[item.id];
+        if (!p || !window.UUCMS) return null;
+        return window.UUCMS.quote(p, itemChoices(item), Number(item.qty));
+      }
 
       function money(n) {
         return Number(n || 0).toLocaleString('vi-VN') + 'đ';
       }
 
       function phucLinhPrice(flavor, qty) {
-        qty = Number(qty) || 0;
-
-        if (flavor === '2 vị' && qty === 30) {
-          return 180000;
-        }
-
-        if (flavor === '2 vị' && qty === 50) {
-          return 230000;
-        }
-
-        return 0;
+        const p = products.phuclinh;
+        return p && window.UUCMS ? window.UUCMS.quote(p, {flavor}, Number(qty)) : null;
       }
 
       function createRequestId() {
@@ -118,67 +89,21 @@
       }
 
       function itemLabel(item) {
-        return (
-          item.variant ||
-          [item.size, item.wrap]
-            .filter(Boolean)
-            .join(' · ') ||
-          'Theo yêu cầu'
-        );
+        if (item.options) return Object.values(item.options).filter(Boolean).join(' · ') + (item.flavor ? ' · ' + item.qty + ' cái' : '');
+        if (item.flavor) return item.flavor + ' · ' + item.qty + ' cái';
+        return item.variant || [item.size, item.wrap].filter(Boolean).join(' · ') || 'Theo yêu cầu';
       }
-
       function itemPrice(item) {
-        if (
-          item.id === 'phuclinh' &&
-          item.flavor
-        ) {
-          const price =
-            phucLinhPrice(
-              item.flavor,
-              item.qty
-            );
-
-          return price
-            ? money(price)
-            : 'Giá liên hệ';
-        }
-
-        return Number(item.price) > 0
-          ? money(
-              Number(item.price) *
-              Number(item.qty || 1)
-            )
-          : (
-              item.priceText ||
-              'Shop xác nhận'
-            );
+        const total = itemTotal(item);
+        return total === null ? 'Giá liên hệ' : money(total);
       }
 
       function addCart(item) {
         const cart = getCart();
-
-        const key = [
-          item.id,
-          item.variant || '',
-          item.size || '',
-          item.wrap || '',
-          item.flavor || ''
-        ].join('|');
-
-        const found =
-          cart.find(i => i.key === key);
-
-        if (found) {
-          found.qty =
-            Number(found.qty || 0) +
-            Number(item.qty || 0);
-        } else {
-          cart.push({
-            ...item,
-            key
-          });
-        }
-
+        const options = itemChoices(item);
+        const key = JSON.stringify([item.id, Object.entries(options).sort(), item.qty]);
+        // Exact bundles are independent lines; do not merge two 30-piece bundles into 60 pieces.
+        cart.push({...item, key: key + ':' + createRequestId()});
         saveCart(cart);
       }
 
@@ -193,68 +118,16 @@
       }
 
       function updateQty(key, qty) {
-        const cart = getCart();
-
-        const item =
-          cart.find(i => i.key === key);
-
+        const cart = getCart(), item = cart.find(i => i.key === key);
         if (item) {
-          const min =
-            Number(item.minQty || 1);
-
-          item.qty = Math.max(
-            min,
-            Number(qty) || min
-          );
-
-          saveCart(cart);
-          renderCart();
+          const q = products[item.id]?.quantity || {min: item.minQty || 1, step: item.stepQty || 1};
+          const value = Number(qty);
+          if (!Number.isInteger(value) || value < q.min || (value - q.min) % q.step) { renderCart(); return; }
+          item.qty = value; saveCart(cart); renderCart();
         }
       }
-
-      function cartTotal() {
-        return getCart().reduce(
-          (sum, item) => {
-            if (
-              item.id === 'phuclinh' &&
-              item.flavor
-            ) {
-              return (
-                sum +
-                phucLinhPrice(
-                  item.flavor,
-                  item.qty
-                )
-              );
-            }
-
-            return (
-              sum +
-              (Number(item.price) || 0) *
-              (Number(item.qty) || 0)
-            );
-          },
-          0
-        );
-      }
-
-      function hasUnknownPrice() {
-        return getCart().some(item => {
-          if (
-            item.id === 'phuclinh' &&
-            item.flavor
-          ) {
-            return !phucLinhPrice(
-              item.flavor,
-              item.qty
-            );
-          }
-
-          return !(
-            Number(item.price) > 0
-          );
-        });
-      }
+      function cartTotal() { return getCart().reduce((sum,item) => sum + (itemTotal(item) ?? 0), 0); }
+      function hasUnknownPrice() { return getCart().some(item => itemTotal(item) === null); }
 
       function toggleMenu() {
         document
@@ -372,7 +245,7 @@
                     Number(
                       input.value
                     ) || min
-                  ) - 1
+                  ) - Number(input.step || 1)
                 );
 
               input.dispatchEvent(
@@ -419,7 +292,7 @@
                     Number(
                       input.value
                     ) || min
-                  ) + 1
+                  ) + Number(input.step || 1)
                 );
 
               input.dispatchEvent(
@@ -491,7 +364,7 @@
 
         const productPriceHint =
           document.getElementById(
-            'product-phuclinh-price'
+            'product-price-hint'
           );
 
         /*
@@ -505,194 +378,32 @@
           }
         );
 
-        function updateProductPhucLinhPrice() {
-          if (
-            productId !== 'phuclinh' ||
-            !productPriceHint
-          ) {
-            return;
-          }
-
-          const flavor =
-            productForm
-              .querySelector(
-                '[name="flavor"]'
-              )
-              ?.value || '';
-
-          const qty =
-            Number(
-              productForm
-                .querySelector(
-                  '[name="qty"]'
-                )
-                ?.value || 0
-            );
-
-          const price =
-            phucLinhPrice(
-              flavor,
-              qty
-            );
-
-          productPriceHint.textContent =
-            price
-              ? `${flavor} · ${qty} cái: ${money(price)}.`
-              : `${flavor || 'Bánh phục linh'} · ${qty || 0} cái: Giá liên hệ. Shop sẽ báo giá khi xác nhận.`;
+        function updateProductPrice() {
+          const p = products[productId];
+          if (!p || !productPriceHint) return;
+          const fd = new FormData(productForm);
+          const options = Object.fromEntries(p.option_groups.map(g => [g.key, String(fd.get(g.key) || '')]));
+          const qty = Number(fd.get('qty'));
+          const price = window.UUCMS.quote(p, options, qty);
+          productPriceHint.textContent = price === null
+            ? 'Giá liên hệ. Shop sẽ báo giá khi xác nhận đủ quy cách và số lượng.'
+            : `${Object.values(options).join(' · ')} · ${qty} ${p.quantity.unit}: ${money(price)}.`;
         }
-
-        productForm
-          .querySelector(
-            '[name="flavor"]'
-          )
-          ?.addEventListener(
-            'change',
-            updateProductPhucLinhPrice
-          );
-
-        productForm
-          .querySelector(
-            '[name="qty"]'
-          )
-          ?.addEventListener(
-            'input',
-            updateProductPhucLinhPrice
-          );
-
-        updateProductPhucLinhPrice();
+        productForm.addEventListener('change', updateProductPrice);
+        productForm.addEventListener('input', updateProductPrice);
+        updateProductPrice();
 
         function buildItem() {
-          const fd =
-            new FormData(
-              productForm
-            );
-
-          const id =
-            productId;
-
-          const base =
-            products[id];
-
-          if (!base) {
-            throw new Error(
-              `Không tìm thấy cấu hình sản phẩm cho data-product="${productForm.dataset.product || ''}".`
-            );
-          }
-
-          const qtyInput =
-            productForm.querySelector(
-              'input[name="qty"]'
-            );
-
-          const minQty =
-            Math.max(
-              1,
-              Number(
-                qtyInput?.min || 1
-              ) || 1
-            );
-
-          const qty =
-            Math.max(
-              minQty,
-              Number(
-                fd.get('qty')
-              ) || minQty
-            );
-
-          if (
-            id === 'phuthe' ||
-            id === 'phuthehue' ||
-            id === 'phuthebac'
-          ) {
-            const wrap =
-              String(
-                fd.get('wrap') || ''
-              ).trim();
-
-            return {
-              id,
-              name: base.name,
-              image: base.image,
-              wrap,
-              variant:
-                wrap ||
-                'Theo yêu cầu',
-              qty,
-              minQty,
-              price: 0,
-              priceText:
-                'Giá liên hệ'
-            };
-          }
-
-          if (
-            id === 'mamqua'
-          ) {
-            const pkg =
-              String(
-                fd.get('package') || ''
-              ).trim();
-
-            return {
-              id,
-              name: base.name,
-              image: base.image,
-              variant:
-                pkg ||
-                'Theo yêu cầu',
-              qty,
-              minQty,
-              price: 0,
-              priceText:
-                'Giá liên hệ'
-            };
-          }
-
-          if (
-            id === 'phuclinh'
-          ) {
-            const flavor =
-              String(
-                fd.get('flavor') ||
-                '2 vị'
-              ).trim();
-
-            const price =
-              phucLinhPrice(
-                flavor,
-                qty
-              );
-
-            return {
-              id,
-              name: base.name,
-              image: base.image,
-              flavor,
-              variant:
-                `${flavor} · ${qty} cái`,
-              qty,
-              minQty,
-              price,
-              priceText:
-                price
-                  ? ''
-                  : 'Giá liên hệ'
-            };
-          }
-
-          return {
-            id,
-            name: base.name,
-            image: base.image,
-            variant:
-              'Theo yêu cầu',
-            qty,
-            minQty,
-            price: 0,
-            priceText:
-              'Shop xác nhận'
-          };
+          const fd = new FormData(productForm), p = products[productId];
+          if (!p) throw new Error('Sản phẩm không còn được xuất bản');
+          const options = Object.fromEntries(p.option_groups.map(g => [g.key, String(fd.get(g.key) || '').trim()]));
+          const qty = Number(fd.get('qty'));
+          if (!p.option_groups.every(g => g.values.includes(options[g.key]))) throw new Error('Chưa chọn đủ quy cách');
+          const q=p.quantity;
+          if (!Number.isInteger(qty) || qty<q.min || (qty-q.min)%q.step) throw new Error('Số lượng không hợp lệ');
+          return { id:p.id, name:p.name, image:p.image, options, wrap:options.wrap || '', flavor:options.flavor || '',
+            variant:Object.values(options).join(' · '), qty, minQty:q.min, stepQty:q.step,
+            price:p.price_mode === 'fixed' ? p.base_price : 0, priceText:'Giá liên hệ' };
         }
 
         const addCartBtn =
@@ -924,17 +635,17 @@
 
           el.innerHTML = `
             <img
-              src="${item.image}"
-              alt="${item.name}"
+              src="${html(item.image)}"
+              alt="${html(item.name)}"
             >
 
             <div>
               <h3>
-                ${item.name}
+                ${html(item.name)}
               </h3>
 
               <p>
-                ${itemLabel(item)}
+                ${html(itemLabel(item))}
               </p>
 
               <div
@@ -950,6 +661,7 @@
                   class="mini-qty"
                   type="number"
                   min="${min}"
+                  step="${products[item.id]?.quantity.step || item.stepQty || 1}"
                   value="${item.qty}"
                   aria-label="Số lượng"
                 >
@@ -966,7 +678,7 @@
             <div
               class="cart-item-price"
             >
-              ${itemPrice(item)}
+              ${html(itemPrice(item))}
             </div>
           `;
 
@@ -1112,17 +824,17 @@
                 >
                   <div>
                     <strong>
-                      ${item.name}
+                      ${html(item.name)}
                     </strong>
 
                     <p>
-                      ${itemLabel(item)}
+                      ${html(itemLabel(item))}
                       ${qtyText}
                     </p>
                   </div>
 
                   <strong>
-                    ${itemPrice(item)}
+                    ${html(itemPrice(item))}
                   </strong>
                 </div>
               `;
