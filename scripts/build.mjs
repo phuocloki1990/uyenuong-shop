@@ -296,7 +296,12 @@ export function build(root = process.cwd(), { check = false } = {}) {
   if (home.includes(homeMetaStart)) {
     home = between(home, homeMetaStart, homeMetaEnd, metadata({ _kind: 'home', _url: '/', title: site.site_name, seo: { title: site.site_name, description: site.seo.default_description } }));
   } else warn('index.html: chưa có CMS_HOME_SEO markers; giữ nguyên SEO và phần nội dung thủ công của trang chủ');
-  for (const [name, render] of [['HEADER', header], ['FOOTER', footer], ['NEEDS', () => topCats.filter(c => c.slug !== 'cam-nang-cuoi').map(c => `<a class="need-card" href="${c._url}">${c.image ? `<img src="${esc(c.image)}" alt="${esc(c.image_alt || c.title)}" loading="lazy">` : ''}<div><h3>${esc(c.title)}</h3><p>${esc(c.description || '')}</p><span class="need-link">Xem thêm →</span></div></a>`).join('')], ['CONTACT', () => `<section class="section-sm" id="lien-he"><div class="container">${contact()}</div></section>`]]) {
+  for (const [name, render] of [['HEADER', header], ['FOOTER', footer], ['NEEDS', () => topCats.filter(c => c.slug !== 'cam-nang-cuoi').map(c => {
+    const representative = ordered(published.products.filter(p => ancestors(p.category).some(a => a.slug === c.slug)))[0];
+    const cover = c.image || representative?.image;
+    const alt = c.image ? (c.image_alt || c.title) : (representative?.image_alt || representative?.name || c.title);
+    return `<a class="need-card" href="${c._url}">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async">` : ''}<div${cover ? '' : ' style="grid-column:1 / -1;min-width:0"'}><h3>${esc(c.title)}</h3><p style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden">${esc(c.description || '')}</p><span class="need-link">Xem thêm →</span></div></a>`;
+  }).join('')], ['CONTACT', () => `<section class="section-sm" id="lien-he"><div class="container">${contact()}</div></section>`]]) {
     if (home.includes(`<!-- CMS_${name}_START -->`)) home = between(home, `<!-- CMS_${name}_START -->`, `<!-- CMS_${name}_END -->`, render());
   }
   home = home.replace(/data-cms-zalo href="[^"]*"/g, `data-cms-zalo href="${esc(site.zalo_url)}"`);
