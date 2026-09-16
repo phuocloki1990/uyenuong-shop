@@ -1748,7 +1748,15 @@
             const orderCode =
               orderResult
                 .order_code;
+            const successCodeEl =
+              document.getElementById(
+                'success-order-code'
+              );
 
+if (successCodeEl) {
+  successCodeEl.textContent =
+    orderCode;
+}
             /* Hiện mã đơn nếu có */
 
             const codeEl =
