@@ -243,3 +243,96 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px
   .detail-list div{grid-template-columns:1fr;gap:0}
   .thumb-row{grid-template-columns:repeat(2,1fr)}.thumb img{width:100%;height:70px}
 }
+.order-confirm-modal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.order-confirm-modal.show{
+  display:flex;
+}
+
+.order-confirm-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(17,35,25,.62);
+  backdrop-filter:blur(3px);
+}
+
+.order-confirm-card{
+  position:relative;
+  z-index:1;
+  width:min(460px,100%);
+  background:#fffdf8;
+  border:1px solid #e6d8c2;
+  border-radius:22px;
+  padding:30px;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(0,0,0,.2);
+}
+
+.order-confirm-icon{
+  width:64px;
+  height:64px;
+  margin:0 auto 16px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#21573d;
+  color:#fff;
+  font-size:34px;
+  font-weight:800;
+}
+
+.order-confirm-card h2{
+  margin:0 0 10px;
+  color:#173f2d;
+}
+
+.order-confirm-card > p{
+  margin:0 0 18px;
+  line-height:1.6;
+}
+
+.order-confirm-notice{
+  padding:14px 16px;
+  margin-bottom:20px;
+  background:#edf7f0;
+  border-radius:12px;
+  line-height:1.55;
+  color:#214b36;
+}
+
+.order-confirm-actions{
+  display:flex;
+  gap:10px;
+}
+
+.order-confirm-actions .btn{
+  flex:1;
+}
+
+body.order-modal-open{
+  overflow:hidden;
+}
+
+#order-form button[type="submit"]:disabled{
+  opacity:.75;
+  cursor:not-allowed;
+}
+
+@media(max-width:600px){
+  .order-confirm-card{
+    padding:24px 18px;
+  }
+
+  .order-confirm-actions{
+    flex-direction:column;
+  }
+}
