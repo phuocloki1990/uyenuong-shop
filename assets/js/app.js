@@ -1881,7 +1881,7 @@ if (successCodeEl) {
                   `Yêu cầu ${orderCode} đã được ghi nhận và gửi thông báo đến Shop. Shop sẽ liên hệ lại để xác nhận.`;
               } else {
                 status.textContent =
-                  `Yêu cầu ${orderCode} đã được ghi nhận thành công. Thông báo Telegram hiện chưa gửi được, nhưng đơn hàng của bạn đã được lưu.`;
+                  'Shop Uyên Ương đã nhận được yêu cầu của bạn. Shop sẽ liên hệ để xác nhận sản phẩm, giá và thời gian giao nhận.';
               }
             }
 
