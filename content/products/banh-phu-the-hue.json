@@ -7,17 +7,17 @@
   "featured": true,
   "featured_order": 2,
   "image": "/assets/images/Anh1.jpg",
-  "short_description": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh, nhận đặt từ 25 bánh.",
+  "short_description": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh, nhận đặt từ 20 bánh.",
   "lead": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh và có thể chọn hộp giấy hoặc lá dừa.",
   "price_mode": "contact",
   "price_text": "Giá liên hệ",
   "quantity": {
     "label": "Số lượng bánh",
     "unit": "bánh",
-    "min": 25,
-    "default": 25,
+    "min": 20,
+    "default": 20,
     "step": 1,
-    "hint": "Nhận đặt tối thiểu 25 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận."
+    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận."
   },
   "option_groups": [
     {
