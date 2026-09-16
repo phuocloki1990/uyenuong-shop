@@ -2,55 +2,115 @@ media:
   input: assets/images
   output: /assets/images
 
+
+# =========================================================
+# COMPONENT DÙNG CHUNG
+# =========================================================
+
 components:
+
   seo:
     type: object
     label: SEO
     fields:
+
       - name: title
         label: SEO title
         type: string
         required: true
+        description: "Tiêu đề dùng cho Google. Nên rõ ý định tìm kiếm, tự nhiên và không nhồi từ khóa."
+        options:
+          maxlength: 70
+
       - name: description
         label: Meta description
         type: text
         required: true
+        description: "Mô tả ngắn nội dung trang. Viết cho người tìm kiếm, không cần nhồi từ khóa."
+        options:
+          maxlength: 180
+
+      - name: focus_keyword
+        label: Từ khóa / chủ đề chính
+        type: string
+        description: "Dùng cho kiểm tra SEO nội bộ sau này. Không tự động chèn vào nội dung."
+
+      - name: secondary_keywords
+        label: Từ khóa / chủ đề liên quan
+        type: string
+        list: true
+        description: "Chỉ nhập các chủ đề liên quan thực sự cần bao phủ. Không dùng để ép mật độ từ khóa."
+
+
+# =========================================================
+# CONTENT
+# =========================================================
 
 content:
+
+
+  # =======================================================
+  # SẢN PHẨM
+  # =======================================================
+
   - name: products_group
     label: Sản phẩm
     type: group
+
     items:
+
       - name: products
         label: Quản lý sản phẩm
         type: collection
+
         path: content/products
         format: json
+
         filename:
           template: "{slug}.json"
           field: create
+
         view:
           primary: name
-          fields: [name, category, status, featured]
-          sort: [featured_order, name]
-          search: [name, slug, category]
+          fields:
+            - name
+            - category
+            - status
+            - featured
+          sort:
+            - featured_order
+            - name
+          search:
+            - name
+            - slug
+            - category
+
         fields:
+
+          # -------------------------------------------------
+          # NHẬN DIỆN
+          # -------------------------------------------------
+
           - name: id
             label: Mã nội bộ
             type: string
             required: true
-            description: "Không dùng khoảng trắng. Ví dụ: phuthehue, mamqua."
+            description: "Không đổi tùy tiện sau khi sản phẩm đã hoạt động. Ví dụ: phuthehue, mamqua."
+
           - name: name
             label: Tên sản phẩm
             type: string
             required: true
+
           - name: slug
             label: Đường dẫn / Slug
             type: string
             required: true
             pattern:
               regex: "^[a-z0-9-]+$"
-              message: Chỉ dùng chữ thường không dấu, số và dấu gạch ngang.
+              message: "Chỉ dùng chữ thường không dấu, số và dấu gạch ngang."
+            description: "Nếu đổi slug của trang đã có SEO, cần khai báo URL cũ ở mục Redirect bên dưới."
+
           - name: category
             label: Chuyên mục
             type: reference
@@ -60,6 +120,7 @@ content:
               value: "{slug}"
               label: "{title}"
               search: "title,slug"
+
           - name: status
             label: Trạng thái
             type: select
@@ -72,26 +133,64 @@ content:
                   label: Bản nháp
                 - name: hidden
                   label: Tạm ẩn
+
+
+          # -------------------------------------------------
+          # HIỂN THỊ TRANG CHỦ / CARD
+          # -------------------------------------------------
+
           - name: featured
             label: Hiển thị ở Sản phẩm nổi bật
             type: boolean
             default: false
+
           - name: featured_order
             label: Thứ tự nổi bật
             type: number
             default: 99
+
+          - name: card_highlights
+            label: Thông tin ngắn trên thẻ sản phẩm
+            type: string
+            list:
+              max: 2
+            description: "Tối đa 2 ý ngắn. Sau này builder sẽ dùng mục này thay cho việc phụ thuộc details[0], details[1]."
+
+
+          # -------------------------------------------------
+          # HÌNH ẢNH
+          # -------------------------------------------------
+
           - name: image
             label: Ảnh đại diện
             type: image
             required: true
+
+          - name: image_alt
+            label: Alt ảnh đại diện
+            type: string
+            description: "Mô tả đúng nội dung ảnh. Không cần lặp nguyên tiêu đề nếu không tự nhiên."
+
+
+          # -------------------------------------------------
+          # NỘI DUNG
+          # -------------------------------------------------
+
           - name: short_description
             label: Mô tả ngắn
             type: text
             required: true
+
           - name: lead
             label: Mô tả đầu trang chi tiết
             type: text
             required: true
+
+
+          # -------------------------------------------------
+          # GIÁ
+          # -------------------------------------------------
+
           - name: price_mode
             label: Cách hiển thị giá
             type: select
@@ -104,155 +203,305 @@ content:
                   label: Giá cố định
                 - name: hybrid
                   label: Có giá cho một số quy cách
+
           - name: price_text
             label: Giá hiển thị mặc định
             type: string
             required: true
             description: "Ví dụ: Giá liên hệ hoặc Từ 180.000đ."
+
+          - name: base_price
+            label: Giá số cơ bản
+            type: number
+            description: "Chỉ nhập khi có giá xác định. Ví dụ 180000. Không nhập giá giả cho sản phẩm Giá liên hệ."
+
+
+          # -------------------------------------------------
+          # SỐ LƯỢNG
+          # -------------------------------------------------
+
           - name: quantity
             label: Số lượng đặt
             type: object
+
             fields:
+
               - name: label
                 label: Tên trường số lượng
                 type: string
                 required: true
+
               - name: unit
                 label: Đơn vị
                 type: string
                 required: true
+
               - name: min
                 label: Số lượng tối thiểu
                 type: number
                 required: true
+
               - name: default
                 label: Số lượng mặc định
                 type: number
                 required: true
+
               - name: step
                 label: Bước tăng
                 type: number
                 required: true
+
               - name: hint
                 label: Ghi chú dưới ô số lượng
                 type: text
+
+
+          # -------------------------------------------------
+          # LỰA CHỌN SẢN PHẨM
+          # -------------------------------------------------
+
           - name: option_groups
             label: Các lựa chọn của sản phẩm
             type: object
+
             list:
               collapsible:
                 collapsed: true
                 summary: "{label}"
+
             fields:
+
               - name: key
                 label: Mã lựa chọn
                 type: string
                 required: true
-                description: "Ví dụ wrap, flavor, package."
+                description: "Ví dụ: wrap, flavor, package. Sau khi đã dùng trên website thì không nên đổi."
+
               - name: label
                 label: Tên hiển thị
                 type: string
                 required: true
+
               - name: values
                 label: Các giá trị
                 type: string
                 list: true
                 required: true
+
+
+          # -------------------------------------------------
+          # BẢNG GIÁ THEO QUY CÁCH
+          # GIỮ TƯƠNG THÍCH VỚI DATA HIỆN TẠI
+          # -------------------------------------------------
+
           - name: price_rules
             label: Bảng giá theo quy cách
             type: object
+
             list:
               collapsible:
                 collapsed: true
                 summary: "{label}"
+
             fields:
+
               - name: label
                 label: Tên quy tắc
                 type: string
                 required: true
+
               - name: when
                 label: Điều kiện
                 type: object
+
                 fields:
+
                   - name: flavor
                     label: Số vị / Giá trị lựa chọn
                     type: string
-                    description: Có thể để trống nếu không dùng.
+                    description: "Giữ để tương thích dữ liệu Bánh phục linh hiện tại."
+
                   - name: qty
                     label: Số lượng chính xác
                     type: number
+
               - name: price
                 label: Giá
                 type: number
                 required: true
+
+
+          # -------------------------------------------------
+          # THÔNG TIN NHANH
+          # -------------------------------------------------
+
           - name: details
             label: Thông tin nhanh
             type: object
+
             list:
               collapsible:
                 collapsed: true
                 summary: "{label}: {value}"
+
             fields:
+
               - name: label
                 label: Nhãn
                 type: string
                 required: true
+
               - name: value
                 label: Nội dung
                 type: string
                 required: true
+
+
+          # -------------------------------------------------
+          # NỘI DUNG HỖ TRỢ KHÁCH
+          # -------------------------------------------------
+
           - name: features
             label: Điểm cần biết trước khi đặt
             type: text
             list: true
+
           - name: faq
             label: Câu hỏi thường gặp
             type: object
+
             list:
               collapsible:
                 collapsed: true
                 summary: "{question}"
+
             fields:
+
               - name: question
                 label: Câu hỏi
                 type: string
                 required: true
+
               - name: answer
                 label: Trả lời
                 type: text
                 required: true
+
+
+          # -------------------------------------------------
+          # LIÊN KẾT NỘI BỘ
+          # -------------------------------------------------
+
+          - name: related_products
+            label: Sản phẩm liên quan
+            type: reference
+            options:
+              collection: products
+              multiple: true
+              max: 6
+              value: "{slug}"
+              label: "{name}"
+              search: "name,slug,category"
+            description: "Tùy chọn. Builder sau này sẽ dùng để tạo liên kết nội bộ có kiểm soát."
+
+          - name: related_articles
+            label: Bài viết liên quan
+            type: reference
+            options:
+              collection: articles
+              multiple: true
+              max: 6
+              value: "{slug}"
+              label: "{title}"
+              search: "title,slug,category"
+            description: "Tùy chọn. Có thể để trống để builder tự đề xuất theo chuyên mục."
+
+
+          # -------------------------------------------------
+          # REDIRECT KHI ĐỔI URL
+          # -------------------------------------------------
+
+          - name: redirect_from
+            label: URL cũ cần chuyển hướng
+            type: string
+            list: true
+            description: "Ví dụ: /san-pham/ten-cu.html. Chỉ dùng khi trang đã từng có URL khác."
+
+
+          # -------------------------------------------------
+          # SEO
+          # -------------------------------------------------
+
           - name: seo
             component: seo
+
+
+
+  # =======================================================
+  # BÀI VIẾT & SEO
+  # =======================================================
 
   - name: editorial_group
     label: Bài viết & SEO
     type: group
+
     items:
+
+
+      # =====================================================
+      # BÀI VIẾT
+      # =====================================================
+
       - name: articles
         label: Bài viết
         type: collection
+
         path: content/articles
         format: json
+
         filename:
           template: "{slug}.json"
           field: create
+
         view:
           primary: title
-          fields: [title, category, status, featured]
-          sort: [featured_order, title]
-          search: [title, slug, category]
+
+          fields:
+            - title
+            - category
+            - status
+            - featured
+            - published_at
+
+          sort:
+            - featured_order
+            - title
+
+          search:
+            - title
+            - slug
+            - category
+
         fields:
+
+          # -------------------------------------------------
+          # CƠ BẢN
+          # -------------------------------------------------
+
           - name: title
             label: Tiêu đề bài viết
             type: string
             required: true
+
           - name: slug
             label: Đường dẫn / Slug
             type: string
             required: true
             pattern:
               regex: "^[a-z0-9-]+$"
-              message: Chỉ dùng chữ thường không dấu, số và dấu gạch ngang.
+              message: "Chỉ dùng chữ thường không dấu, số và dấu gạch ngang."
+            description: "Nếu đổi slug của bài đã index, khai báo URL cũ ở mục Redirect."
+
           - name: category
             label: Chuyên mục / Chuyên mục con
             type: reference
@@ -262,6 +511,7 @@ content:
               value: "{slug}"
               label: "{title}"
               search: "title,slug,parent"
+
           - name: status
             label: Trạng thái
             type: select
@@ -274,22 +524,64 @@ content:
                   label: Bản nháp
                 - name: hidden
                   label: Tạm ẩn
+
+
+          # -------------------------------------------------
+          # NGÀY
+          # -------------------------------------------------
+
+          - name: published_at
+            label: Ngày đăng
+            type: date
+            description: "Nên nhập cho bài đã xuất bản. Dùng cho sắp xếp, sitemap và Article schema."
+
+          - name: updated_at
+            label: Ngày cập nhật nội dung
+            type: date
+            description: "Chỉ cập nhật khi nội dung có thay đổi đáng kể, không đổi ngày chỉ để làm mới giả."
+
+
+          # -------------------------------------------------
+          # TRANG CHỦ
+          # -------------------------------------------------
+
           - name: featured
             label: Hiển thị ở trang chủ
             type: boolean
             default: false
+
           - name: featured_order
             label: Thứ tự trang chủ
             type: number
             default: 99
+
+
+          # -------------------------------------------------
+          # ẢNH
+          # -------------------------------------------------
+
           - name: thumbnail
             label: Ảnh đại diện
             type: image
             required: true
+
+          - name: image_alt
+            label: Alt ảnh đại diện
+            type: string
+            description: "Mô tả đúng ảnh, ngắn gọn và tự nhiên."
+
+
+          # -------------------------------------------------
+          # NỘI DUNG
+          # -------------------------------------------------
+
           - name: excerpt
             label: Mô tả ngắn
             type: text
             required: true
+            options:
+              maxlength: 300
+
           - name: body
             label: Nội dung bài viết
             type: rich-text
@@ -298,39 +590,131 @@ content:
               format: html
               media: false
               switcher: true
+
+
+          # -------------------------------------------------
+          # LIÊN KẾT NỘI BỘ
+          # -------------------------------------------------
+
+          - name: related_products
+            label: Sản phẩm liên quan
+            type: reference
+            options:
+              collection: products
+              multiple: true
+              max: 6
+              value: "{slug}"
+              label: "{name}"
+              search: "name,slug,category"
+            description: "Chọn khi bài có sản phẩm liên quan trực tiếp."
+
+          - name: related_articles
+            label: Bài viết liên quan
+            type: reference
+            options:
+              collection: articles
+              multiple: true
+              max: 6
+              value: "{slug}"
+              label: "{title}"
+              search: "title,slug,category"
+            description: "Có thể để trống; builder sau này sẽ tự lấy bài cùng chuyên mục."
+
+
+          # -------------------------------------------------
+          # REDIRECT
+          # -------------------------------------------------
+
+          - name: redirect_from
+            label: URL cũ cần chuyển hướng
+            type: string
+            list: true
+            description: "Ví dụ: /cam-nang/ten-bai-cu.html."
+
+
+          # -------------------------------------------------
+          # SEO
+          # -------------------------------------------------
+
           - name: seo
             component: seo
+
+
+
+      # =====================================================
+      # CHUYÊN MỤC
+      # =====================================================
 
       - name: categories
         label: Chuyên mục
         type: collection
+
         path: content/categories
         format: json
+
         filename:
           template: "{slug}.json"
           field: create
+
         view:
           primary: title
-          fields: [title, slug, parent, status]
-          sort: [title]
-          search: [title, slug, parent]
+
+          fields:
+            - title
+            - slug
+            - parent
+            - status
+
+          sort:
+            - title
+
+          search:
+            - title
+            - slug
+            - parent
+
         fields:
+
           - name: title
             label: Tên chuyên mục
             type: string
             required: true
+
           - name: slug
             label: Slug
             type: string
             required: true
-            pattern: "^[a-z0-9-]+$"
+            pattern:
+              regex: "^[a-z0-9-]+$"
+              message: "Chỉ dùng chữ thường không dấu, số và dấu gạch ngang."
+
           - name: parent
             label: Slug chuyên mục cha
             type: string
-            description: Để trống nếu là chuyên mục cấp 1. Ví dụ cam-nang-cuoi.
+            description: "Để trống nếu là chuyên mục cấp 1."
+
           - name: description
             label: Mô tả chuyên mục
             type: text
+            description: "Mô tả ngắn dùng cho danh sách và SEO."
+
+          - name: intro
+            label: Nội dung giới thiệu chuyên mục
+            type: rich-text
+            options:
+              format: html
+              media: false
+              switcher: true
+            description: "Dùng khi chuyên mục trở thành landing page SEO. Không cần viết dài nếu chưa có nhu cầu."
+
+          - name: image
+            label: Ảnh chuyên mục
+            type: image
+
+          - name: image_alt
+            label: Alt ảnh chuyên mục
+            type: string
+
           - name: status
             label: Trạng thái
             type: select
@@ -342,17 +726,166 @@ content:
                 - name: hidden
                   label: Tạm ẩn
 
-  - name: orders_placeholder
-    label: Đơn hàng
+          - name: redirect_from
+            label: URL cũ cần chuyển hướng
+            type: string
+            list: true
+
+          - name: seo
+            component: seo
+
+
+
+  # =======================================================
+  # CÀI ĐẶT WEBSITE
+  # =======================================================
+
+  - name: settings_group
+    label: Cài đặt website
     type: group
+
     items:
-      - name: orders_note
-        label: Trạng thái phát triển
+
+      - name: site_settings
+        label: Thông tin Shop
         type: file
-        path: content/orders-note.json
+
+        path: content/settings/site.json
         format: json
+
         fields:
-          - name: note
-            label: Ghi chú
-            type: text
-            readonly: true
+
+          # -------------------------------------------------
+          # NHẬN DIỆN
+          # -------------------------------------------------
+
+          - name: site_name
+            label: Tên website / Shop
+            type: string
+            required: true
+
+          - name: brand_name
+            label: Tên thương hiệu hiển thị
+            type: string
+            required: true
+
+          - name: site_url
+            label: URL chính của website
+            type: string
+            required: true
+            description: "Sau này khi gắn domain riêng chỉ cần đổi tại đây."
+
+          - name: tagline
+            label: Câu giới thiệu thương hiệu
+            type: string
+
+
+          # -------------------------------------------------
+          # LIÊN HỆ
+          # -------------------------------------------------
+
+          - name: phone
+            label: Số điện thoại dạng máy đọc
+            type: string
+            required: true
+            description: "Ví dụ 0868157858."
+
+          - name: phone_display
+            label: Số điện thoại hiển thị
+            type: string
+            required: true
+            description: "Ví dụ 0868 157 858."
+
+          - name: zalo_url
+            label: Link Zalo
+            type: string
+            required: true
+
+
+          # -------------------------------------------------
+          # ĐỊA CHỈ
+          # -------------------------------------------------
+
+          - name: address
+            label: Địa chỉ
+            type: object
+            required: true
+
+            fields:
+
+              - name: street
+                label: Số nhà / đường
+                type: string
+                required: true
+
+              - name: ward
+                label: Phường / xã
+                type: string
+                required: true
+
+              - name: district
+                label: Quận / huyện
+                type: string
+                required: true
+
+              - name: city
+                label: Tỉnh / thành phố
+                type: string
+                required: true
+
+              - name: country
+                label: Mã quốc gia
+                type: string
+                required: true
+                description: "Việt Nam dùng VN."
+
+          - name: service_area
+            label: Khu vực phục vụ
+            type: string
+
+
+          # -------------------------------------------------
+          # MẠNG XÃ HỘI
+          # -------------------------------------------------
+
+          - name: facebook_main
+            label: Facebook Shop / Mâm quả
+            type: string
+
+          - name: facebook_phuclinh
+            label: Facebook Bánh phục linh
+            type: string
+
+
+          # -------------------------------------------------
+          # LOGO
+          # -------------------------------------------------
+
+          - name: logo
+            label: Logo
+            type: image
+            required: true
+
+
+          # -------------------------------------------------
+          # SEO MẶC ĐỊNH TOÀN SITE
+          # -------------------------------------------------
+
+          - name: seo
+            label: SEO mặc định
+            type: object
+
+            fields:
+
+              - name: title_suffix
+                label: Hậu tố tiêu đề
+                type: string
+                description: "Ví dụ: | Shop Uyên Ương"
+
+              - name: default_description
+                label: Meta description mặc định
+                type: text
+
+              - name: default_og_image
+                label: Ảnh chia sẻ mặc định
+                type: image
