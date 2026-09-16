@@ -336,3 +336,7 @@ body.order-modal-open{
     flex-direction:column;
   }
 }
+/* Không hiển thị nội dung đơn dạng kỹ thuật cho khách */
+#order-preview{
+  display:none !important;
+}
