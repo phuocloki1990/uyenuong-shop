@@ -1,13 +1,11 @@
 {
   "site_name": "Shop Uyên Ương",
-  "brand_name": "UYÊN ƯƠNG",
+  "brand_name": "Shop Uyên Ương",
   "site_url": "https://uyenuong-shop.pages.dev",
   "tagline": "Đồng hành cùng những khoảnh khắc hạnh phúc",
-
   "phone": "0868157858",
   "phone_display": "0868 157 858",
   "zalo_url": "https://zalo.me/0868157858",
-
   "address": {
     "street": "31/42 Phạm Hùng",
     "ward": "Bình Hưng",
@@ -15,14 +13,10 @@
     "city": "TP. Hồ Chí Minh",
     "country": "VN"
   },
-
   "service_area": "TP. Hồ Chí Minh",
-
   "facebook_main": "https://www.facebook.com/mamquacuoihcm/",
-  "facebook_phuclinh": "https://www.facebook.com/Banhphuclinhhcm/?locale=vi_VN",
-
+  "facebook_phuclinh": "https://www.facebook.com/Banhphuclinhhcm/",
   "logo": "/assets/images/logo.jpg",
-
   "seo": {
     "title_suffix": " | Shop Uyên Ương",
     "default_description": "Shop Uyên Ương nhận chuẩn bị mâm quả cưới, bánh phu thê và bánh phục linh tại TP. Hồ Chí Minh.",
