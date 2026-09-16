@@ -416,3 +416,20 @@ body.order-modal-open{
     width:100%;
   }
 }
+/* Không hiện nội dung đơn dạng kỹ thuật cho khách */
+#order-preview{
+  display:none !important;
+}
+
+
+/* Mã tham chiếu là thông tin phụ */
+.order-reference{
+  margin-top:12px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.order-reference span{
+  font-weight:600;
+  color:var(--muted);
+}
