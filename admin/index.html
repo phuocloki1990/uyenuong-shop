@@ -6,12 +6,12 @@
 
   <meta
     name="viewport"
-    content="width=device-width,initial-scale=1"
+    content="width=device-width, initial-scale=1"
   >
 
   <meta
     name="robots"
-    content="noindex,nofollow"
+    content="noindex,nofollow,noarchive"
   >
 
   <title>
@@ -35,7 +35,6 @@
   >
 
   <style>
-
     :root{
       --brand:#244c36;
       --brand-dark:#183726;
@@ -46,7 +45,6 @@
 
       --bg:#f5f2eb;
       --surface:#ffffff;
-      --surface-soft:#fbfaf6;
 
       --text:#28312b;
       --muted:#707872;
@@ -54,13 +52,8 @@
       --line:#e2ddd2;
 
       --danger:#b84336;
-      --danger-soft:#fff0ee;
-
       --warning:#9b6d1e;
-      --warning-soft:#fff6df;
-
       --success:#34774c;
-      --success-soft:#edf8f1;
 
       --shadow:
         0 14px 40px
@@ -96,8 +89,7 @@
 
       color:var(--text);
 
-      background:
-        var(--bg);
+      background:var(--bg);
 
       -webkit-font-smoothing:
         antialiased;
@@ -110,19 +102,8 @@
     }
 
 
-    button,
-    input{
-      font:inherit;
-    }
-
-
     button{
-      cursor:pointer;
-    }
-
-
-    [hidden]{
-      display:none !important;
+      font:inherit;
     }
 
 
@@ -301,18 +282,6 @@
     }
 
 
-    .btn-danger{
-      border-color:
-        #efd1cc;
-
-      background:
-        var(--danger-soft);
-
-      color:
-        var(--danger);
-    }
-
-
     .btn-small{
       min-height:36px;
 
@@ -351,8 +320,7 @@
     .hero{
       margin-bottom:24px;
 
-      padding:
-        28px;
+      padding:28px;
 
       display:grid;
 
@@ -366,8 +334,7 @@
       border:
         1px solid var(--line);
 
-      border-radius:
-        22px;
+      border-radius:22px;
 
       background:
         linear-gradient(
@@ -435,7 +402,7 @@
 
 
     .hero-status{
-      min-width:210px;
+      min-width:250px;
 
       padding:17px;
 
@@ -483,21 +450,17 @@
       width:8px;
       height:8px;
 
+      flex:none;
+
       border-radius:50%;
 
-      background:
-        var(--warning);
-    }
-
-
-    .status-dot.connected{
       background:
         var(--success);
     }
 
 
     /* =========================
-       ORDER SUMMARY
+       ORDER QUICK LINKS
        ========================= */
 
     .order-summary{
@@ -530,8 +493,7 @@
       border:
         1px solid var(--line);
 
-      border-radius:
-        15px;
+      border-radius:15px;
 
       background:
         var(--surface);
@@ -539,6 +501,19 @@
       box-shadow:
         0 6px 20px
         rgba(30,46,35,.04);
+
+      transition:
+        transform .17s ease,
+        box-shadow .17s ease;
+    }
+
+
+    .summary-card:hover{
+      transform:
+        translateY(-2px);
+
+      box-shadow:
+        var(--shadow-hover);
     }
 
 
@@ -712,8 +687,7 @@
 
       margin-bottom:15px;
 
-      border-radius:
-        12px;
+      border-radius:12px;
 
       background:
         var(--brand-soft);
@@ -820,8 +794,7 @@
       background:
         var(--gold-soft);
 
-      color:
-        #836324;
+      color:#836324;
 
       font-size:9px;
 
@@ -829,129 +802,6 @@
 
       text-transform:
         uppercase;
-    }
-
-
-    /* =========================
-       KEY PANEL
-       ========================= */
-
-    .key-panel{
-      margin-top:28px;
-
-      padding:20px;
-
-      display:grid;
-
-      grid-template-columns:
-        1fr minmax(280px,430px);
-
-      gap:24px;
-
-      align-items:center;
-
-      border:
-        1px solid var(--line);
-
-      border-radius:
-        var(--radius);
-
-      background:
-        var(--surface);
-
-      box-shadow:
-        var(--shadow);
-    }
-
-
-    .key-panel h3{
-      margin:0;
-
-      color:
-        var(--brand-dark);
-
-      font-size:16px;
-    }
-
-
-    .key-panel p{
-      max-width:600px;
-
-      margin:
-        6px 0 0;
-
-      color:
-        var(--muted);
-
-      font-size:12px;
-
-      line-height:1.65;
-    }
-
-
-    .key-form{
-      display:flex;
-
-      gap:8px;
-    }
-
-
-    .key-form input{
-      min-width:0;
-
-      flex:1;
-
-      height:43px;
-
-      padding:
-        10px 12px;
-
-      border:
-        1px solid var(--line);
-
-      border-radius:
-        10px;
-
-      outline:none;
-
-      background:#fff;
-
-      color:
-        var(--text);
-    }
-
-
-    .key-form input:focus{
-      border-color:
-        var(--brand);
-
-      box-shadow:
-        0 0 0 3px
-        rgba(36,76,54,.08);
-    }
-
-
-    .key-message{
-      min-height:18px;
-
-      margin-top:7px;
-
-      color:
-        var(--muted);
-
-      font-size:10px;
-    }
-
-
-    .key-message.error{
-      color:
-        var(--danger);
-    }
-
-
-    .key-message.success{
-      color:
-        var(--success);
     }
 
 
@@ -996,11 +846,6 @@
           );
       }
 
-
-      .key-panel{
-        grid-template-columns:1fr;
-      }
-
     }
 
 
@@ -1042,36 +887,18 @@
 
       .order-summary{
         grid-template-columns:
-          repeat(
-            2,
-            minmax(0,1fr)
-          );
-      }
-
-
-      .summary-card.total{
-        grid-column:
-          1 / -1;
+          1fr;
       }
 
 
       .admin-grid{
-        grid-template-columns:1fr;
+        grid-template-columns:
+          1fr;
       }
 
 
       .admin-card{
         min-height:160px;
-      }
-
-
-      .key-form{
-        flex-direction:column;
-      }
-
-
-      .key-form .btn{
-        width:100%;
       }
 
     }
@@ -1124,20 +951,25 @@
         rel="noopener"
       >
         ↗
+
         <span>
           Mở website
         </span>
+
       </a>
 
 
-      <button
-        class="btn btn-danger btn-small"
-        type="button"
-        id="logout-btn"
-        hidden
+      <a
+        class="btn btn-primary btn-small"
+        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
       >
-        Đăng xuất
-      </button>
+        ◫
+
+        <span>
+          Đơn hàng
+        </span>
+
+      </a>
 
     </div>
 
@@ -1170,9 +1002,9 @@
         </h1>
 
         <p>
-          Từ đây bạn có thể xử lý đơn hàng,
-          quản lý sản phẩm, bài viết và nội dung website
-          mà không cần nhớ nhiều đường dẫn khác nhau.
+          Từ đây có thể vào quản lý đơn hàng,
+          sản phẩm, bài viết, chuyên mục và hình ảnh
+          từ một cổng quản trị duy nhất.
         </p>
 
       </div>
@@ -1181,18 +1013,15 @@
       <div class="hero-status">
 
         <span class="hero-status-label">
-          Hệ thống đơn hàng
+          Bảo mật trang quản trị
         </span>
 
         <div class="hero-status-value">
 
-          <span
-            class="status-dot"
-            id="connection-dot"
-          ></span>
+          <span class="status-dot"></span>
 
-          <span id="connection-text">
-            Chưa kết nối
+          <span>
+            Đã bảo vệ bởi Cloudflare Access
           </span>
 
         </div>
@@ -1203,28 +1032,23 @@
 
 
     <!-- =========================
-         ORDER SUMMARY
+         ORDER QUICK LINKS
          ========================= -->
 
-    <section
-      class="order-summary"
-      id="order-summary"
-    >
+    <section class="order-summary">
+
 
       <a
         class="summary-card new"
-        href="/admin/orders.html"
+        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
       >
 
         <span class="summary-label">
-          Đơn mới
+          Quản lý đơn hàng
         </span>
 
-        <strong
-          class="summary-value"
-          id="new-count"
-        >
-          —
+        <strong class="summary-value">
+          Mở
         </strong>
 
       </a>
@@ -1232,18 +1056,15 @@
 
       <a
         class="summary-card processing"
-        href="/admin/orders.html"
+        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
       >
 
         <span class="summary-label">
-          Đang xử lý
+          Trạng thái xử lý
         </span>
 
-        <strong
-          class="summary-value"
-          id="processing-count"
-        >
-          —
+        <strong class="summary-value">
+          4
         </strong>
 
       </a>
@@ -1251,21 +1072,19 @@
 
       <a
         class="summary-card total"
-        href="/admin/orders.html"
+        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
       >
 
         <span class="summary-label">
-          Tổng số đơn
+          Lưu trữ đơn hàng
         </span>
 
-        <strong
-          class="summary-value"
-          id="total-count"
-        >
-          —
+        <strong class="summary-value">
+          D1
         </strong>
 
       </a>
+
 
     </section>
 
@@ -1283,7 +1102,7 @@
         </h2>
 
         <p>
-          Chọn khu vực bạn cần làm việc.
+          Chọn khu vực cần làm việc.
         </p>
 
       </div>
@@ -1294,11 +1113,13 @@
     <section class="admin-grid">
 
 
-      <!-- ORDERS -->
+      <!-- =========================
+           ORDERS
+           ========================= -->
 
       <a
         class="admin-card primary-card"
-        href="/admin/orders.html"
+        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
       >
 
         <div class="card-icon">
@@ -1312,7 +1133,7 @@
         <p class="card-desc">
           Xem đơn mới, thông tin khách,
           sản phẩm đã đặt và chuyển trạng thái
-          Mới → Đang xử lý → Hoàn thành.
+          Mới → Đang xử lý → Hoàn thành / Đã hủy.
         </p>
 
         <div class="card-link">
@@ -1330,7 +1151,9 @@
       </a>
 
 
-      <!-- PRODUCTS -->
+      <!-- =========================
+           PRODUCTS
+           ========================= -->
 
       <a
         class="admin-card"
@@ -1372,7 +1195,9 @@
       </a>
 
 
-      <!-- ARTICLES -->
+      <!-- =========================
+           ARTICLES
+           ========================= -->
 
       <a
         class="admin-card"
@@ -1414,7 +1239,9 @@
       </a>
 
 
-      <!-- CATEGORIES -->
+      <!-- =========================
+           CATEGORIES
+           ========================= -->
 
       <a
         class="admin-card"
@@ -1455,7 +1282,9 @@
       </a>
 
 
-      <!-- MEDIA -->
+      <!-- =========================
+           MEDIA
+           ========================= -->
 
       <a
         class="admin-card"
@@ -1497,7 +1326,9 @@
       </a>
 
 
-      <!-- WEBSITE -->
+      <!-- =========================
+           WEBSITE
+           ========================= -->
 
       <a
         class="admin-card"
@@ -1534,67 +1365,9 @@
 
       </a>
 
-    </section>
-
-
-    <!-- =========================
-         API KEY
-         ========================= -->
-
-    <section
-      class="key-panel"
-      id="key-panel"
-    >
-
-      <div>
-
-        <h3>
-          Kết nối quản lý đơn hàng
-        </h3>
-
-        <p id="key-description">
-          Nhập khóa quản trị một lần trong phiên làm việc.
-          Khóa chỉ được lưu trong phiên trình duyệt này
-          và không được ghi vào mã nguồn website.
-        </p>
-
-      </div>
-
-
-      <div>
-
-        <form
-          class="key-form"
-          id="key-form"
-        >
-
-          <input
-            type="password"
-            id="admin-key"
-            placeholder="Nhập ADMIN_API_KEY"
-            autocomplete="current-password"
-            required
-          >
-
-          <button
-            class="btn btn-primary"
-            type="submit"
-            id="connect-btn"
-          >
-            Kết nối
-          </button>
-
-        </form>
-
-
-        <div
-          class="key-message"
-          id="key-message"
-        ></div>
-
-      </div>
 
     </section>
+
 
   </div>
 
@@ -1610,618 +1383,6 @@
 </footer>
 
 
-<script>
-
-(function(){
-
-  'use strict';
-
-
-  /* =========================
-     CONFIG
-     ========================= */
-
-  const API_URL =
-    '/api/orders';
-
-
-  /*
-    Phải giống với orders.html
-    để nhập khóa tại Dashboard
-    thì không phải nhập lại khi
-    mở trang Đơn hàng.
-  */
-
-  const KEY_NAME =
-    'uyen_uong_admin_api_key';
-
-
-  /* =========================
-     ELEMENTS
-     ========================= */
-
-  const keyForm =
-    document.getElementById(
-      'key-form'
-    );
-
-
-  const keyInput =
-    document.getElementById(
-      'admin-key'
-    );
-
-
-  const connectBtn =
-    document.getElementById(
-      'connect-btn'
-    );
-
-
-  const keyMessage =
-    document.getElementById(
-      'key-message'
-    );
-
-
-  const connectionDot =
-    document.getElementById(
-      'connection-dot'
-    );
-
-
-  const connectionText =
-    document.getElementById(
-      'connection-text'
-    );
-
-
-  const logoutBtn =
-    document.getElementById(
-      'logout-btn'
-    );
-
-
-  const newCount =
-    document.getElementById(
-      'new-count'
-    );
-
-
-  const processingCount =
-    document.getElementById(
-      'processing-count'
-    );
-
-
-  const totalCount =
-    document.getElementById(
-      'total-count'
-    );
-
-
-  /* =========================
-     STORAGE
-     ========================= */
-
-  function getKey(){
-
-    return (
-      sessionStorage.getItem(
-        KEY_NAME
-      ) || ''
-    );
-
-  }
-
-
-  function setKey(key){
-
-    sessionStorage.setItem(
-      KEY_NAME,
-      key
-    );
-
-  }
-
-
-  function removeKey(){
-
-    sessionStorage.removeItem(
-      KEY_NAME
-    );
-
-  }
-
-
-  /* =========================
-     UI
-     ========================= */
-
-  function setConnectedUI(){
-
-    connectionDot
-      .classList
-      .add(
-        'connected'
-      );
-
-
-    connectionText.textContent =
-      'Đã kết nối';
-
-
-    logoutBtn.hidden =
-      false;
-
-
-    keyInput.value =
-      '';
-
-
-    keyInput.placeholder =
-      'Đã kết nối';
-
-
-    keyInput.disabled =
-      true;
-
-
-    connectBtn.hidden =
-      true;
-
-
-    showKeyMessage(
-      'Đã kết nối với hệ thống đơn hàng.',
-      'success'
-    );
-
-  }
-
-
-  function setDisconnectedUI(){
-
-    connectionDot
-      .classList
-      .remove(
-        'connected'
-      );
-
-
-    connectionText.textContent =
-      'Chưa kết nối';
-
-
-    logoutBtn.hidden =
-      true;
-
-
-    keyInput.disabled =
-      false;
-
-
-    keyInput.value =
-      '';
-
-
-    keyInput.placeholder =
-      'Nhập ADMIN_API_KEY';
-
-
-    connectBtn.hidden =
-      false;
-
-
-    newCount.textContent =
-      '—';
-
-
-    processingCount.textContent =
-      '—';
-
-
-    totalCount.textContent =
-      '—';
-
-  }
-
-
-  function showKeyMessage(
-    message,
-    type = ''
-  ){
-
-    keyMessage.textContent =
-      message;
-
-
-    keyMessage.className =
-      'key-message';
-
-
-    if(type){
-
-      keyMessage
-        .classList
-        .add(type);
-
-    }
-
-  }
-
-
-  /* =========================
-     API
-     ========================= */
-
-  async function testKey(
-    key
-  ){
-
-    const response =
-      await fetch(
-        `${API_URL}?limit=1&offset=0`,
-        {
-          headers:{
-            'Authorization':
-              `Bearer ${key}`
-          }
-        }
-      );
-
-
-    if(
-      response.status === 401
-    ){
-
-      throw new Error(
-        'Khóa quản trị không đúng.'
-      );
-
-    }
-
-
-    if(!response.ok){
-
-      throw new Error(
-        'Không thể kết nối hệ thống đơn hàng.'
-      );
-
-    }
-
-
-    return true;
-
-  }
-
-
-  async function loadOrderCounts(){
-
-    const key =
-      getKey();
-
-
-    if(!key){
-
-      setDisconnectedUI();
-
-      return;
-
-    }
-
-
-    try{
-
-      let offset = 0;
-
-      const limit = 100;
-
-      let total = 0;
-
-      let newOrders = 0;
-
-      let processingOrders = 0;
-
-
-      /*
-        API giới hạn tối đa
-        100 đơn mỗi lần.
-
-        Dashboard tự tải tiếp
-        nếu sau này có nhiều hơn
-        100 đơn.
-      */
-
-      while(true){
-
-        const response =
-          await fetch(
-            `${API_URL}?limit=${limit}&offset=${offset}`,
-            {
-              headers:{
-                'Authorization':
-                  `Bearer ${key}`
-              }
-            }
-          );
-
-
-        if(
-          response.status === 401
-        ){
-
-          removeKey();
-
-          setDisconnectedUI();
-
-          showKeyMessage(
-            'Khóa quản trị không còn hợp lệ. Vui lòng nhập lại.',
-            'error'
-          );
-
-          return;
-
-        }
-
-
-        if(!response.ok){
-
-          throw new Error(
-            'Không tải được dữ liệu đơn hàng.'
-          );
-
-        }
-
-
-        const result =
-          await response.json();
-
-
-        const orders =
-          Array.isArray(
-            result.orders
-          )
-            ? result.orders
-            : [];
-
-
-        total +=
-          orders.length;
-
-
-        orders.forEach(
-          order => {
-
-            if(
-              order.status ===
-              'new'
-            ){
-
-              newOrders++;
-
-            }
-
-
-            if(
-              order.status ===
-              'processing'
-            ){
-
-              processingOrders++;
-
-            }
-
-          }
-        );
-
-
-        if(
-          orders.length < limit
-        ){
-
-          break;
-
-        }
-
-
-        offset += limit;
-
-
-        /*
-          Chặn vòng lặp bất thường.
-        */
-
-        if(
-          offset >= 10000
-        ){
-
-          break;
-
-        }
-
-      }
-
-
-      newCount.textContent =
-        newOrders;
-
-
-      processingCount.textContent =
-        processingOrders;
-
-
-      totalCount.textContent =
-        total;
-
-
-      setConnectedUI();
-
-
-    }catch(error){
-
-      connectionText.textContent =
-        'Lỗi kết nối';
-
-
-      showKeyMessage(
-        error.message ||
-        'Không thể tải dữ liệu đơn hàng.',
-        'error'
-      );
-
-    }
-
-  }
-
-
-  /* =========================
-     CONNECT
-     ========================= */
-
-  keyForm.addEventListener(
-    'submit',
-    async event => {
-
-      event.preventDefault();
-
-
-      const key =
-        keyInput
-          .value
-          .trim();
-
-
-      if(!key){
-
-        return;
-
-      }
-
-
-      connectBtn.disabled =
-        true;
-
-
-      connectBtn.textContent =
-        'Đang kiểm tra...';
-
-
-      showKeyMessage(
-        'Đang kết nối...'
-      );
-
-
-      try{
-
-        await testKey(
-          key
-        );
-
-
-        setKey(
-          key
-        );
-
-
-        await loadOrderCounts();
-
-
-      }catch(error){
-
-        removeKey();
-
-
-        setDisconnectedUI();
-
-
-        showKeyMessage(
-          error.message ||
-          'Khóa quản trị không đúng.',
-          'error'
-        );
-
-
-        keyInput.focus();
-
-
-      }finally{
-
-        connectBtn.disabled =
-          false;
-
-
-        connectBtn.textContent =
-          'Kết nối';
-
-      }
-
-    }
-  );
-
-
-  /* =========================
-     LOGOUT
-     ========================= */
-
-  logoutBtn.addEventListener(
-    'click',
-    () => {
-
-      removeKey();
-
-
-      setDisconnectedUI();
-
-
-      showKeyMessage(
-        'Đã ngắt kết nối quản lý đơn hàng.'
-      );
-
-
-      keyInput.focus();
-
-    }
-  );
-
-
-  /* =========================
-     INIT
-     ========================= */
-
-  async function init(){
-
-    const key =
-      getKey();
-
-
-    if(!key){
-
-      setDisconnectedUI();
-
-      showKeyMessage(
-        'Chưa kết nối. Nhập khóa quản trị bên trên để xem số đơn.'
-      );
-
-      return;
-
-    }
-
-
-    connectionText.textContent =
-      'Đang kết nối...';
-
-
-    await loadOrderCounts();
-
-  }
-
-
-  init();
-
-})();
-
-</script>
-
-
 </body>
+
 </html>
