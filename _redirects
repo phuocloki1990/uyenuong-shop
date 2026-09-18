@@ -1,2 +1,1 @@
-/admin https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/ 302
-/admin/* https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/:splat 302
+
