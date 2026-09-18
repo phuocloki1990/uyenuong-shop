@@ -37,20 +37,13 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const disk = relative => {
     const resolved = path.resolve(root, relative);
-
-    if (resolved === root || !resolved.startsWith(root + path.sep)) {
-      fail(`Đường dẫn ngoài repo: ${relative}`);
-    }
+    if (resolved === root || !resolved.startsWith(root + path.sep)) fail(`Đường dẫn ngoài repo: ${relative}`);
 
     // Refuse symlinks/junctions in any output/input path.
     let current = root;
-
     for (const part of path.relative(root, resolved).split(path.sep)) {
       current = path.join(current, part);
-
-      if (fs.existsSync(current) && fs.lstatSync(current).isSymbolicLink()) {
-        fail(`Không hỗ trợ symlink: ${relative}`);
-      }
+      if (fs.existsSync(current) && fs.lstatSync(current).isSymbolicLink()) fail(`Không hỗ trợ symlink: ${relative}`);
     }
 
     return resolved;
@@ -58,9 +51,7 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const read = relative => {
     try {
-      return JSON.parse(
-        fs.readFileSync(disk(relative), 'utf8').replace(/^\uFEFF/, '')
-      );
+      return JSON.parse(fs.readFileSync(disk(relative), 'utf8').replace(/^\uFEFF/, ''));
     } catch (e) {
       fail(`${relative}: ${e.message}`);
     }
@@ -68,155 +59,73 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   function textField(x, key, label, required = true) {
     if (x[key] === undefined && !required) return;
-
-    if (
-      typeof x[key] !== 'string' ||
-      (required && !x[key].trim())
-    ) {
-      fail(`${label}: ${key} phải là chuỗi${required ? ' không rỗng' : ''}`);
-    }
+    if (typeof x[key] !== 'string' || (required && !x[key].trim())) fail(`${label}: ${key} phải là chuỗi${required ? ' không rỗng' : ''}`);
   }
 
   function strings(x, key, label) {
     if (x[key] === undefined) x[key] = [];
-
-    if (
-      !Array.isArray(x[key]) ||
-      x[key].some(v => !nonempty(v))
-    ) {
-      fail(`${label}: ${key} phải là danh sách chuỗi không rỗng`);
-    }
-
-    if (new Set(x[key]).size !== x[key].length) {
-      fail(`${label}: ${key} có giá trị trùng`);
-    }
+    if (!Array.isArray(x[key]) || x[key].some(v => !nonempty(v))) fail(`${label}: ${key} phải là danh sách chuỗi không rỗng`);
+    if (new Set(x[key]).size !== x[key].length) fail(`${label}: ${key} có giá trị trùng`);
   }
 
   function list(x, key, label) {
     if (x[key] === undefined) x[key] = [];
-
-    if (
-      !Array.isArray(x[key]) ||
-      x[key].some(v => !object(v))
-    ) {
-      fail(`${label}: ${key} phải là danh sách object`);
-    }
+    if (!Array.isArray(x[key]) || x[key].some(v => !object(v))) fail(`${label}: ${key} phải là danh sách object`);
   }
 
   function url(value, label, local = false) {
-    if (
-      local &&
-      /^\/assets\/[A-Za-z0-9_./-]+$/.test(value) &&
-      !value.split('/').includes('..')
-    ) {
-      if (!fs.existsSync(disk(value.slice(1)))) {
-        warn(`${label}: chưa tìm thấy ảnh ${value}`);
-      }
-
+    if (local && /^\/assets\/[A-Za-z0-9_./-]+$/.test(value) && !value.split('/').includes('..')) {
+      if (!fs.existsSync(disk(value.slice(1)))) warn(`${label}: chưa tìm thấy ảnh ${value}`);
       return;
     }
 
     try {
       const u = new URL(value);
-
-      if (
-        !['https:', 'http:'].includes(u.protocol) ||
-        u.username ||
-        u.password
-      ) {
-        throw 0;
-      }
+      if (!['https:', 'http:'].includes(u.protocol) || u.username || u.password) throw 0;
     } catch {
       fail(`${label}: URL không hợp lệ`);
     }
   }
 
   function rich(value, label) {
-    if (typeof value !== 'string') {
-      fail(`${label}: phải là HTML dạng chuỗi`);
-    }
+    if (typeof value !== 'string') fail(`${label}: phải là HTML dạng chuỗi`);
 
-    // CMS supports text-only rich content.
-    // Reject unsupported HTML instead of pretending to sanitize it.
+    // CMS supports text-only rich content. Reject unsupported HTML instead of pretending to sanitize it.
     const tags = new Set([
-      'p',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'br',
-      'hr',
-      'strong',
-      'b',
-      'em',
-      'i',
-      'u',
-      's',
-      'del',
-      'ul',
-      'ol',
-      'li',
-      'blockquote',
-      'a',
-      'code',
-      'pre',
-      'table',
-      'thead',
-      'tbody',
-      'tr',
-      'th',
-      'td',
-      'span',
-      'div'
+      'p', 'h2', 'h3', 'h4', 'h5', 'h6', 'br', 'hr',
+      'strong', 'b', 'em', 'i', 'u', 's', 'del',
+      'ul', 'ol', 'li', 'blockquote', 'a', 'code', 'pre',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span', 'div'
     ]);
 
     const tokens = value.match(/<[^>]*>/g) || [];
 
     for (const token of tokens) {
-      const match = token.match(
-        /^<\/?([a-z][a-z0-9]*)([\s\S]*?)\/?>$/i
-      );
+      const match = token.match(/^<\/?([a-z][a-z0-9]*)([\s\S]*?)\/?>$/i);
 
-      if (
-        !match ||
-        !tags.has(match[1].toLowerCase())
-      ) {
+      if (!match || !tags.has(match[1].toLowerCase())) {
         fail(`${label}: HTML không hỗ trợ: ${token}`);
       }
 
       let attrs = match[2].trim();
 
       while (attrs) {
-        const attr = attrs.match(
-          /^([a-z][a-z0-9-]*)\s*=\s*("[^"]*"|'[^']*')\s*/i
-        );
+        const attr = attrs.match(/^([a-z][a-z0-9-]*)\s*=\s*("[^"]*"|'[^']*')\s*/i);
 
-        if (!attr) {
-          fail(`${label}: thuộc tính HTML phải có dấu nháy`);
-        }
+        if (!attr) fail(`${label}: thuộc tính HTML phải có dấu nháy`);
 
         const key = attr[1].toLowerCase();
         const val = attr[2].slice(1, -1);
 
-        if (
-          !['href', 'title', 'colspan', 'rowspan'].includes(key) ||
-          (key === 'href' && match[1].toLowerCase() !== 'a')
-        ) {
+        if (!['href', 'title', 'colspan', 'rowspan'].includes(key) || (key === 'href' && match[1].toLowerCase() !== 'a')) {
           fail(`${label}: thuộc tính HTML không hỗ trợ: ${key}`);
         }
 
-        if (
-          key === 'href' &&
-          !/^(https?:\/\/|\/(?!\/)|#|mailto:|tel:)/i.test(val)
-        ) {
+        if (key === 'href' && !/^(https?:\/\/|\/(?!\/)|#|mailto:|tel:)/i.test(val)) {
           fail(`${label}: liên kết HTML không an toàn`);
         }
 
-        if (
-          key === 'href' &&
-          /[\u0000-\u0020\\&]/.test(val)
-        ) {
+        if (key === 'href' && /[\u0000-\u0020\\&]/.test(val)) {
           fail(`${label}: hãy dùng URL không mã hóa entity/ký tự điều khiển`);
         }
 
@@ -224,29 +133,16 @@ export function build(root = process.cwd(), { check = false } = {}) {
       }
     }
 
-    if (
-      value.replace(/<[^>]*>/g, '').includes('<')
-    ) {
-      fail(`${label}: HTML chưa đóng thẻ`);
-    }
+    if (value.replace(/<[^>]*>/g, '').includes('<')) fail(`${label}: HTML chưa đóng thẻ`);
 
     return value;
   }
 
   const site = read('content/settings/site.json');
 
-  if (!object(site)) {
-    fail('site.json phải là object');
-  }
+  if (!object(site)) fail('site.json phải là object');
 
-  for (const key of [
-    'site_name',
-    'site_url',
-    'phone',
-    'phone_display',
-    'zalo_url',
-    'logo'
-  ]) {
+  for (const key of ['site_name', 'site_url', 'phone', 'phone_display', 'zalo_url', 'logo']) {
     textField(site, key, 'site.json');
   }
 
@@ -254,621 +150,283 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const origin = new URL(site.site_url);
 
-  if (
-    origin.pathname !== '/' ||
-    origin.search ||
-    origin.hash
-  ) {
+  if (origin.pathname !== '/' || origin.search || origin.hash) {
     fail('site_url phải là origin, không có đường dẫn/query/hash');
   }
 
   site.site_url = origin.origin;
 
-  if (!/^\+?\d{8,15}$/.test(site.phone)) {
-    fail('phone phải là số điện thoại, không có dấu cách');
-  }
+  if (!/^\+?\d{8,15}$/.test(site.phone)) fail('phone phải là số điện thoại, không có dấu cách');
 
-  if (
-    site.phone_display.replace(/\D/g, '') !==
-    site.phone.replace(/\D/g, '')
-  ) {
+  if (site.phone_display.replace(/\D/g, '') !== site.phone.replace(/\D/g, '')) {
     fail('phone_display không khớp phone');
   }
 
-  for (const key of [
-    'zalo_url',
-    'facebook_main',
-    'facebook_phuclinh'
-  ]) {
+  for (const key of ['zalo_url', 'facebook_main', 'facebook_phuclinh']) {
     if (site[key]) url(site[key], key);
   }
 
   url(site.logo, 'logo', true);
 
-  if (!object(site.address)) {
-    fail('site.address phải là object');
-  }
+  if (!object(site.address)) fail('site.address phải là object');
 
   for (const [key, value] of Object.entries(site.address)) {
-    if (typeof value !== 'string') {
-      fail(`address.${key} phải là chuỗi`);
-    }
+    if (typeof value !== 'string') fail(`address.${key} phải là chuỗi`);
   }
 
-  if (site.seo === undefined) {
-    site.seo = {};
-  }
+  if (site.seo === undefined) site.seo = {};
 
-  if (!object(site.seo)) {
-    fail('site.seo phải là object');
-  }
+  if (!object(site.seo)) fail('site.seo phải là object');
 
-  for (const key of [
-    'title_suffix',
-    'default_description',
-    'default_og_image'
-  ]) {
+  for (const key of ['title_suffix', 'default_description', 'default_og_image']) {
     textField(site.seo, key, 'site.seo', false);
   }
 
-  if (site.seo.default_og_image) {
-    url(
-      site.seo.default_og_image,
-      'default_og_image',
-      true
-    );
-  }
+  if (site.seo.default_og_image) url(site.seo.default_og_image, 'default_og_image', true);
 
-  const absolute = value =>
-    new URL(value, site.site_url + '/').href;
-
+  const absolute = value => new URL(value, site.site_url + '/').href;
   const data = {};
 
-  for (const kind of [
-    'products',
-    'articles',
-    'categories'
-  ]) {
+  for (const kind of ['products', 'articles', 'categories']) {
     const dir = disk(`content/${kind}`);
 
-    data[kind] = fs
-      .readdirSync(dir)
-      .sort()
-      .filter(f => f.endsWith('.json'))
-      .map(file => {
-        const label = `content/${kind}/${file}`;
-        const x = read(label);
+    data[kind] = fs.readdirSync(dir).sort().filter(f => f.endsWith('.json')).map(file => {
+      const label = `content/${kind}/${file}`;
+      const x = read(label);
 
-        if (!object(x)) {
-          fail(`${label}: cần object JSON`);
+      if (!object(x)) fail(`${label}: cần object JSON`);
+
+      const fields =
+        kind === 'products'
+          ? ['id', 'name', 'slug', 'category', 'status', 'image', 'short_description', 'lead', 'price_mode', 'price_text']
+          : kind === 'articles'
+            ? ['title', 'slug', 'category', 'status', 'thumbnail', 'excerpt', 'body']
+            : ['title', 'slug', 'status'];
+
+      fields.forEach(key => textField(x, key, label));
+
+      if (!slugPattern.test(x.slug)) fail(`${label}: slug không hợp lệ`);
+
+      if (!['published', 'draft', 'hidden'].includes(x.status)) {
+        fail(`${label}: status không hợp lệ`);
+      }
+
+      for (const key of ['image_alt', 'description', 'parent', 'intro']) {
+        textField(x, key, label, false);
+      }
+
+      if (x.featured === undefined) x.featured = false;
+
+      if (typeof x.featured !== 'boolean') fail(`${label}: featured phải là boolean`);
+
+      if (x.featured_order === undefined) x.featured_order = 99;
+
+      if (!Number.isFinite(x.featured_order)) fail(`${label}: featured_order phải là số`);
+
+      if (x.seo === undefined) x.seo = {};
+
+      if (!object(x.seo)) fail(`${label}: seo phải là object`);
+
+      for (const key of ['title', 'description', 'focus_keyword']) {
+        textField(x.seo, key, label + '.seo', false);
+      }
+
+      strings(x.seo, 'secondary_keywords', label + '.seo');
+
+      if ((x.seo.title?.length || 0) > 70 || (x.seo.description?.length || 0) > 180) {
+        warn(`${label}: SEO dài hơn giới hạn gợi ý 70/180`);
+      }
+
+      for (const key of ['related_products', 'related_articles', 'redirect_from']) {
+        strings(x, key, label);
+      }
+
+      for (const key of ['related_products', 'related_articles']) {
+        if (x[key].length > 6) fail(`${label}: ${key} tối đa 6`);
+      }
+
+      for (const key of ['image', 'thumbnail']) {
+        if (x[key]) url(x[key], label + ':' + key, true);
+      }
+
+      if (kind === 'articles') {
+        rich(x.body, label + ':body');
+
+        for (const key of ['published_at', 'updated_at']) {
+          if (x[key] === undefined || x[key] === '') continue;
+
+          if (
+            typeof x[key] !== 'string' ||
+            !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(x[key]) ||
+            !Number.isFinite(Date.parse(x[key])) ||
+            new Date(x[key].slice(0, 10)).toISOString().slice(0, 10) !== x[key].slice(0, 10)
+          ) {
+            fail(`${label}: ${key} không phải ngày ISO hợp lệ`);
+          }
         }
 
-        const fields =
-          kind === 'products'
-            ? [
-                'id',
-                'name',
-                'slug',
-                'category',
-                'status',
-                'image',
-                'short_description',
-                'lead',
-                'price_mode',
-                'price_text'
-              ]
-            : kind === 'articles'
-              ? [
-                  'title',
-                  'slug',
-                  'category',
-                  'status',
-                  'thumbnail',
-                  'excerpt',
-                  'body'
-                ]
-              : [
-                  'title',
-                  'slug',
-                  'status'
-                ];
-
-        fields.forEach(key =>
-          textField(x, key, label)
-        );
-
-        if (!slugPattern.test(x.slug)) {
-          fail(`${label}: slug không hợp lệ`);
+        if (x.updated_at && x.published_at && Date.parse(x.updated_at) < Date.parse(x.published_at)) {
+          fail(`${label}: updated_at trước published_at`);
         }
+
+        if (!x.published_at) {
+          warn(`${label}: chưa có ngày đăng; bỏ datePublished và không đoán ngày`);
+        }
+      }
+
+      if (kind === 'categories' && x.intro) {
+        rich(x.intro, label + ':intro');
+      }
+
+      if (kind === 'products') {
+        if (!/^[a-zA-Z0-9_-]+$/.test(x.id)) fail(`${label}: id không hợp lệ`);
+
+        if (!['contact', 'fixed', 'hybrid'].includes(x.price_mode)) {
+          fail(`${label}: price_mode không hợp lệ`);
+        }
+
+        if (x.base_price !== undefined && (!Number.isFinite(x.base_price) || x.base_price <= 0)) {
+          fail(`${label}: base_price phải là số dương`);
+        }
+
+        if (x.price_mode === 'fixed' && x.base_price === undefined) {
+          fail(`${label}: fixed cần base_price (đơn giá)`);
+        }
+
+        if (!object(x.quantity)) {
+          fail(`${label}: cần quantity, không tự đoán đơn vị hoặc số lượng`);
+        }
+
+        const q = x.quantity;
+
+        for (const key of ['label', 'unit']) {
+          textField(q, key, label + ':quantity');
+        }
+
+        textField(q, 'hint', label + ':quantity', false);
 
         if (
-          !['published', 'draft', 'hidden'].includes(x.status)
+          !['min', 'default', 'step'].every(key => Number.isSafeInteger(q[key]) && q[key] > 0) ||
+          q.default < q.min ||
+          (q.default - q.min) % q.step
         ) {
-          fail(`${label}: status không hợp lệ`);
+          fail(`${label}: quantity không hợp lệ`);
         }
 
-        for (const key of [
-          'image_alt',
-          'description',
-          'parent',
-          'intro'
-        ]) {
-          textField(x, key, label, false);
+        for (const key of ['option_groups', 'price_rules', 'details', 'faq']) {
+          list(x, key, label);
         }
 
-        if (x.featured === undefined) {
-          x.featured = false;
+        strings(x, 'features', label);
+        strings(x, 'card_highlights', label);
+
+        if (x.card_highlights.length > 2) {
+          fail(`${label}: card_highlights tối đa 2`);
         }
 
-        if (typeof x.featured !== 'boolean') {
-          fail(`${label}: featured phải là boolean`);
-        }
+        const optionKeys = new Set();
 
-        if (x.featured_order === undefined) {
-          x.featured_order = 99;
-        }
-
-        if (!Number.isFinite(x.featured_order)) {
-          fail(`${label}: featured_order phải là số`);
-        }
-
-        if (x.seo === undefined) {
-          x.seo = {};
-        }
-
-        if (!object(x.seo)) {
-          fail(`${label}: seo phải là object`);
-        }
-
-        for (const key of [
-          'title',
-          'description',
-          'focus_keyword'
-        ]) {
-          textField(
-            x.seo,
-            key,
-            label + '.seo',
-            false
-          );
-        }
-
-        strings(
-          x.seo,
-          'secondary_keywords',
-          label + '.seo'
-        );
-
-        if (
-          (x.seo.title?.length || 0) > 70 ||
-          (x.seo.description?.length || 0) > 180
-        ) {
-          warn(
-            `${label}: SEO dài hơn giới hạn gợi ý 70/180`
-          );
-        }
-
-        for (const key of [
-          'related_products',
-          'related_articles',
-          'redirect_from'
-        ]) {
-          strings(x, key, label);
-        }
-
-        for (const key of [
-          'related_products',
-          'related_articles'
-        ]) {
-          if (x[key].length > 6) {
-            fail(`${label}: ${key} tối đa 6`);
-          }
-        }
-
-        for (const key of [
-          'image',
-          'thumbnail'
-        ]) {
-          if (x[key]) {
-            url(
-              x[key],
-              label + ':' + key,
-              true
-            );
-          }
-        }
-
-        if (kind === 'articles') {
-          rich(
-            x.body,
-            label + ':body'
-          );
-
-          for (const key of [
-            'published_at',
-            'updated_at'
-          ]) {
-            if (
-              x[key] === undefined ||
-              x[key] === ''
-            ) {
-              continue;
-            }
-
-            if (
-              typeof x[key] !== 'string' ||
-              !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(x[key]) ||
-              !Number.isFinite(Date.parse(x[key])) ||
-              new Date(x[key].slice(0, 10))
-                .toISOString()
-                .slice(0, 10) !==
-                x[key].slice(0, 10)
-            ) {
-              fail(
-                `${label}: ${key} không phải ngày ISO hợp lệ`
-              );
-            }
+        for (const g of x.option_groups) {
+          for (const key of ['key', 'label']) {
+            textField(g, key, label + ':option_groups');
           }
 
           if (
-            x.updated_at &&
-            x.published_at &&
-            Date.parse(x.updated_at) <
-              Date.parse(x.published_at)
+            !/^[a-z][a-z0-9_]*$/.test(g.key) ||
+            ['qty', '__proto__', 'constructor', 'prototype'].includes(g.key) ||
+            optionKeys.has(g.key)
           ) {
-            fail(
-              `${label}: updated_at trước published_at`
-            );
+            fail(`${label}: key lựa chọn trùng/không hợp lệ`);
           }
 
-          if (!x.published_at) {
-            warn(
-              `${label}: chưa có ngày đăng; bỏ datePublished và không đoán ngày`
-            );
+          optionKeys.add(g.key);
+
+          strings(g, 'values', label + ':' + g.key);
+
+          if (!g.values.length) fail(`${label}: lựa chọn rỗng`);
+        }
+
+        for (const d of x.details) {
+          for (const key of ['label', 'value']) {
+            textField(d, key, label + ':details');
           }
         }
 
-        if (
-          kind === 'categories' &&
-          x.intro
-        ) {
-          rich(
-            x.intro,
-            label + ':intro'
-          );
-        }
-
-        if (kind === 'products') {
-          if (
-            !/^[a-zA-Z0-9_-]+$/.test(x.id)
-          ) {
-            fail(
-              `${label}: id không hợp lệ`
-            );
-          }
-
-          if (
-            !['contact', 'fixed', 'hybrid'].includes(x.price_mode)
-          ) {
-            fail(
-              `${label}: price_mode không hợp lệ`
-            );
-          }
-
-          if (
-            x.base_price !== undefined &&
-            (
-              !Number.isFinite(x.base_price) ||
-              x.base_price <= 0
-            )
-          ) {
-            fail(
-              `${label}: base_price phải là số dương`
-            );
-          }
-
-          if (
-            x.price_mode === 'fixed' &&
-            x.base_price === undefined
-          ) {
-            fail(
-              `${label}: fixed cần base_price (đơn giá)`
-            );
-          }
-
-          if (!object(x.quantity)) {
-            fail(
-              `${label}: cần quantity, không tự đoán đơn vị hoặc số lượng`
-            );
-          }
-
-          const q = x.quantity;
-
-          for (const key of [
-            'label',
-            'unit'
-          ]) {
-            textField(
-              q,
-              key,
-              label + ':quantity'
-            );
-          }
-
-          textField(
-            q,
-            'hint',
-            label + ':quantity',
-            false
-          );
-
-          if (
-            !['min', 'default', 'step']
-              .every(
-                key =>
-                  Number.isSafeInteger(q[key]) &&
-                  q[key] > 0
-              ) ||
-            q.default < q.min ||
-            (q.default - q.min) % q.step
-          ) {
-            fail(
-              `${label}: quantity không hợp lệ`
-            );
-          }
-
-          for (const key of [
-            'option_groups',
-            'price_rules',
-            'details',
-            'faq'
-          ]) {
-            list(x, key, label);
-          }
-
-          strings(
-            x,
-            'features',
-            label
-          );
-
-          strings(
-            x,
-            'card_highlights',
-            label
-          );
-
-          if (
-            x.card_highlights.length > 2
-          ) {
-            fail(
-              `${label}: card_highlights tối đa 2`
-            );
-          }
-
-          const optionKeys = new Set();
-
-          for (const g of x.option_groups) {
-            for (const key of [
-              'key',
-              'label'
-            ]) {
-              textField(
-                g,
-                key,
-                label + ':option_groups'
-              );
-            }
-
-            if (
-              !/^[a-z][a-z0-9_]*$/.test(g.key) ||
-              [
-                'qty',
-                '__proto__',
-                'constructor',
-                'prototype'
-              ].includes(g.key) ||
-              optionKeys.has(g.key)
-            ) {
-              fail(
-                `${label}: key lựa chọn trùng/không hợp lệ`
-              );
-            }
-
-            optionKeys.add(g.key);
-
-            strings(
-              g,
-              'values',
-              label + ':' + g.key
-            );
-
-            if (!g.values.length) {
-              fail(
-                `${label}: lựa chọn rỗng`
-              );
-            }
-          }
-
-          for (const d of x.details) {
-            for (const key of [
-              'label',
-              'value'
-            ]) {
-              textField(
-                d,
-                key,
-                label + ':details'
-              );
-            }
-          }
-
-          for (const f of x.faq) {
-            for (const key of [
-              'question',
-              'answer'
-            ]) {
-              textField(
-                f,
-                key,
-                label + ':faq'
-              );
-            }
-          }
-
-          for (const r of x.price_rules) {
-            textField(
-              r,
-              'label',
-              label + ':price_rules'
-            );
-
-            if (
-              !object(r.when) ||
-              !Object.keys(r.when).length ||
-              !Number.isFinite(r.price) ||
-              r.price <= 0
-            ) {
-              fail(
-                `${label}: price rule không hợp lệ`
-              );
-            }
-
-            if (
-              !Number.isSafeInteger(r.when.qty) ||
-              r.when.qty < q.min ||
-              (r.when.qty - q.min) % q.step
-            ) {
-              fail(
-                `${label}: rule cần qty chính xác hợp lệ`
-              );
-            }
-
-            for (
-              const [key, value]
-              of Object.entries(r.when)
-            ) {
-              if (
-                key !== 'qty' &&
-                !x.option_groups
-                  .find(g => g.key === key)
-                  ?.values.includes(value)
-              ) {
-                fail(
-                  `${label}: điều kiện giá ${key} không khớp lựa chọn`
-                );
-              }
-            }
-          }
-
-          for (
-            let i = 0;
-            i < x.price_rules.length;
-            i++
-          ) {
-            for (
-              let j = i + 1;
-              j < x.price_rules.length;
-              j++
-            ) {
-              const a =
-                x.price_rules[i].when;
-
-              const b =
-                x.price_rules[j].when;
-
-              if (
-                Object.keys(a).every(
-                  k =>
-                    !(k in b) ||
-                    a[k] === b[k]
-                )
-              ) {
-                fail(
-                  `${label}: hai price_rules chồng điều kiện`
-                );
-              }
-            }
-          }
-
-          if (
-            x.price_mode !== 'hybrid' &&
-            x.price_rules.length
-          ) {
-            fail(
-              `${label}: price_rules chỉ dùng cho hybrid`
-            );
-          }
-
-          if (
-            x.price_mode === 'hybrid' &&
-            !x.price_rules.length
-          ) {
-            warn(
-              `${label}: hybrid chưa có giá, sẽ hiển thị liên hệ`
-            );
-          }
-
-          if (!x.card_highlights.length) {
-            x.card_highlights =
-              x.details
-                .slice(0, 2)
-                .map(d => d.value);
-
-            warn(
-              `${label}: dùng details làm card_highlights tạm thời`
-            );
+        for (const f of x.faq) {
+          for (const key of ['question', 'answer']) {
+            textField(f, key, label + ':faq');
           }
         }
 
-        return {
-          ...x,
-          _kind: kind,
-          _file: label,
-          _url: route(
-            kind,
-            x.slug
-          )
-        };
-      });
+        for (const r of x.price_rules) {
+          textField(r, 'label', label + ':price_rules');
 
-    for (
-      const key of
-      kind === 'products'
-        ? ['id', 'slug']
-        : ['slug']
-    ) {
+          if (!object(r.when) || !Object.keys(r.when).length || !Number.isFinite(r.price) || r.price <= 0) {
+            fail(`${label}: price rule không hợp lệ`);
+          }
+
+          if (!Number.isSafeInteger(r.when.qty) || r.when.qty < q.min || (r.when.qty - q.min) % q.step) {
+            fail(`${label}: rule cần qty chính xác hợp lệ`);
+          }
+
+          for (const [key, value] of Object.entries(r.when)) {
+            if (key !== 'qty' && !x.option_groups.find(g => g.key === key)?.values.includes(value)) {
+              fail(`${label}: điều kiện giá ${key} không khớp lựa chọn`);
+            }
+          }
+        }
+
+        for (let i = 0; i < x.price_rules.length; i++) {
+          for (let j = i + 1; j < x.price_rules.length; j++) {
+            const a = x.price_rules[i].when;
+            const b = x.price_rules[j].when;
+
+            if (Object.keys(a).every(k => !(k in b) || a[k] === b[k])) {
+              fail(`${label}: hai price_rules chồng điều kiện`);
+            }
+          }
+        }
+
+        if (x.price_mode !== 'hybrid' && x.price_rules.length) {
+          fail(`${label}: price_rules chỉ dùng cho hybrid`);
+        }
+
+        if (x.price_mode === 'hybrid' && !x.price_rules.length) {
+          warn(`${label}: hybrid chưa có giá, sẽ hiển thị liên hệ`);
+        }
+
+        if (!x.card_highlights.length) {
+          x.card_highlights = x.details.slice(0, 2).map(d => d.value);
+          warn(`${label}: dùng details làm card_highlights tạm thời`);
+        }
+      }
+
+      return {
+        ...x,
+        _kind: kind,
+        _file: label,
+        _url: route(kind, x.slug)
+      };
+    });
+
+    for (const key of kind === 'products' ? ['id', 'slug'] : ['slug']) {
       const seen = new Set();
 
       for (const x of data[kind]) {
-        if (seen.has(x[key])) {
-          fail(
-            `${kind}: trùng ${key} ${x[key]}`
-          );
-        }
-
+        if (seen.has(x[key])) fail(`${kind}: trùng ${key} ${x[key]}`);
         seen.add(x[key]);
       }
     }
   }
 
-  const maps =
-    Object.fromEntries(
-      Object.entries(data).map(
-        ([kind, items]) => [
-          kind,
-          new Map(
-            items.map(x => [
-              x.slug,
-              x
-            ])
-          )
-        ]
-      )
-    );
+  const maps = Object.fromEntries(
+    Object.entries(data).map(([kind, items]) => [
+      kind,
+      new Map(items.map(x => [x.slug, x]))
+    ])
+  );
 
-  const all =
-    Object.values(data).flat();
+  const all = Object.values(data).flat();
 
   const ancestors = category => {
     const result = [];
@@ -876,22 +434,13 @@ export function build(root = process.cwd(), { check = false } = {}) {
     let slug = category;
 
     while (slug) {
-      if (seen.has(slug)) {
-        fail(
-          `Category có vòng lặp: ${slug}`
-        );
-      }
+      if (seen.has(slug)) fail(`Category có vòng lặp: ${slug}`);
 
       seen.add(slug);
 
-      const c =
-        maps.categories.get(slug);
+      const c = maps.categories.get(slug);
 
-      if (!c) {
-        fail(
-          `Category không tồn tại: ${slug}`
-        );
-      }
+      if (!c) fail(`Category không tồn tại: ${slug}`);
 
       result.unshift(c);
       slug = c.parent;
@@ -901,33 +450,16 @@ export function build(root = process.cwd(), { check = false } = {}) {
   };
 
   for (const x of all) {
-    ancestors(
-      x._kind === 'categories'
-        ? x.slug
-        : x.category
-    );
+    ancestors(x._kind === 'categories' ? x.slug : x.category);
 
-    for (const kind of [
-      'products',
-      'articles'
-    ]) {
-      for (
-        const slug
-        of x[`related_${kind}`]
-      ) {
+    for (const kind of ['products', 'articles']) {
+      for (const slug of x[`related_${kind}`]) {
         if (!maps[kind].has(slug)) {
-          fail(
-            `${x._file}: related_${kind} không tồn tại: ${slug}`
-          );
+          fail(`${x._file}: related_${kind} không tồn tại: ${slug}`);
         }
 
-        if (
-          x._kind === kind &&
-          x.slug === slug
-        ) {
-          fail(
-            `${x._file}: tự liên kết chính mình`
-          );
+        if (x._kind === kind && x.slug === slug) {
+          fail(`${x._file}: tự liên kết chính mình`);
         }
       }
     }
@@ -935,55 +467,28 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const live = x =>
     x.status === 'published' &&
-    ancestors(
-      x._kind === 'categories'
-        ? x.slug
-        : x.category
-    ).every(
-      c =>
-        c.status === 'published'
-    );
+    ancestors(x._kind === 'categories' ? x.slug : x.category).every(c => c.status === 'published');
 
   for (const x of all) {
-    if (
-      x.status === 'published' &&
-      !live(x)
-    ) {
-      warn(
-        `${x._file}: bị ẩn vì chuyên mục/cha không published`
-      );
+    if (x.status === 'published' && !live(x)) {
+      warn(`${x._file}: bị ẩn vì chuyên mục/cha không published`);
     }
   }
 
-  const published =
-    Object.fromEntries(
-      Object.entries(data).map(
-        ([k, items]) => [
-          k,
-          items.filter(live)
-        ]
-      )
-    );
+  const published = Object.fromEntries(
+    Object.entries(data).map(([k, items]) => [k, items.filter(live)])
+  );
 
   const ordered = items =>
-    [...items].sort(
-      (a, b) =>
-        a.featured_order -
-          b.featured_order ||
-        a.slug.localeCompare(b.slug)
-    );
+    [...items].sort((a, b) => a.featured_order - b.featured_order || a.slug.localeCompare(b.slug));
 
-  const suffix =
-    site.seo.title_suffix ??
-    ` | ${site.site_name}`;
+  const suffix = site.seo.title_suffix ?? ` | ${site.site_name}`;
 
   const title = x =>
     x.seo?.title ||
-    (
-      (x.name || x.title).endsWith(suffix)
-        ? (x.name || x.title)
-        : (x.name || x.title) + suffix
-    );
+    ((x.name || x.title).endsWith(suffix)
+      ? (x.name || x.title)
+      : (x.name || x.title) + suffix);
 
   const description = x =>
     x.seo?.description ||
@@ -1008,37 +513,16 @@ export function build(root = process.cwd(), { check = false } = {}) {
     telephone: site.phone,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: [
-        site.address.street,
-        site.address.ward
-      ]
-        .filter(Boolean)
-        .join(', '),
-      addressLocality: [
-        site.address.district,
-        site.address.city
-      ]
-        .filter(Boolean)
-        .join(', '),
-      addressCountry:
-        site.address.country || 'VN'
+      streetAddress: [site.address.street, site.address.ward].filter(Boolean).join(', '),
+      addressLocality: [site.address.district, site.address.city].filter(Boolean).join(', '),
+      addressCountry: site.address.country || 'VN'
     },
-    sameAs: [
-      site.facebook_main,
-      site.facebook_phuclinh
-    ].filter(Boolean)
+    sameAs: [site.facebook_main, site.facebook_phuclinh].filter(Boolean)
   };
 
   const crumbs = x => [
-    {
-      name: 'Trang chủ',
-      url: '/'
-    },
-    ...ancestors(
-      x._kind === 'categories'
-        ? x.parent
-        : x.category
-    ).map(c => ({
+    { name: 'Trang chủ', url: '/' },
+    ...ancestors(x._kind === 'categories' ? x.parent : x.category).map(c => ({
       name: c.title,
       url: c._url
     })),
@@ -1049,31 +533,23 @@ export function build(root = process.cwd(), { check = false } = {}) {
   ];
 
   const breadcrumb = x =>
-    `<div class="breadcrumb">${
-      crumbs(x)
-        .map(
-          (c, i, a) =>
-            i === a.length - 1
-              ? `<span>${esc(c.name)}</span>`
-              : `<a href="${esc(c.url)}">${esc(c.name)}</a><span>›</span>`
-        )
-        .join('')
-    }</div>`;
+    `<div class="breadcrumb">${crumbs(x).map((c, i, a) =>
+      i === a.length - 1
+        ? `<span>${esc(c.name)}</span>`
+        : `<a href="${esc(c.url)}">${esc(c.name)}</a><span>›</span>`
+    ).join('')}</div>`;
 
   function metadata(x) {
     const graph = [
       org,
       {
         '@type': 'BreadcrumbList',
-        itemListElement:
-          crumbs(x).map(
-            (c, i) => ({
-              '@type': 'ListItem',
-              position: i + 1,
-              name: c.name,
-              item: absolute(c.url)
-            })
-          )
+        itemListElement: crumbs(x).map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: c.name,
+          item: absolute(c.url)
+        }))
       }
     ];
 
@@ -1093,14 +569,11 @@ export function build(root = process.cwd(), { check = false } = {}) {
           price: x.base_price,
           priceCurrency: 'VND',
           url: absolute(x._url),
-          seller: {
-            '@id': org['@id']
-          }
+          seller: { '@id': org['@id'] }
         };
       }
 
-      // Hybrid prices are bundle totals.
-      // Do not label them as a generic unit Offer.
+      // Hybrid prices are bundle totals. Do not label them as a generic unit Offer.
       graph.push(p);
     } else if (x._kind === 'articles') {
       graph.push({
@@ -1108,41 +581,24 @@ export function build(root = process.cwd(), { check = false } = {}) {
         headline: x.title,
         description: description(x),
         image: absolute(image(x)),
-        mainEntityOfPage:
-          absolute(x._url),
-        publisher: {
-          '@id': org['@id']
-        },
-        ...(x.published_at
-          ? {
-              datePublished:
-                x.published_at
-            }
-          : {}),
-        ...(x.updated_at
-          ? {
-              dateModified:
-                x.updated_at
-            }
-          : {})
+        mainEntityOfPage: absolute(x._url),
+        publisher: { '@id': org['@id'] },
+        ...(x.published_at ? { datePublished: x.published_at } : {}),
+        ...(x.updated_at ? { dateModified: x.updated_at } : {})
       });
     } else {
       graph.push({
         '@type': 'CollectionPage',
         name: x.title,
         url: absolute(x._url),
-        description:
-          description(x)
+        description: description(x)
       });
     }
 
     return `<title>${esc(title(x))}</title><meta name="description" content="${esc(description(x))}"><link rel="canonical" href="${esc(absolute(x._url))}"><meta name="robots" content="index,follow"><meta property="og:title" content="${esc(title(x))}"><meta property="og:description" content="${esc(description(x))}"><meta property="og:url" content="${esc(absolute(x._url))}"><meta property="og:image" content="${esc(absolute(image(x)))}"><meta property="og:type" content="${x._kind === 'articles' ? 'article' : 'website'}"><meta property="og:site_name" content="${esc(site.site_name)}"><meta property="og:locale" content="vi_VN"><script type="application/ld+json">${json({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
   }
 
-  const topCats =
-    published.categories.filter(
-      c => !c.parent
-    );
+  const topCats = published.categories.filter(c => !c.parent);
 
   function header() {
     return `<header class="site-header"><div class="container nav"><a class="brand" href="/"><img src="${esc(site.logo)}" alt="${esc(site.site_name)}"><span class="brand-name">${esc(site.brand_name || site.site_name)}</span></a><button class="menu-btn" type="button" aria-label="Mở menu" onclick="toggleMenu()">☰</button><nav class="nav-links" id="mobileMenu" aria-label="Điều hướng chính"><a href="/">Trang chủ</a>${topCats.map(c => `<a href="${c._url}">${esc(c.title)}</a>`).join('')}<a href="/index.html#lien-he">Liên hệ</a><a class="cart-link" href="/gio-hang.html">Giỏ hàng <span class="cart-badge" data-cart-count>0</span></a><a class="nav-order" href="/dat-hang.html">Đặt hàng</a></nav></div></header>`;
@@ -1163,69 +619,37 @@ export function build(root = process.cwd(), { check = false } = {}) {
     `<article class="article-card"><img src="${esc(a.thumbnail)}" alt="${esc(a.image_alt || a.title)}" loading="lazy" decoding="async"><div><h3>${esc(a.title)}</h3><p>${esc(a.excerpt)}</p><a href="${a._url}">Xem bài viết →</a></div></article>`;
 
   const categoryToProduct = {
-    'banh-cuoi-bai-viet':
-      'banh-cuoi-hoi',
-    'mam-qua-cuoi-bai-viet':
-      'mam-qua-cuoi'
+    'banh-cuoi-bai-viet': 'banh-cuoi-hoi',
+    'mam-qua-cuoi-bai-viet': 'mam-qua-cuoi'
   };
 
   function related(x) {
     const sections = [];
 
-    for (const kind of [
-      'products',
-      'articles'
-    ]) {
+    for (const kind of ['products', 'articles']) {
       let items;
 
       if (x[`related_${kind}`].length) {
-        items =
-          x[`related_${kind}`]
-            .map(
-              s =>
-                maps[kind].get(s)
-            )
-            .filter(live);
+        items = x[`related_${kind}`]
+          .map(s => maps[kind].get(s))
+          .filter(live);
       } else {
-        let categories = [
-          x.category
-        ];
+        let categories = [x.category];
 
-        if (
-          kind === 'products' &&
-          x._kind === 'articles'
-        ) {
-          categories = [
-            categoryToProduct[
-              x.category
-            ]
-          ].filter(Boolean);
+        if (kind === 'products' && x._kind === 'articles') {
+          categories = [categoryToProduct[x.category]].filter(Boolean);
         }
 
-        if (
-          kind === 'articles' &&
-          x._kind === 'products'
-        ) {
-          categories =
-            Object.keys(
-              categoryToProduct
-            ).filter(
-              k =>
-                categoryToProduct[k] ===
-                x.category
-            );
+        if (kind === 'articles' && x._kind === 'products') {
+          categories = Object.keys(categoryToProduct)
+            .filter(k => categoryToProduct[k] === x.category);
         }
 
-        items =
-          ordered(
-            published[kind].filter(
-              y =>
-                categories.includes(
-                  y.category
-                ) &&
-                y._url !== x._url
-            )
-          );
+        items = ordered(
+          published[kind].filter(
+            y => categories.includes(y.category) && y._url !== x._url
+          )
+        );
       }
 
       if (items.length) {
@@ -1245,21 +669,14 @@ export function build(root = process.cwd(), { check = false } = {}) {
   function productPage(p) {
     const q = p.quantity;
 
-    const payload =
-      Object.fromEntries(
-        Object.entries(p).filter(
-          ([key]) =>
-            !key.startsWith('_')
-        )
-      );
+    const payload = Object.fromEntries(
+      Object.entries(p).filter(([key]) => !key.startsWith('_'))
+    );
 
-    const options =
-      p.option_groups
-        .map(
-          g =>
-            `<div class="field"><label for="${esc(g.key)}">${esc(g.label)}</label><select required id="${esc(g.key)}" name="${esc(g.key)}"><option value="">-- Chọn --</option>${g.values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('')}</select></div>`
-        )
-        .join('');
+    const options = p.option_groups.map(
+      g =>
+        `<div class="field"><label for="${esc(g.key)}">${esc(g.label)}</label><select required id="${esc(g.key)}" name="${esc(g.key)}"><option value="">-- Chọn --</option>${g.values.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('')}</select></div>`
+    ).join('');
 
     return page(
       p,
@@ -1276,32 +693,16 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   function categoryPage(c) {
     const belongs = x =>
-      ancestors(
-        x.category
-      ).some(
-        a =>
-          a.slug === c.slug
-      );
+      ancestors(x.category).some(a => a.slug === c.slug);
 
     const children =
-      published.categories.filter(
-        x =>
-          x.parent === c.slug
-      );
+      published.categories.filter(x => x.parent === c.slug);
 
     const products =
-      ordered(
-        published.products.filter(
-          belongs
-        )
-      );
+      ordered(published.products.filter(belongs));
 
     const articles =
-      ordered(
-        published.articles.filter(
-          belongs
-        )
-      );
+      ordered(published.articles.filter(belongs));
 
     return page(
       c,
@@ -1309,389 +710,227 @@ export function build(root = process.cwd(), { check = false } = {}) {
     );
   }
 
-  // Prepare everything before touching output.
-  // Validation failures leave existing files intact.
+  // Prepare everything before touching output. Validation failures leave existing files intact.
   const outputs = new Map();
 
-  for (
-    const [kind, render]
-    of [
-      ['products', productPage],
-      ['articles', articlePage],
-      ['categories', categoryPage]
-    ]
-  ) {
-    for (
-      const x
-      of published[kind]
-    ) {
-      outputs.set(
-        x._url.slice(1),
-        render(x)
-      );
+  for (const [kind, render] of [
+    ['products', productPage],
+    ['articles', articlePage],
+    ['categories', categoryPage]
+  ]) {
+    for (const x of published[kind]) {
+      outputs.set(x._url.slice(1), render(x));
     }
   }
 
-  const catalog =
-    Object.fromEntries(
-      published.products.map(
-        p => [
-          p.id,
-          Object.fromEntries(
-            Object.entries(p)
-              .filter(
-                ([key]) =>
-                  !key.startsWith('_')
-              )
-          )
-        ]
+  const catalog = Object.fromEntries(
+    published.products.map(p => [
+      p.id,
+      Object.fromEntries(
+        Object.entries(p).filter(([key]) => !key.startsWith('_'))
       )
-    );
+    ])
+  );
 
   outputs.set(
     'assets/js/cms-catalog.js',
     `// ${OWNER}\nwindow.UUCMS = { products: ${json(catalog)}, quote: ${quoteProduct.toString()} };\n`
   );
 
-  const indexFile =
-    disk('index.html');
+  const indexFile = disk('index.html');
 
   if (!fs.existsSync(indexFile)) {
-    fail(
-      'Thiếu index.html gốc có CMS_PRODUCTS/CMS_ARTICLES markers'
-    );
+    fail('Thiếu index.html gốc có CMS_PRODUCTS/CMS_ARTICLES markers');
   }
 
-  function between(
-    input,
-    start,
-    end,
-    body
-  ) {
+  function between(input, start, end, body) {
     if (
       input.split(start).length !== 2 ||
       input.split(end).length !== 2 ||
-      input.indexOf(end) <
-        input.indexOf(start)
+      input.indexOf(end) < input.indexOf(start)
     ) {
-      fail(
-        `Marker thiếu, trùng hoặc sai thứ tự: ${start}`
-      );
+      fail(`Marker thiếu, trùng hoặc sai thứ tự: ${start}`);
     }
 
     return (
-      input.slice(
-        0,
-        input.indexOf(start) +
-          start.length
-      ) +
+      input.slice(0, input.indexOf(start) + start.length) +
       '\n' +
       body +
       '\n' +
-      input.slice(
-        input.indexOf(end)
-      )
+      input.slice(input.indexOf(end))
     );
   }
 
-  let home =
-    fs.readFileSync(
-      indexFile,
-      'utf8'
-    );
+  let home = fs.readFileSync(indexFile, 'utf8');
 
-  home =
-    between(
+  home = between(
+    home,
+    '<!-- CMS_PRODUCTS_START -->',
+    '<!-- CMS_PRODUCTS_END -->',
+    `<div class="featured-grid" id="banh-cuoi-hoi">${ordered(published.products.filter(p => p.featured)).slice(0, 8).map(productCard).join('')}</div>`
+  );
+
+  home = between(
+    home,
+    '<!-- CMS_ARTICLES_START -->',
+    '<!-- CMS_ARTICLES_END -->',
+    `<div class="guides-grid">${ordered(published.articles.filter(a => a.featured)).slice(0, 6).map(articleCard).join('')}</div>`
+  );
+
+  const homeMetaStart = '<!-- CMS_HOME_SEO_START -->';
+  const homeMetaEnd = '<!-- CMS_HOME_SEO_END -->';
+
+  if (home.includes(homeMetaStart)) {
+    home = between(
       home,
-      '<!-- CMS_PRODUCTS_START -->',
-      '<!-- CMS_PRODUCTS_END -->',
-      `<div class="featured-grid" id="banh-cuoi-hoi">${ordered(published.products.filter(p => p.featured)).slice(0, 8).map(productCard).join('')}</div>`
+      homeMetaStart,
+      homeMetaEnd,
+      metadata({
+        _kind: 'home',
+        _url: '/',
+        title: site.site_name,
+        seo: {
+          title: site.site_name,
+          description: site.seo.default_description
+        }
+      })
     );
-
-  home =
-    between(
-      home,
-      '<!-- CMS_ARTICLES_START -->',
-      '<!-- CMS_ARTICLES_END -->',
-      `<div class="guides-grid">${ordered(published.articles.filter(a => a.featured)).slice(0, 6).map(articleCard).join('')}</div>`
-    );
-
-  const homeMetaStart =
-    '<!-- CMS_HOME_SEO_START -->';
-
-  const homeMetaEnd =
-    '<!-- CMS_HOME_SEO_END -->';
-
-  if (
-    home.includes(
-      homeMetaStart
-    )
-  ) {
-    home =
-      between(
-        home,
-        homeMetaStart,
-        homeMetaEnd,
-        metadata({
-          _kind: 'home',
-          _url: '/',
-          title:
-            site.site_name,
-          seo: {
-            title:
-              site.site_name,
-            description:
-              site.seo
-                .default_description
-          }
-        })
-      );
   } else {
-    warn(
-      'index.html: chưa có CMS_HOME_SEO markers; giữ nguyên SEO và phần nội dung thủ công của trang chủ'
-    );
+    warn('index.html: chưa có CMS_HOME_SEO markers; giữ nguyên SEO và phần nội dung thủ công của trang chủ');
   }
 
-  for (
-    const [name, render]
-    of [
-      [
-        'HEADER',
-        header
-      ],
-      [
-        'FOOTER',
-        footer
-      ],
-      [
-        'NEEDS',
-        () =>
-          topCats
-            .filter(
-              c =>
-                c.slug !==
-                'cam-nang-cuoi'
-            )
-            .map(c => {
-              const representative =
-                ordered(
-                  published.products.filter(
-                    p =>
-                      ancestors(
-                        p.category
-                      ).some(
-                        a =>
-                          a.slug ===
-                          c.slug
-                      )
-                  )
-                )[0];
+  for (const [name, render] of [
+    ['HEADER', header],
+    ['FOOTER', footer],
+    [
+      'NEEDS',
+      () =>
+        topCats
+          .filter(c => c.slug !== 'cam-nang-cuoi')
+          .map(c => {
+            const representative = ordered(
+              published.products.filter(p =>
+                ancestors(p.category).some(a => a.slug === c.slug)
+              )
+            )[0];
 
-              const cover =
-                c.image ||
-                representative?.image;
+            const cover = c.image || representative?.image;
 
-              const alt =
-                c.image
-                  ? (
-                      c.image_alt ||
-                      c.title
-                    )
-                  : (
-                      representative?.image_alt ||
-                      representative?.name ||
-                      c.title
-                    );
+            const alt = c.image
+              ? (c.image_alt || c.title)
+              : (representative?.image_alt || representative?.name || c.title);
 
-              return `<a class="need-card" href="${c._url}">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async">` : ''}<div${cover ? '' : ' style="grid-column:1 / -1;min-width:0"'}><h3>${esc(c.title)}</h3><p style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden">${esc(c.description || '')}</p><span class="need-link">Xem thêm →</span></div></a>`;
-            })
-            .join('')
-      ],
-      [
-        'CONTACT',
-        () =>
-          `<section class="section-sm" id="lien-he"><div class="container">${contact()}</div></section>`
-      ]
+            return `<a class="need-card" href="${c._url}">${cover ? `<img src="${esc(cover)}" alt="${esc(alt)}" loading="lazy" decoding="async">` : ''}<div${cover ? '' : ' style="grid-column:1 / -1;min-width:0"'}><h3>${esc(c.title)}</h3><p style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden">${esc(c.description || '')}</p><span class="need-link">Xem thêm →</span></div></a>`;
+          })
+          .join('')
+    ],
+    [
+      'CONTACT',
+      () => `<section class="section-sm" id="lien-he"><div class="container">${contact()}</div></section>`
     ]
-  ) {
-    if (
-      home.includes(
-        `<!-- CMS_${name}_START -->`
-      )
-    ) {
-      home =
-        between(
-          home,
-          `<!-- CMS_${name}_START -->`,
-          `<!-- CMS_${name}_END -->`,
-          render()
-        );
+  ]) {
+    if (home.includes(`<!-- CMS_${name}_START -->`)) {
+      home = between(
+        home,
+        `<!-- CMS_${name}_START -->`,
+        `<!-- CMS_${name}_END -->`,
+        render()
+      );
     }
   }
 
-  home =
-    home.replace(
-      /data-cms-zalo href="[^"]*"/g,
-      `data-cms-zalo href="${esc(site.zalo_url)}"`
-    );
+  home = home.replace(
+    /data-cms-zalo href="[^"]*"/g,
+    `data-cms-zalo href="${esc(site.zalo_url)}"`
+  );
 
-  home =
-    home.replace(
-      /<a data-cms-category="([a-z0-9-]+)"[^>]*>[\s\S]*?<\/a>/g,
-      (_, slug) => {
-        const c =
-          maps.categories.get(slug);
+  home = home.replace(
+    /<a data-cms-category="([a-z0-9-]+)"[^>]*>[\s\S]*?<\/a>/g,
+    (_, slug) => {
+      const c = maps.categories.get(slug);
 
-        return `<a data-cms-category="${slug}" class="head-link" href="${c && live(c) ? c._url : '/index.html#lien-he'}">${c && live(c) ? 'Xem chuyên mục →' : 'Liên hệ Shop →'}</a>`;
-      }
-    );
+      return `<a data-cms-category="${slug}" class="head-link" href="${c && live(c) ? c._url : '/index.html#lien-he'}">${c && live(c) ? 'Xem chuyên mục →' : 'Liên hệ Shop →'}</a>`;
+    }
+  );
 
-  const currentPaths =
-    new Set([
-      ...outputs.keys(),
-      'index.html'
-    ]);
+  const currentPaths = new Set([
+    ...outputs.keys(),
+    'index.html'
+  ]);
 
-  const aliases =
-    new Map();
+  const aliases = new Map();
 
   const reserved =
     /^\/(?:admin(?:\/|$)|api(?:\/|$)|assets(?:\/|$)|css(?:\/|$)|content(?:\/|$)|scripts(?:\/|$)|(?:index|dat-hang|gio-hang)\.html$|(?:sitemap\.xml|robots\.txt|_redirects|_headers)$)/i;
 
   for (const x of all) {
-    if (
-      !live(x) &&
-      x.redirect_from.length
-    ) {
-      warn(
-        `${x._file}: không tạo redirect tới nội dung ẩn`
-      );
+    if (!live(x) && x.redirect_from.length) {
+      warn(`${x._file}: không tạo redirect tới nội dung ẩn`);
       continue;
     }
 
-    for (
-      const from
-      of x.redirect_from
-    ) {
+    for (const from of x.redirect_from) {
       if (
         !/^\/[a-z0-9/-]+\.html$/.test(from) ||
         from.includes('//') ||
         from.split('/').includes('..') ||
         reserved.test(from)
       ) {
-        fail(
-          `${x._file}: redirect_from phải là đường dẫn .html nội bộ, không thuộc trang hệ thống: ${from}`
-        );
+        fail(`${x._file}: redirect_from phải là đường dẫn .html nội bộ, không thuộc trang hệ thống: ${from}`);
       }
 
-      if (
-        currentPaths.has(
-          from.slice(1)
-        )
-      ) {
-        fail(
-          `Redirect đè trang đang hoạt động: ${from}`
-        );
+      if (currentPaths.has(from.slice(1))) {
+        fail(`Redirect đè trang đang hoạt động: ${from}`);
       }
 
-      if (
-        aliases.has(from)
-      ) {
-        fail(
-          `Redirect trùng nguồn: ${from}`
-        );
+      if (aliases.has(from)) {
+        fail(`Redirect trùng nguồn: ${from}`);
       }
 
-      aliases.set(
-        from,
-        x._url
-      );
+      aliases.set(from, x._url);
     }
   }
 
-  const redirectFile =
-    disk('_redirects');
+  const redirectFile = disk('_redirects');
 
   const oldRedirects =
-    fs.existsSync(
-      redirectFile
-    )
-      ? fs.readFileSync(
-          redirectFile,
-          'utf8'
-        )
+    fs.existsSync(redirectFile)
+      ? fs.readFileSync(redirectFile, 'utf8')
       : '';
 
-  let unmanaged =
-    oldRedirects;
+  let unmanaged = oldRedirects;
 
-  if (
-    oldRedirects.includes(START) ||
-    oldRedirects.includes(END)
-  ) {
-    unmanaged =
-      between(
-        oldRedirects,
-        START,
-        END,
-        ''
-      ).replace(
-        START + '\n\n' + END,
-        ''
-      );
+  if (oldRedirects.includes(START) || oldRedirects.includes(END)) {
+    unmanaged = between(oldRedirects, START, END, '').replace(
+      START + '\n\n' + END,
+      ''
+    );
   }
 
-  for (
-    const line
-    of unmanaged.split(/\r?\n/)
-  ) {
-    const trimmed =
-      line.trim();
+  for (const line of unmanaged.split(/\r?\n/)) {
+    const trimmed = line.trim();
 
-    if (
-      !trimmed ||
-      trimmed.startsWith('#')
-    ) {
-      continue;
-    }
+    if (!trimmed || trimmed.startsWith('#')) continue;
 
-    const from =
-      trimmed.split(/\s+/)[0];
+    const from = trimmed.split(/\s+/)[0];
 
-    const pattern =
-      new RegExp(
-        '^' +
-        from
-          .replace(
-            /[.+?^${}()|[\]\\]/g,
-            '\\$&'
-          )
-          .replace(
-            /\*/g,
-            '.*'
-          )
-          .replace(
-            /:[A-Za-z][A-Za-z0-9_]*/g,
-            '[^/]+'
-          ) +
-        '$'
-      );
+    const pattern = new RegExp(
+      '^' +
+      from
+        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*/g, '.*')
+        .replace(/:[A-Za-z][A-Za-z0-9_]*/g, '[^/]+') +
+      '$'
+    );
 
     if (
       [
         ...aliases.keys(),
-        ...[...currentPaths].map(
-          p => '/' + p
-        ),
+        ...[...currentPaths].map(p => '/' + p),
         '/'
-      ].some(
-        p =>
-          pattern.test(p)
-      )
+      ].some(p => pattern.test(p))
     ) {
-      fail(
-        `Rule _redirects thủ công xung đột URL CMS: ${line}`
-      );
+      fail(`Rule _redirects thủ công xung đột URL CMS: ${line}`);
     }
   }
 
@@ -1699,337 +938,170 @@ export function build(root = process.cwd(), { check = false } = {}) {
     `${unmanaged.trimEnd()}${unmanaged.trim() ? '\n\n' : ''}${START}\n${[...aliases].sort().map(([from, to]) => `${from} ${to} 301`).join('\n')}\n${END}\n`;
 
   const sitemapItems = [
-    {
-      _url: '/'
-    },
-    ...Object.values(
-      published
-    ).flat()
+    { _url: '/' },
+    ...Object.values(published).flat()
   ];
 
   const sitemap =
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapItems.map(x => `<url><loc>${esc(absolute(x._url))}</loc>${x._kind === 'articles' && (x.updated_at || x.published_at) ? `<lastmod>${esc(x.updated_at || x.published_at)}</lastmod>` : ''}</url>`).join('')}</urlset>\n`;
 
   const legacy =
-    fs.existsSync(
-      disk(
-        'scripts/cms-legacy-pages.json'
-      )
-    )
-      ? read(
-          'scripts/cms-legacy-pages.json'
-        )
+    fs.existsSync(disk('scripts/cms-legacy-pages.json'))
+      ? read('scripts/cms-legacy-pages.json')
       : {};
 
   if (!object(legacy)) {
-    fail(
-      'Legacy migration map không hợp lệ'
-    );
+    fail('Legacy migration map không hợp lệ');
   }
 
   const previous =
-    fs.existsSync(
-      disk(MANIFEST)
-    )
+    fs.existsSync(disk(MANIFEST))
       ? read(MANIFEST)
       : {
           version: 1,
           pages: legacy
         };
 
-  if (
-    previous.version !== 1 ||
-    !object(previous.pages)
-  ) {
-    fail(
-      'Manifest CMS không hợp lệ'
-    );
+  if (previous.version !== 1 || !object(previous.pages)) {
+    fail('Manifest CMS không hợp lệ');
   }
 
   const isPagePath = p =>
     p === 'assets/js/cms-catalog.js' ||
     /^(san-pham|cam-nang|chuyen-muc)\/[a-z0-9]+(?:-[a-z0-9]+)*\.html$/.test(p);
 
-  for (
-    const [relative, digest]
-    of Object.entries(
-      previous.pages
-    )
-  ) {
-    if (
-      !isPagePath(relative) ||
-      !/^[a-f0-9]{64}$/.test(digest)
-    ) {
-      fail(
-        'Manifest có đường dẫn/hash không hợp lệ'
-      );
+  for (const [relative, digest] of Object.entries(previous.pages)) {
+    if (!isPagePath(relative) || !/^[a-f0-9]{64}$/.test(digest)) {
+      fail('Manifest có đường dẫn/hash không hợp lệ');
     }
   }
 
-  const originalContent =
-    new Map();
+  const originalContent = new Map();
 
   function inspect(relative) {
-    const p =
-      disk(relative);
+    const p = disk(relative);
 
     const value =
       fs.existsSync(p)
-        ? fs.readFileSync(
-            p,
-            'utf8'
-          )
+        ? fs.readFileSync(p, 'utf8')
         : null;
 
-    originalContent.set(
-      relative,
-      value
-    );
+    originalContent.set(relative, value);
 
     return value;
   }
 
-  // Kiểm tra các file CMS đã sinh trước đó.
-  //
-  // Nếu file có OWNER thì đây là file CMS quản lý.
-  // Trường hợp manifest bị cũ do upload/restore cả repo,
-  // builder vẫn được phép build lại file và cập nhật manifest.
-  //
-  // File không có OWNER vẫn được bảo vệ chặt để tránh
-  // builder vô tình ghi đè file HTML thủ công.
-  for (
-    const relative
-    of new Set([
-      ...Object.keys(
-        previous.pages
-      ),
-      ...outputs.keys()
-    ])
-  ) {
-    const value =
-      inspect(relative);
+  // QUAN TRỌNG:
+  // Giữ nguyên cơ chế bảo vệ generated file.
+  // Nếu file đã bị sửa hoặc hash không khớp manifest thì phải dừng.
+  for (const relative of new Set([
+    ...Object.keys(previous.pages),
+    ...outputs.keys()
+  ])) {
+    const value = inspect(relative);
 
-    if (value === null) {
-      continue;
+    if (value === null) continue;
+
+    if (!(relative in previous.pages)) {
+      fail(`Không ghi đè HTML chưa thuộc manifest: ${relative}. Cần xác nhận/migrate file builder cũ trước.`);
     }
 
     if (
-      !(relative in previous.pages)
+      (!value.includes(OWNER) && hash(value) !== legacy[relative]) ||
+      hash(value) !== previous.pages[relative]
     ) {
-      fail(
-        `Không ghi đè HTML chưa thuộc manifest: ${relative}. Cần xác nhận/migrate file builder cũ trước.`
-      );
-    }
-
-    const digest =
-      hash(value);
-
-    const ownedByCms =
-      value.includes(OWNER);
-
-    if (ownedByCms) {
-      if (
-        digest !==
-        previous.pages[relative]
-      ) {
-        warn(
-          `Manifest CMS lệch file generated, sẽ tự đồng bộ khi build: ${relative}`
-        );
-      }
-
-      continue;
-    }
-
-    const knownManifestHash =
-      previous.pages[relative];
-
-    const knownLegacyHash =
-      legacy[relative];
-
-    if (
-      digest !==
-        knownManifestHash &&
-      digest !==
-        knownLegacyHash
-    ) {
-      fail(
-        `File chưa có dấu CMS và nội dung đã thay đổi ngoài builder: ${relative}`
-      );
+      fail(`File generated đã bị sửa ngoài CMS: ${relative}`);
     }
   }
 
-  for (
-    const from
-    of aliases.keys()
-  ) {
-    const relative =
-      from.slice(1);
+  for (const from of aliases.keys()) {
+    const relative = from.slice(1);
 
     if (
-      fs.existsSync(
-        disk(relative)
-      ) &&
+      fs.existsSync(disk(relative)) &&
       !(relative in previous.pages)
     ) {
-      fail(
-        `Redirect đè file thủ công: ${from}`
-      );
+      fail(`Redirect đè file thủ công: ${from}`);
     }
   }
 
-  // Report untracked legacy pages,
-  // never delete them by directory or guessed slug.
-  for (const dir of [
-    'san-pham',
-    'cam-nang',
-    'chuyen-muc'
-  ]) {
-    if (
-      fs.existsSync(
-        disk(dir)
-      )
-    ) {
-      for (
-        const filename
-        of fs.readdirSync(
-          disk(dir)
-        )
-      ) {
+  // Report untracked legacy pages, never delete them by directory or guessed slug.
+  for (const dir of ['san-pham', 'cam-nang', 'chuyen-muc']) {
+    if (fs.existsSync(disk(dir))) {
+      for (const filename of fs.readdirSync(disk(dir))) {
         if (
           filename.endsWith('.html') &&
-          !(
-            `${dir}/${filename}`
-            in previous.pages
-          ) &&
-          !outputs.has(
-            `${dir}/${filename}`
-          )
+          !(`${dir}/${filename}` in previous.pages) &&
+          !outputs.has(`${dir}/${filename}`)
         ) {
-          warn(
-            `HTML ngoài manifest cần rà migration: ${dir}/${filename}`
-          );
+          warn(`HTML ngoài manifest cần rà migration: ${dir}/${filename}`);
         }
       }
     }
   }
 
-  const removals =
-    Object.keys(
-      previous.pages
-    ).filter(
-      p =>
-        !outputs.has(p)
-    );
+  const removals = Object.keys(previous.pages)
+    .filter(p => !outputs.has(p));
 
   const summary = {
-    products:
-      published.products.length,
-    articles:
-      published.articles.length,
-    categories:
-      published.categories.length,
-    redirects:
-      aliases.size,
-    removed:
-      removals,
-    warnings:
-      [...warnings]
+    products: published.products.length,
+    articles: published.articles.length,
+    categories: published.categories.length,
+    redirects: aliases.size,
+    removed: removals,
+    warnings: [...warnings]
   };
 
-  if (check) {
-    return summary;
-  }
+  if (check) return summary;
 
-  const changes =
-    new Map(outputs);
+  const changes = new Map(outputs);
 
-  changes.set(
-    'index.html',
-    home
-  );
-
-  changes.set(
-    '_redirects',
-    redirects
-  );
-
-  changes.set(
-    'sitemap.xml',
-    sitemap
-  );
+  changes.set('index.html', home);
+  changes.set('_redirects', redirects);
+  changes.set('sitemap.xml', sitemap);
 
   changes.set(
     MANIFEST,
     JSON.stringify(
       {
         version: 1,
-        pages:
-          Object.fromEntries(
-            [...outputs].map(
-              ([p, body]) => [
-                p,
-                hash(body)
-              ]
-            )
-          )
+        pages: Object.fromEntries(
+          [...outputs].map(([p, body]) => [
+            p,
+            hash(body)
+          ])
+        )
       },
       null,
       2
     ) + '\n'
   );
 
-  for (
-    const p
-    of removals
-  ) {
-    changes.set(
-      p,
-      null
-    );
+  for (const p of removals) {
+    changes.set(p, null);
   }
 
-  for (
-    const p
-    of changes.keys()
-  ) {
-    if (
-      !originalContent.has(p)
-    ) {
-      inspect(p);
-    }
+  for (const p of changes.keys()) {
+    if (!originalContent.has(p)) inspect(p);
   }
 
-  // Roll back file contents if a write fails.
-  // Run a single build process at a time.
+  // Roll back file contents if a write fails. Run a single build process at a time.
   const touched = [];
 
   try {
-    for (
-      const [relative, value]
-      of changes
-    ) {
-      const filename =
-        disk(relative);
+    for (const [relative, value] of changes) {
+      const filename = disk(relative);
 
-      touched.push(
-        relative
-      );
+      touched.push(relative);
 
       if (value === null) {
-        if (
-          fs.existsSync(filename)
-        ) {
-          fs.unlinkSync(
-            filename
-          );
+        if (fs.existsSync(filename)) {
+          fs.unlinkSync(filename);
         }
       } else {
-        fs.mkdirSync(
-          path.dirname(filename),
-          {
-            recursive: true
-          }
-        );
+        fs.mkdirSync(path.dirname(filename), {
+          recursive: true
+        });
 
         fs.writeFileSync(
           filename,
@@ -2039,27 +1111,13 @@ export function build(root = process.cwd(), { check = false } = {}) {
       }
     }
   } catch (error) {
-    for (
-      const relative
-      of touched.reverse()
-    ) {
-      const old =
-        originalContent.get(
-          relative
-        );
-
-      const filename =
-        disk(relative);
+    for (const relative of touched.reverse()) {
+      const old = originalContent.get(relative);
+      const filename = disk(relative);
 
       if (old === null) {
-        if (
-          fs.existsSync(
-            filename
-          )
-        ) {
-          fs.unlinkSync(
-            filename
-          );
+        if (fs.existsSync(filename)) {
+          fs.unlinkSync(filename);
         }
       } else {
         fs.writeFileSync(
@@ -2078,43 +1136,23 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
 if (
   process.argv[1] &&
-  path.resolve(
-    process.argv[1]
-  ) ===
-    fileURLToPath(
-      import.meta.url
-    )
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   try {
-    const flags =
-      process.argv.slice(2);
+    const flags = process.argv.slice(2);
 
-    if (
-      flags.some(
-        f =>
-          f !== '--check'
-      )
-    ) {
-      fail(
-        'Cách dùng: node scripts/build.mjs [--check]'
-      );
+    if (flags.some(f => f !== '--check')) {
+      fail('Cách dùng: node scripts/build.mjs [--check]');
     }
 
-    const result =
-      build(
-        process.cwd(),
-        {
-          check:
-            flags.includes(
-              '--check'
-            )
-        }
-      );
+    const result = build(
+      process.cwd(),
+      {
+        check: flags.includes('--check')
+      }
+    );
 
-    for (
-      const warning
-      of result.warnings
-    ) {
+    for (const warning of result.warnings) {
       console.warn(
         'CẢNH BÁO:',
         warning
