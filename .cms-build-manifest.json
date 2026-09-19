@@ -1,7 +1,7 @@
 {
   "version": 1,
   "pages": {
-    "san-pham/banh-phu-the-hue-tphcm.html": "da7916f2c2e8a31470186da465583e571a271b972ce6bddd69c96e510c7c6b8f",
+    "san-pham/banh-phu-the-hue-tphcm.html": "7da392081854a5b89ec91e0b44e360b1fa884343c6cb7945ce2542fe11092c58",
     "san-pham/banh-phu-the-mien-bac-tphcm.html": "9f7abd06a879a66abfc9380701e8f2bd46a7a467ed4e37e28cd87734cdd37daa",
     "san-pham/banh-phuc-linh-tphcm.html": "32740a4bf2385695ce7d80b37fc2fe126da1406e4374271beb13c309717b9ef8",
     "san-pham/mam-qua-cuoi-tphcm.html": "287d9d2a20db4c7ff4d06f314384a39229eb060018432a232c07fa9dbd6c1948",
@@ -14,6 +14,6 @@
     "chuyen-muc/cam-nang-cuoi.html": "ea2fb79a62385c35da03fd88598174cf8dd32f0ad47a77b70f3de1edfd367ea2",
     "chuyen-muc/mam-qua-cuoi-bai-viet.html": "1701a4aa337f3512b175dad1a8c733eee85bbe5f51ca37ac699674c9f03979c2",
     "chuyen-muc/mam-qua-cuoi.html": "65b399ce31773e26901532b6aa5d15f4b190101e5882fef5f72c452e4c742b63",
-    "assets/js/cms-catalog.js": "4c5ecc336cf36727d809d4ff34352a52f84b00969a83a36f3db50071a04aa4b2"
+    "assets/js/cms-catalog.js": "4aa184edbb4ea1c1fab3b416962e3e2abcc70e74472ef04c202f360a1eac3665"
   }
 }
