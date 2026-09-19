@@ -17,7 +17,7 @@
     "min": 20,
     "default": 20,
     "step": 1,
-    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận."
+    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận!"
   },
   "option_groups": [
     {
