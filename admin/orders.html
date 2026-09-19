@@ -1327,163 +1327,6 @@
 
 
     /* =========================
-       LOGIN
-       ========================= */
-
-    .login-screen{
-      position:fixed;
-
-      inset:0;
-
-      z-index:300;
-
-      display:flex;
-
-      align-items:center;
-      justify-content:center;
-
-      padding:20px;
-
-      background:
-        linear-gradient(
-          145deg,
-          #173c2a,
-          #28583d
-        );
-    }
-
-
-    .login-card{
-      width:
-        min(420px,100%);
-
-      padding:
-        28px;
-
-      background:
-        #fffdf8;
-
-      border-radius:
-        22px;
-
-      box-shadow:
-        0 30px 90px
-        rgba(0,0,0,.28);
-    }
-
-
-    .login-logo{
-      width:56px;
-      height:56px;
-
-      margin-bottom:17px;
-
-      display:grid;
-      place-items:center;
-
-      border-radius:50%;
-
-      background:
-        var(--brand);
-
-      color:#fff;
-
-      font-family:
-        var(--display);
-
-      font-size:24px;
-    }
-
-
-    .login-card h1{
-      font-size:27px;
-    }
-
-
-    .login-card > p{
-      margin:
-        7px 0 20px;
-
-      color:
-        var(--muted);
-
-      font-size:12px;
-
-      line-height:1.6;
-    }
-
-
-    .login-card label{
-      display:block;
-
-      margin-bottom:6px;
-
-      color:
-        var(--brand-dark);
-
-      font-size:11px;
-
-      font-weight:800;
-    }
-
-
-    .login-card input{
-      width:100%;
-      height:44px;
-
-      padding:
-        10px 12px;
-
-      border:
-        1px solid var(--line);
-
-      border-radius:
-        10px;
-
-      outline:none;
-
-      background:#fff;
-
-      color:
-        var(--text);
-    }
-
-
-    .login-card input:focus{
-      border-color:
-        var(--brand);
-
-      box-shadow:
-        0 0 0 3px
-        rgba(36,76,54,.08);
-    }
-
-
-    .login-card .btn{
-      width:100%;
-
-      margin-top:11px;
-    }
-
-
-    .login-error{
-      display:none;
-
-      margin-top:10px;
-
-      color:
-        var(--danger);
-
-      font-size:11px;
-    }
-
-
-    .login-error.show{
-      display:block;
-    }
-
-
-    /* =========================
        MOBILE ORDER CARDS
        ========================= */
 
@@ -1779,8 +1622,6 @@
     </div>
 
 
-    <!-- ALERT -->
-
     <div
       class="alert alert-error"
       id="error-alert"
@@ -1791,10 +1632,6 @@
       id="success-alert"
     ></div>
 
-
-    <!-- =========================
-         STATS
-         ========================= -->
 
     <section class="stats">
 
@@ -1859,10 +1696,6 @@
 
     </section>
 
-
-    <!-- =========================
-         TOOLBAR
-         ========================= -->
 
     <section class="toolbar">
 
@@ -1929,10 +1762,6 @@
     </section>
 
 
-    <!-- =========================
-         ORDERS
-         ========================= -->
-
     <section class="orders-panel">
 
       <div
@@ -1967,8 +1796,6 @@
       </div>
 
 
-      <!-- DESKTOP -->
-
       <div
         class="table-wrap desktop-table"
         id="desktop-orders"
@@ -1997,8 +1824,6 @@
       </div>
 
 
-      <!-- MOBILE -->
-
       <div
         class="mobile-orders"
         id="mobile-orders"
@@ -2011,73 +1836,6 @@
 
 </div>
 
-
-<!-- =========================
-     LOGIN
-     ========================= -->
-
-<div
-  class="login-screen"
-  id="login-screen"
->
-
-  <form
-    class="login-card"
-    id="login-form"
-  >
-
-    <div class="login-logo">
-      U
-    </div>
-
-    <div class="eyebrow">
-      Quản trị
-    </div>
-
-    <h1>
-      Đơn hàng
-    </h1>
-
-    <p>
-      Nhập khóa quản trị để xem
-      và xử lý đơn hàng của Shop Uyên Ương.
-      Khóa chỉ được giữ trong phiên trình duyệt hiện tại.
-    </p>
-
-    <label for="admin-key">
-      Khóa quản trị
-    </label>
-
-    <input
-      id="admin-key"
-      type="password"
-      autocomplete="current-password"
-      required
-    >
-
-    <button
-      class="btn btn-primary"
-      type="submit"
-      id="login-btn"
-    >
-      Mở trang quản lý
-    </button>
-
-    <div
-      class="login-error"
-      id="login-error"
-    >
-      Khóa quản trị không đúng.
-    </div>
-
-  </form>
-
-</div>
-
-
-<!-- =========================
-     DETAIL MODAL
-     ========================= -->
 
 <div
   class="modal"
@@ -2224,8 +1982,6 @@
       ></div>
 
 
-      <!-- UPDATE -->
-
       <div class="admin-form">
 
         <div class="field">
@@ -2311,10 +2067,7 @@
      ========================= */
 
   const API_URL =
-    '/api/orders';
-
-  const KEY_NAME =
-    'uyen_uong_admin_api_key';
+    '/admin/api/orders';
 
 
   /* =========================
@@ -2336,32 +2089,6 @@
      ELEMENTS
      ========================= */
 
-  const loginScreen =
-    document.getElementById(
-      'login-screen'
-    );
-
-  const loginForm =
-    document.getElementById(
-      'login-form'
-    );
-
-  const loginInput =
-    document.getElementById(
-      'admin-key'
-    );
-
-  const loginBtn =
-    document.getElementById(
-      'login-btn'
-    );
-
-  const loginError =
-    document.getElementById(
-      'login-error'
-    );
-
-
   const refreshBtn =
     document.getElementById(
       'refresh-btn'
@@ -2372,12 +2099,10 @@
       'logout-btn'
     );
 
-
   const searchInput =
     document.getElementById(
       'search-input'
     );
-
 
   const loadingState =
     document.getElementById(
@@ -2404,7 +2129,6 @@
       'orders-tbody'
     );
 
-
   const errorAlert =
     document.getElementById(
       'error-alert'
@@ -2414,7 +2138,6 @@
     document.getElementById(
       'success-alert'
     );
-
 
   const modal =
     document.getElementById(
@@ -2428,85 +2151,6 @@
 
 
   /* =========================
-     AUTH
-     ========================= */
-
-  function getAdminKey(){
-
-    return (
-      sessionStorage.getItem(
-        KEY_NAME
-      ) || ''
-    );
-
-  }
-
-
-  function setAdminKey(key){
-
-    sessionStorage.setItem(
-      KEY_NAME,
-      key
-    );
-
-  }
-
-
-  function clearAdminKey(){
-
-    sessionStorage.removeItem(
-      KEY_NAME
-    );
-
-  }
-
-
-  function showLogin(){
-
-    loginScreen.hidden =
-      false;
-
-    loginError.classList.remove(
-      'show'
-    );
-
-    setTimeout(
-      () => {
-        loginInput.focus();
-      },
-      50
-    );
-
-  }
-
-
-  function hideLogin(){
-
-    loginScreen.hidden =
-      true;
-
-    loginInput.value =
-      '';
-
-    loginError.classList.remove(
-      'show'
-    );
-
-  }
-
-
-  function authorizationHeaders(){
-
-    return {
-      'Authorization':
-        'Bearer ' +
-        getAdminKey()
-    };
-
-  }
-
-
-  /* =========================
      FETCH
      ========================= */
 
@@ -2515,32 +2159,37 @@
     options = {}
   ){
 
-    const headers = {
-      ...authorizationHeaders(),
-      ...(options.headers || {})
-    };
-
-
     const response =
       await fetch(
         url,
-        {
-          ...options,
-          headers
-        }
+        options
       );
 
 
+    const contentType =
+      response.headers.get(
+        'content-type'
+      ) || '';
+
+
+    /*
+      Nếu phiên Cloudflare Access hết hạn,
+      request có thể bị chuyển sang
+      màn hình đăng nhập Cloudflare.
+    */
+
     if(
-      response.status === 401
+      response.redirected &&
+      response.url.includes(
+        '/cdn-cgi/access/login'
+      )
     ){
 
-      clearAdminKey();
-
-      showLogin();
+      window.location.href =
+        '/admin/orders';
 
       throw new Error(
-        'UNAUTHORIZED'
+        'ACCESS_EXPIRED'
       );
 
     }
@@ -2549,14 +2198,38 @@
     let result = null;
 
 
-    try{
+    if(
+      contentType.includes(
+        'application/json'
+      )
+    ){
 
-      result =
-        await response.json();
+      try{
 
-    }catch(error){
+        result =
+          await response.json();
 
-      result = null;
+      }catch(error){
+
+        result = null;
+
+      }
+
+    }else{
+
+      if(
+        response.status === 401 ||
+        response.status === 403
+      ){
+
+        window.location.href =
+          '/admin/orders';
+
+        throw new Error(
+          'ACCESS_EXPIRED'
+        );
+
+      }
 
     }
 
@@ -2568,6 +2241,17 @@
       throw new Error(
         result?.message ||
         'Có lỗi xảy ra.'
+      );
+
+    }
+
+
+    if(
+      result === null
+    ){
+
+      throw new Error(
+        'Phản hồi từ hệ thống không hợp lệ.'
       );
 
     }
@@ -2605,14 +2289,6 @@
       const limit = 100;
 
 
-      /*
-        API hiện giới hạn tối đa
-        100 đơn / request.
-
-        Tự tải tiếp cho đến khi
-        hết dữ liệu.
-      */
-
       while(true){
 
         const result =
@@ -2644,12 +2320,6 @@
         offset += limit;
 
 
-        /*
-          Giới hạn an toàn
-          tránh loop vô hạn nếu
-          API gặp lỗi logic.
-        */
-
         if(
           offset >= 10000
         ){
@@ -2672,7 +2342,7 @@
 
       if(
         error.message !==
-        'UNAUTHORIZED'
+        'ACCESS_EXPIRED'
       ){
 
         showError(
@@ -2915,12 +2585,6 @@
       value;
 
 
-    /*
-      D1 CURRENT_TIMESTAMP
-      trả về UTC:
-      YYYY-MM-DD HH:mm:ss
-    */
-
     if(
       /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
         .test(value)
@@ -3048,7 +2712,9 @@
   }
 
 
-  /* DESKTOP */
+  /* =========================
+     DESKTOP
+     ========================= */
 
   function renderDesktopRow(
     order
@@ -3078,8 +2744,6 @@
     );
 
 
-    /* CODE */
-
     const codeTd =
       document.createElement(
         'td'
@@ -3102,8 +2766,6 @@
       code
     );
 
-
-    /* CUSTOMER */
 
     const customerTd =
       document.createElement(
@@ -3144,8 +2806,6 @@
     );
 
 
-    /* RECEIVE */
-
     const receiveTd =
       document.createElement(
         'td'
@@ -3160,8 +2820,6 @@
       );
 
 
-    /* STATUS */
-
     const statusTd =
       document.createElement(
         'td'
@@ -3173,8 +2831,6 @@
       )
     );
 
-
-    /* CREATED */
 
     const createdTd =
       document.createElement(
@@ -3189,8 +2845,6 @@
         order.created_at
       );
 
-
-    /* BUTTON */
 
     const actionTd =
       document.createElement(
@@ -3248,7 +2902,9 @@
   }
 
 
-  /* MOBILE */
+  /* =========================
+     MOBILE
+     ========================= */
 
   function renderMobileCard(
     order
@@ -3448,7 +3104,7 @@
 
       if(
         error.message !==
-        'UNAUTHORIZED'
+        'ACCESS_EXPIRED'
       ){
 
         closeModal();
@@ -3543,8 +3199,6 @@
       );
 
 
-    /* PHONE LINK */
-
     const phoneWrap =
       document.getElementById(
         'detail-phone'
@@ -3626,13 +3280,15 @@
     document.getElementById(
       'edit-status'
     ).value =
-      order.status || 'new';
+      order.status ||
+      'new';
 
 
     document.getElementById(
       'internal-note'
     ).value =
-      order.internal_note || '';
+      order.internal_note ||
+      '';
 
 
     renderItems(
@@ -3732,7 +3388,8 @@
         if(
           item.quantity !==
           undefined &&
-          item.quantity !== null
+          item.quantity !==
+          null
         ){
 
           parts.push(
@@ -3744,7 +3401,9 @@
 
 
         meta.textContent =
-          parts.join(' · ') ||
+          parts.join(
+            ' · '
+          ) ||
           'Theo yêu cầu';
 
 
@@ -3810,7 +3469,8 @@
 
 
     if(
-      status === 'cancelled'
+      status ===
+      'cancelled'
     ){
 
       const confirmed =
@@ -3855,15 +3515,12 @@
       );
 
 
-      /*
-        Cập nhật local trước
-        để UI phản hồi ngay.
-      */
-
       const local =
         allOrders.find(
           order =>
-            Number(order.id) ===
+            Number(
+              order.id
+            ) ===
             Number(
               activeOrderId
             )
@@ -3892,11 +3549,6 @@
       );
 
 
-      /*
-        Làm mới từ server
-        để dữ liệu luôn đồng bộ.
-      */
-
       loadOrders();
 
 
@@ -3904,7 +3556,7 @@
 
       if(
         error.message !==
-        'UNAUTHORIZED'
+        'ACCESS_EXPIRED'
       ){
 
         showError(
@@ -3975,7 +3627,9 @@
         event.key ===
           'Escape' &&
         modal.classList
-          .contains('show')
+          .contains(
+            'show'
+          )
       ){
 
         closeModal();
@@ -4018,11 +3672,13 @@
               )
               .forEach(
                 item => {
+
                   item.classList
                     .toggle(
                       'active',
                       item === btn
                     );
+
                 }
               );
 
@@ -4065,11 +3721,14 @@
               )
               .forEach(
                 item => {
+
                   item.classList
                     .toggle(
                       'active',
-                      item === matching
+                      item ===
+                      matching
                     );
+
                 }
               );
 
@@ -4083,7 +3742,8 @@
     );
 
 
-  let searchTimer = null;
+  let searchTimer =
+    null;
 
 
   searchInput.addEventListener(
@@ -4130,7 +3790,9 @@
   }
 
 
-  function showError(message){
+  function showError(
+    message
+  ){
 
     successAlert.classList.remove(
       'show'
@@ -4146,7 +3808,9 @@
   }
 
 
-  function showSuccess(message){
+  function showSuccess(
+    message
+  ){
 
     errorAlert.classList.remove(
       'show'
@@ -4165,7 +3829,9 @@
 
         successAlert
           .classList
-          .remove('show');
+          .remove(
+            'show'
+          );
 
       },
       3500
@@ -4204,109 +3870,15 @@
 
 
   /* =========================
-     LOGIN
+     CLOUDFLARE ACCESS LOGOUT
      ========================= */
-
-  loginForm.addEventListener(
-    'submit',
-    async event => {
-
-      event.preventDefault();
-
-
-      const key =
-        loginInput
-          .value
-          .trim();
-
-
-      if(!key){
-        return;
-      }
-
-
-      loginBtn.disabled =
-        true;
-
-      loginBtn.textContent =
-        'Đang kiểm tra...';
-
-      loginError.classList.remove(
-        'show'
-      );
-
-
-      setAdminKey(
-        key
-      );
-
-
-      try{
-
-        /*
-          Chỉ tải 1 đơn để
-          kiểm tra quyền.
-        */
-
-        await apiFetch(
-          `${API_URL}?limit=1&offset=0`
-        );
-
-
-        hideLogin();
-
-        await loadOrders();
-
-
-      }catch(error){
-
-        if(
-          error.message ===
-          'UNAUTHORIZED'
-        ){
-
-          loginError.classList.add(
-            'show'
-          );
-
-          clearAdminKey();
-
-        }else{
-
-          loginError.textContent =
-            'Không thể kết nối hệ thống. Vui lòng thử lại.';
-
-          loginError.classList.add(
-            'show'
-          );
-
-          clearAdminKey();
-
-        }
-
-      }finally{
-
-        loginBtn.disabled =
-          false;
-
-        loginBtn.textContent =
-          'Mở trang quản lý';
-
-      }
-
-    }
-  );
-
 
   logoutBtn.addEventListener(
     'click',
     () => {
 
-      clearAdminKey();
-
-      allOrders = [];
-
-      showLogin();
+      window.location.href =
+        '/cdn-cgi/access/logout';
 
     }
   );
@@ -4323,19 +3895,6 @@
      ========================= */
 
   async function init(){
-
-    if(
-      !getAdminKey()
-    ){
-
-      showLogin();
-
-      return;
-
-    }
-
-
-    hideLogin();
 
     await loadOrders();
 
