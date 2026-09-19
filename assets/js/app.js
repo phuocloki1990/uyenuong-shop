@@ -13,10 +13,10 @@
       // API lưu đơn hàng vào Cloudflare D1.
       const ORDER_DB_API_URL = '/api/orders';
 
-      // Worker hiện tại chỉ dùng để gửi thông báo Telegram.
-      // Bot Token và Chat ID vẫn nằm an toàn phía Worker.
+      // API gửi thông báo Telegram qua Cloudflare Pages Function.
+      // Bot Token và Chat ID chỉ nằm ở Variables and Secrets của Cloudflare.
       const ORDER_API_URL =
-        'https://uyenuong-order-api.phuoc-loki1990.workers.dev';
+        '/api/send-order';
 
       const products = window.UUCMS?.products || {};
       const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1542,7 +1542,7 @@ if (successCodeEl) {
 
                       body:
                         JSON.stringify({
-                          message:
+                          text:
                             text
                         })
                     }
