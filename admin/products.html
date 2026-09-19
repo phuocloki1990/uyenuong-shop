@@ -1,0 +1,1381 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>Quản lý sản phẩm | Shop Uyên Ương</title>
+
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --surface: #ffffff;
+      --text: #24332b;
+      --muted: #6b776e;
+      --green: #26583d;
+      --green-dark: #19432d;
+      --green-light: #edf5ef;
+      --border: #dce5dd;
+      --red: #a33b37;
+      --red-light: #fff0ee;
+      --radius: 15px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family:
+        "Be Vietnam Pro",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .back-link {
+      white-space: nowrap;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    main {
+      padding: 28px 0 48px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 32px);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 17px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-weight: 650;
+      font-size: 13px;
+      text-decoration: none;
+      transition: background .15s;
+    }
+
+    .button:hover {
+      text-decoration: none;
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--green);
+    }
+
+    .button-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .button-secondary {
+      color: var(--green);
+      background: white;
+      border-color: var(--border);
+    }
+
+    .button-secondary:hover {
+      background: var(--green-light);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .search {
+      width: min(380px, 100%);
+      min-height: 43px;
+      padding: 10px 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      outline-color: var(--green);
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-message {
+      margin: 0 0 16px;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      font-size: 13px;
+    }
+
+    .status-message.error {
+      color: var(--red);
+      border-color: #efc7c3;
+      background: var(--red-light);
+    }
+
+    .status-message.success {
+      color: var(--green-dark);
+      border-color: #bdddc6;
+      background: var(--green-light);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .products {
+      padding: 8px;
+    }
+
+    .product-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      background: white;
+      text-align: left;
+    }
+
+    .product-row:hover {
+      background: #f4f7f3;
+    }
+
+    .product-row.active {
+      border-color: #b8d4c0;
+      background: var(--green-light);
+    }
+
+    .product-row img {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 9px;
+      background: #edf0ec;
+    }
+
+    .product-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .product-info strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .product-info small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+      margin-top: 3px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: #e9f4eb;
+      color: #23633b;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge.draft {
+      background: #fff3dd;
+      color: #8a610d;
+    }
+
+    .badge.hidden {
+      background: #eceeef;
+      color: #687078;
+    }
+
+    .editor-body {
+      padding: 20px;
+    }
+
+    .empty {
+      padding: 48px 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .product-summary {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fafcf9;
+    }
+
+    .product-summary img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #eef1ee;
+    }
+
+    .product-summary strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .product-summary small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      font-size: 12px;
+    }
+
+    .section-title {
+      margin: 24px 0 12px;
+      font-size: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 9px;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 11px 12px;
+      color: var(--text);
+      background: white;
+      border: 1px solid #cfdad0;
+      border-radius: 9px;
+      outline-color: var(--green);
+      font-size: 13px;
+    }
+
+    .field textarea {
+      min-height: 93px;
+      resize: vertical;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .read-only {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .read-only > div {
+      padding: 10px 12px;
+      background: #f6f8f5;
+      border-radius: 9px;
+      min-width: 0;
+    }
+
+    .read-only small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .read-only strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      margin: 0 0 20px;
+      padding: 12px 14px;
+      background: #fff8e9;
+      border: 1px solid #efdfb6;
+      border-radius: 9px;
+      color: #6b5728;
+      font-size: 12px;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px -20px -20px;
+      padding: 14px 20px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 850px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .wrap {
+        width: min(100% - 22px, 1180px);
+      }
+
+      main {
+        padding-top: 20px;
+      }
+
+      .topbar-inner {
+        min-height: 69px;
+      }
+
+      .brand strong {
+        font-size: 14px;
+      }
+
+      .brand small {
+        font-size: 11px;
+      }
+
+      .read-only {
+        grid-template-columns: 1fr;
+      }
+
+      .actions .button {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+
+      <div class="brand">
+        <img
+          src="/assets/images/logo.jpg"
+          alt="Logo Shop Uyên Ương"
+        >
+
+        <div>
+          <strong>Shop Uyên Ương</strong>
+          <small>Quản trị nội bộ</small>
+        </div>
+      </div>
+
+      <a class="back-link" href="/admin/">
+        ← Tổng quan
+      </a>
+
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div class="heading">
+
+      <div>
+        <h1>Quản lý sản phẩm</h1>
+        <p class="subtitle">
+          Chỉnh sửa nội dung sản phẩm ngay trong Admin.
+          Dữ liệu được lưu về GitHub.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="button button-secondary"
+        id="reloadProducts"
+      >
+        ↻ Tải lại
+      </button>
+
+    </div>
+
+    <div
+      id="message"
+      class="status-message"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <div class="toolbar">
+
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Tìm tên hoặc mã sản phẩm..."
+        aria-label="Tìm sản phẩm"
+      >
+
+      <span class="count" id="productCount">
+        Đang tải sản phẩm...
+      </span>
+
+    </div>
+
+    <div class="layout">
+
+      <!-- DANH SÁCH SẢN PHẨM -->
+
+      <section class="panel">
+
+        <div class="panel-head">
+          <h2>Danh sách sản phẩm</h2>
+          <p>Chọn sản phẩm để xem và chỉnh sửa.</p>
+        </div>
+
+        <div
+          class="products"
+          id="products"
+        ></div>
+
+      </section>
+
+      <!-- CHỈNH SỬA SẢN PHẨM -->
+
+      <section class="panel">
+
+        <div class="panel-head">
+          <h2 id="editorTitle">
+            Chỉnh sửa sản phẩm
+          </h2>
+
+          <p>
+            Những trường có ô nhập bên dưới
+            đều có thể lưu thật lên GitHub.
+          </p>
+        </div>
+
+        <div
+          id="editorEmpty"
+          class="empty"
+        >
+          Chọn một sản phẩm ở danh sách bên trái
+          để bắt đầu chỉnh sửa.
+        </div>
+
+        <form
+          id="editor"
+          class="editor-body"
+          hidden
+        >
+
+          <div class="product-summary">
+
+            <img
+              id="previewImage"
+              src=""
+              alt="Ảnh sản phẩm"
+            >
+
+            <div>
+              <strong id="previewName"></strong>
+              <small id="previewFile"></small>
+            </div>
+
+          </div>
+
+          <div class="read-only">
+
+            <div>
+              <small>Mã nội bộ</small>
+              <strong id="readId"></strong>
+            </div>
+
+            <div>
+              <small>Slug trang bán hàng</small>
+              <strong id="readSlug"></strong>
+            </div>
+
+            <div>
+              <small>Chuyên mục</small>
+              <strong id="readCategory"></strong>
+            </div>
+
+            <div>
+              <small>Trạng thái</small>
+              <strong id="readStatus"></strong>
+            </div>
+
+            <div>
+              <small>Cách hiển thị giá</small>
+              <strong id="readPriceMode"></strong>
+            </div>
+
+            <div>
+              <small>Giá hiện tại</small>
+              <strong id="readPriceText"></strong>
+            </div>
+
+          </div>
+
+          <p class="note">
+            Giai đoạn này chỉ chỉnh sửa nội dung văn bản
+            và SEO. Giá, số lượng, quy cách, ảnh và trạng thái
+            đang ở chế độ xem; chúng ta sẽ mở chỉnh sửa
+            những phần đó sau khi bổ sung kiểm tra dữ liệu.
+          </p>
+
+          <h3 class="section-title">
+            Thông tin sản phẩm
+          </h3>
+
+          <div class="field">
+            <label for="name">
+              Tên sản phẩm *
+            </label>
+
+            <input
+              id="name"
+              name="name"
+              type="text"
+              maxlength="200"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="short_description">
+              Mô tả ngắn *
+            </label>
+
+            <textarea
+              id="short_description"
+              name="short_description"
+              maxlength="5000"
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="lead">
+              Nội dung đầu trang chi tiết *
+            </label>
+
+            <textarea
+              id="lead"
+              name="lead"
+              maxlength="5000"
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="image_alt">
+              Mô tả ảnh (Alt)
+            </label>
+
+            <input
+              id="image_alt"
+              name="image_alt"
+              type="text"
+              maxlength="200"
+            >
+
+            <small class="hint">
+              Mô tả đúng nội dung ảnh,
+              không cần nhồi từ khóa.
+            </small>
+          </div>
+
+          <h3 class="section-title">
+            SEO
+          </h3>
+
+          <div class="field">
+            <label for="seo_title">
+              SEO title
+            </label>
+
+            <input
+              id="seo_title"
+              name="seo_title"
+              type="text"
+              maxlength="70"
+            >
+
+            <small class="hint">
+              Tối đa 70 ký tự theo cấu hình CMS.
+            </small>
+          </div>
+
+          <div class="field">
+            <label for="seo_description">
+              Meta description
+            </label>
+
+            <textarea
+              id="seo_description"
+              name="seo_description"
+              maxlength="180"
+            ></textarea>
+
+            <small class="hint">
+              Tối đa 180 ký tự theo cấu hình CMS.
+            </small>
+          </div>
+
+          <div class="actions">
+
+            <a
+              id="viewProduct"
+              class="button button-secondary"
+              href="#"
+              target="_blank"
+              rel="noopener"
+            >
+              Xem trang bán hàng ↗
+            </a>
+
+            <button
+              id="saveProduct"
+              class="button button-primary"
+              type="submit"
+            >
+              Lưu thay đổi
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const API = '/admin/api/content';
+
+      const fields = {
+        name: document.getElementById('name'),
+        short_description:
+          document.getElementById('short_description'),
+        lead: document.getElementById('lead'),
+        image_alt:
+          document.getElementById('image_alt'),
+        'seo.title':
+          document.getElementById('seo_title'),
+        'seo.description':
+          document.getElementById('seo_description')
+      };
+
+      const labels = {
+        published: 'Đang hiển thị',
+        draft: 'Bản nháp',
+        hidden: 'Tạm ẩn'
+      };
+
+      const priceLabels = {
+        contact: 'Giá liên hệ',
+        fixed: 'Giá cố định',
+        hybrid: 'Giá theo quy cách'
+      };
+
+      const elements = {
+        list: document.getElementById('products'),
+        count: document.getElementById('productCount'),
+        search: document.getElementById('search'),
+        message: document.getElementById('message'),
+        editor: document.getElementById('editor'),
+        empty: document.getElementById('editorEmpty'),
+        title: document.getElementById('editorTitle'),
+        save: document.getElementById('saveProduct'),
+        reload: document.getElementById('reloadProducts'),
+        previewImage:
+          document.getElementById('previewImage'),
+        previewName:
+          document.getElementById('previewName'),
+        previewFile:
+          document.getElementById('previewFile'),
+        viewProduct:
+          document.getElementById('viewProduct')
+      };
+
+      let products = [];
+      let current = null;
+      let busy = false;
+
+      function message(text, type = '') {
+        elements.message.textContent = text;
+        elements.message.className =
+          'status-message' +
+          (type ? ` ${type}` : '');
+
+        elements.message.hidden = !text;
+      }
+
+      function setText(id, value) {
+        document.getElementById(id).textContent =
+          String(value ?? '—');
+      }
+
+      function getField(data, key) {
+        if (key.startsWith('seo.')) {
+          return data.seo?.[key.slice(4)] ?? '';
+        }
+
+        return data[key] ?? '';
+      }
+
+      function getChanges() {
+        if (!current) return {};
+
+        const changes = {};
+
+        for (const [key, input] of Object.entries(fields)) {
+          const original =
+            String(getField(current.data, key));
+
+          if (input.value !== original) {
+            changes[key] = input.value;
+          }
+        }
+
+        return changes;
+      }
+
+      function isDirty() {
+        return Object.keys(getChanges()).length > 0;
+      }
+
+      function confirmDiscard() {
+        if (!isDirty()) return true;
+
+        return confirm(
+          'Anh có thay đổi chưa lưu. ' +
+          'Bỏ các thay đổi để tiếp tục?'
+        );
+      }
+
+      function setBusy(value) {
+        busy = value;
+
+        elements.save.disabled = value;
+        elements.reload.disabled = value;
+
+        for (const input of Object.values(fields)) {
+          input.disabled = value;
+        }
+      }
+
+      async function readJson(url, options) {
+        const response = await fetch(
+          url,
+          {
+            credentials: 'same-origin',
+            cache: 'no-store',
+            ...options
+          }
+        );
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            'Không đọc được phản hồi API. ' +
+            'Hãy kiểm tra đăng nhập Cloudflare Access.'
+          );
+        }
+
+        if (!response.ok || data.success === false) {
+          const error = new Error(
+            data.message ||
+            `API trả về lỗi ${response.status}`
+          );
+
+          error.status = response.status;
+          error.data = data;
+
+          throw error;
+        }
+
+        return data;
+      }
+
+      function productImage(value) {
+        return (
+          typeof value === 'string' &&
+          value.startsWith('/assets/images/') &&
+          !value.includes('..')
+        )
+          ? value
+          : '/assets/images/logo.jpg';
+      }
+
+      function createProductRow(product) {
+        const button = document.createElement('button');
+
+        button.type = 'button';
+        button.className = 'product-row';
+
+        if (
+          current &&
+          current.filename === product.filename
+        ) {
+          button.classList.add('active');
+        }
+
+        const img = document.createElement('img');
+
+        img.src = productImage(product.image);
+        img.alt = product.name || 'Sản phẩm';
+        img.loading = 'lazy';
+
+        const info = document.createElement('div');
+
+        info.className = 'product-info';
+
+        const name = document.createElement('strong');
+
+        name.textContent =
+          product.name || product.filename;
+
+        const filename = document.createElement('small');
+
+        filename.textContent = product.filename;
+
+        const badge = document.createElement('span');
+
+        badge.className =
+          'badge' +
+          (
+            product.status === 'draft'
+              ? ' draft'
+              : product.status === 'hidden'
+                ? ' hidden'
+                : ''
+          );
+
+        badge.textContent =
+          labels[product.status] ||
+          'Chưa xác định';
+
+        info.append(name, filename, badge);
+
+        button.append(img, info);
+
+        button.addEventListener('click', () => {
+          openProduct(product);
+        });
+
+        return button;
+      }
+
+      function renderList() {
+        const term =
+          elements.search.value
+            .trim()
+            .toLocaleLowerCase('vi');
+
+        const filtered = products.filter(product => {
+          const searchable =
+            `${product.name || ''} ` +
+            `${product.filename || ''} ` +
+            `${product.id || ''}`
+          ;
+
+          return searchable
+            .toLocaleLowerCase('vi')
+            .includes(term);
+        });
+
+        elements.list.replaceChildren();
+
+        elements.count.textContent =
+          `Hiển thị ${filtered.length}/${products.length} sản phẩm`;
+
+        if (!filtered.length) {
+          const empty = document.createElement('p');
+
+          empty.className = 'empty';
+
+          empty.textContent =
+            'Không tìm thấy sản phẩm phù hợp.';
+
+          elements.list.append(empty);
+          return;
+        }
+
+        for (const product of filtered) {
+          elements.list.append(
+            createProductRow(product)
+          );
+        }
+      }
+
+      function showProduct(detail) {
+        current = detail;
+
+        const data = detail.data;
+
+        elements.empty.hidden = true;
+        elements.editor.hidden = false;
+
+        elements.title.textContent =
+          'Chỉnh sửa: ' + data.name;
+
+        elements.previewImage.src =
+          productImage(data.image);
+
+        elements.previewName.textContent =
+          data.name;
+
+        elements.previewFile.textContent =
+          detail.filename;
+
+        setText('readId', data.id);
+        setText('readSlug', data.slug);
+        setText('readCategory', data.category);
+
+        setText(
+          'readStatus',
+          labels[data.status] || data.status
+        );
+
+        setText(
+          'readPriceMode',
+          priceLabels[data.price_mode] ||
+          data.price_mode
+        );
+
+        setText(
+          'readPriceText',
+          data.price_text
+        );
+
+        elements.viewProduct.href =
+          '/san-pham/' +
+          encodeURIComponent(data.slug) +
+          '.html';
+
+        for (const [key, input] of Object.entries(fields)) {
+          input.value = String(
+            getField(data, key)
+          );
+        }
+
+        renderList();
+      }
+
+      async function openProduct(product) {
+        if (busy) return;
+        if (!confirmDiscard()) return;
+
+        setBusy(true);
+
+        message('Đang tải chi tiết sản phẩm...');
+
+        try {
+          const slug =
+            product.filename.replace(/\.json$/, '');
+
+          const detail = await readJson(
+            API +
+            '/item?kind=products&slug=' +
+            encodeURIComponent(slug)
+          );
+
+          showProduct(detail);
+          message('');
+
+        } catch (error) {
+          message(
+            error.message,
+            'error'
+          );
+
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function loadProducts() {
+        if (busy) return;
+        if (!confirmDiscard()) return;
+
+        setBusy(true);
+
+        message('Đang tải sản phẩm từ GitHub...');
+
+        try {
+          const list = await readJson(
+            API + '?kind=products'
+          );
+
+          const details = await Promise.all(
+            list.items.map(async item => {
+              try {
+                const slug =
+                  item.filename.replace(/\.json$/, '');
+
+                const detail = await readJson(
+                  API +
+                  '/item?kind=products&slug=' +
+                  encodeURIComponent(slug)
+                );
+
+                return {
+                  ...detail.data,
+                  filename: item.filename
+                };
+
+              } catch {
+                return {
+                  filename: item.filename,
+                  name: item.filename,
+                  status: 'unknown'
+                };
+              }
+            })
+          );
+
+          products = details;
+
+          current = null;
+
+          elements.editor.hidden = true;
+          elements.empty.hidden = false;
+          elements.title.textContent =
+            'Chỉnh sửa sản phẩm';
+
+          renderList();
+
+          message(
+            `Đã tải ${products.length} sản phẩm.`,
+            'success'
+          );
+
+        } catch (error) {
+          message(
+            error.message,
+            'error'
+          );
+
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function saveProduct(event) {
+        event.preventDefault();
+
+        if (busy || !current) return;
+
+        if (!elements.editor.reportValidity()) {
+          return;
+        }
+
+        const changes = getChanges();
+
+        if (!Object.keys(changes).length) {
+          message(
+            'Chưa có thay đổi nào cần lưu.'
+          );
+
+          return;
+        }
+
+        if (
+          !confirm(
+            'Lưu thay đổi của sản phẩm này lên GitHub?'
+          )
+        ) {
+          return;
+        }
+
+        setBusy(true);
+
+        elements.save.textContent =
+          'Đang lưu...';
+
+        message(
+          'Đang lưu nội dung lên GitHub...'
+        );
+
+        try {
+          const result = await readJson(
+            API + '/save',
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json'
+              },
+
+              body: JSON.stringify({
+                kind: 'products',
+                filename: current.filename,
+                sha: current.sha,
+                changes,
+                confirm_write: true
+              })
+            }
+          );
+
+          if (!result.saved) {
+            message(
+              result.message ||
+              'Không có thay đổi cần lưu.'
+            );
+
+            return;
+          }
+
+          // Đọc lại để lấy dữ liệu và SHA
+          // chính thức sau khi GitHub lưu.
+
+          const slug =
+            current.filename
+              .replace(/\.json$/, '');
+
+          const fresh = await readJson(
+            API +
+            '/item?kind=products&slug=' +
+            encodeURIComponent(slug)
+          );
+
+          showProduct(fresh);
+
+          const index = products.findIndex(
+            p => p.filename === fresh.filename
+          );
+
+          if (index !== -1) {
+            products[index] = {
+              ...fresh.data,
+              filename: fresh.filename
+            };
+          }
+
+          renderList();
+
+          message(
+            'Đã lưu lên GitHub. ' +
+            'Website sẽ cập nhật sau khi ' +
+            'GitHub Actions build thành công.',
+            'success'
+          );
+
+        } catch (error) {
+          if (error.status === 409) {
+            message(
+              'File đã có phiên bản mới trên GitHub. ' +
+              'Hãy tải lại sản phẩm trước khi sửa tiếp.',
+              'error'
+            );
+
+          } else {
+            message(
+              error.message,
+              'error'
+            );
+          }
+
+        } finally {
+          setBusy(false);
+
+          elements.save.textContent =
+            'Lưu thay đổi';
+        }
+      }
+
+      elements.editor.addEventListener(
+        'submit',
+        saveProduct
+      );
+
+      elements.reload.addEventListener(
+        'click',
+        loadProducts
+      );
+
+      elements.search.addEventListener(
+        'input',
+        renderList
+      );
+
+      window.addEventListener(
+        'beforeunload',
+        event => {
+          if (!isDirty()) return;
+
+          event.preventDefault();
+          event.returnValue = '';
+        }
+      );
+
+      loadProducts();
+    })();
+  </script>
+
+</body>
+</html>
