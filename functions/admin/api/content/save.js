@@ -1,20 +1,26 @@
 // functions/admin/api/content/save.js
 //
-// A1.4 — API lưu nội dung về GitHub.
+// API lưu nội dung Shop Uyên Ương.
 //
-// GET  /admin/api/content/save
-//      Kiểm tra API đã sẵn sàng.
-//
-// POST /admin/api/content/save
-//      Xem trước hoặc lưu các trường văn bản được cho phép.
-//
-// Không sử dụng D1.
-// Không sửa file HTML do builder tạo.
-// Không nhận đường dẫn file tùy ý từ trình duyệt.
+// - Sửa sản phẩm đầy đủ.
+// - Tạo sản phẩm mới.
+// - Giữ tương thích với cách lưu văn bản cũ.
+// - Kiểm tra dữ liệu sản phẩm trước khi ghi.
+// - Kiểm tra SHA để chống ghi đè.
+// - Chỉ ghi vào nhánh được cấu hình trên server.
+// - Không sửa HTML generated hoặc D1.
+
+import {
+  validateProduct
+} from '../../../../scripts/product-validation.mjs';
 
 const OWNER = 'phuocloki1990';
 const REPO = 'uyenuong-shop';
-const BRANCH = 'main';
+
+const SHA = /^[a-f0-9]{40}$/i;
+
+const SLUG =
+  /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const FOLDERS = {
   products: 'content/products',
@@ -22,11 +28,7 @@ const FOLDERS = {
   categories: 'content/categories'
 };
 
-// Giai đoạn đầu chỉ mở các trường văn bản ít rủi ro.
-// Giá, số lượng, slug, category, body HTML và trạng thái
-// sẽ được bổ sung khi có bộ kiểm tra tương ứng.
-
-const EDITABLE_FIELDS = {
+const LEGACY_FIELDS = {
   products: [
     'name',
     'short_description',
@@ -53,7 +55,7 @@ const EDITABLE_FIELDS = {
   ]
 };
 
-const REQUIRED_FIELDS = new Set([
+const REQUIRED = new Set([
   'name',
   'title',
   'short_description',
@@ -61,41 +63,54 @@ const REQUIRED_FIELDS = new Set([
   'excerpt'
 ]);
 
-const SLUG_PATTERN =
-  /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MAX_BYTES = 100_000;
 
-const SHA_PATTERN =
-  /^[a-f0-9]{40}$/i;
+const isObj = value =>
+  value !== null &&
+  typeof value === 'object' &&
+  !Array.isArray(value);
 
-const MAX_REQUEST_BYTES = 40_000;
-
-function json(data, status = 200) {
-  return Response.json(data, {
+const reply = (data, status = 200) =>
+  Response.json(data, {
     status,
     headers: {
       'Cache-Control': 'no-store'
     }
   });
+
+const headers = token => ({
+  Accept: 'application/vnd.github+json',
+
+  Authorization: `Bearer ${token}`,
+
+  'User-Agent': 'uyenuong-shop-admin',
+
+  'X-GitHub-Api-Version': '2022-11-28'
+});
+
+const api = path =>
+  `https://api.github.com/repos/${OWNER}/${REPO}/${path}`;
+
+function textToBase64(text) {
+  const bytes =
+    new TextEncoder().encode(text);
+
+  let result = '';
+
+  for (
+    let i = 0;
+    i < bytes.length;
+    i += 8192
+  ) {
+    result += String.fromCharCode(
+      ...bytes.subarray(i, i + 8192)
+    );
+  }
+
+  return btoa(result);
 }
 
-function isObject(value) {
-  return (
-    value !== null &&
-    typeof value === 'object' &&
-    !Array.isArray(value)
-  );
-}
-
-function githubHeaders(token) {
-  return {
-    Accept: 'application/vnd.github+json',
-    Authorization: `Bearer ${token}`,
-    'User-Agent': 'uyenuong-shop-admin',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
-}
-
-function decodeBase64Utf8(value) {
+function base64ToText(value) {
   const binary = atob(
     value.replace(/\s/g, '')
   );
@@ -111,191 +126,580 @@ function decodeBase64Utf8(value) {
   ).decode(bytes);
 }
 
-function encodeBase64Utf8(value) {
-  const bytes = new TextEncoder().encode(value);
+function exception(
+  message,
+  status = 400,
+  extra = {}
+) {
+  const error = new Error(message);
 
-  let binary = '';
+  error.status = status;
+  error.extra = extra;
 
-  // Chia nhỏ để tránh lỗi khi chuỗi dài.
-  for (let i = 0; i < bytes.length; i += 8192) {
-    binary += String.fromCharCode(
-      ...bytes.subarray(i, i + 8192)
+  throw error;
+}
+
+async function gh(
+  token,
+  path,
+  options = {}
+) {
+  const response = await fetch(
+    api(path),
+    {
+      ...options,
+
+      headers: {
+        ...headers(token),
+        ...(options.headers || {})
+      },
+
+      cache: 'no-store'
+    }
+  );
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      exception(
+        'Không tìm thấy file trên GitHub.',
+        404
+      );
+    }
+
+    if (
+      response.status === 409 ||
+      response.status === 422
+    ) {
+      exception(
+        'GitHub báo dữ liệu hoặc phiên bản đã thay đổi. Hãy tải lại trước khi lưu.',
+        409
+      );
+    }
+
+    console.error(
+      'GitHub API:',
+      response.status,
+      path
+    );
+
+    exception(
+      'GitHub chưa xử lý được yêu cầu.',
+      502,
+      {
+        github_status:
+          response.status
+      }
     );
   }
 
-  return btoa(binary);
+  return response.json();
 }
 
-function fieldLimit(field) {
-  if (field === 'seo.title') {
-    return 70;
+const filePath = (kind, filename) =>
+  `${FOLDERS[kind]}/${filename}`;
+
+async function readFile(
+  token,
+  path,
+  branch
+) {
+  const file = await gh(
+    token,
+
+    `contents/${path}?ref=${encodeURIComponent(branch)}`
+  );
+
+  if (
+    file.type !== 'file' ||
+    file.encoding !== 'base64' ||
+    typeof file.content !== 'string' ||
+    !SHA.test(file.sha)
+  ) {
+    exception(
+      'Nội dung GitHub không đúng định dạng.',
+      502
+    );
   }
 
-  if (field === 'seo.description') {
-    return 180;
+  const data = JSON.parse(
+    base64ToText(file.content)
+  );
+
+  if (!isObj(data)) {
+    exception(
+      'File JSON không đúng cấu trúc.',
+      502
+    );
   }
 
-  if (field === 'excerpt') {
-    return 300;
+  return {
+    data,
+    sha: file.sha
+  };
+}
+
+async function listFiles(
+  token,
+  kind,
+  branch
+) {
+  const rows = await gh(
+    token,
+
+    `contents/${FOLDERS[kind]}?ref=${encodeURIComponent(branch)}`
+  );
+
+  if (!Array.isArray(rows)) {
+    exception(
+      'GitHub không trả về danh sách.',
+      502
+    );
+  }
+
+  return rows.filter(
+    row =>
+      row.type === 'file' &&
+      row.name.endsWith('.json')
+  );
+}
+
+const urlFor = (kind, slug) =>
+  `/${{
+    products: 'san-pham',
+    articles: 'cam-nang',
+    categories: 'chuyen-muc'
+  }[kind]}/${slug}.html`;
+
+async function checkReferences(
+  token,
+  branch,
+  product,
+  filename,
+  oldProduct = null
+) {
+  const [
+    products,
+    articles,
+    categories
+  ] = await Promise.all(
+    [
+      'products',
+      'articles',
+      'categories'
+    ].map(kind =>
+      listFiles(
+        token,
+        kind,
+        branch
+      )
+    )
+  );
+
+  const files = {
+    products,
+    articles,
+    categories
+  };
+
+  const all = await Promise.all(
+    Object.entries(files).flatMap(
+      ([kind, rows]) =>
+        rows.map(async row => {
+          if (
+            kind === 'products' &&
+            row.name === filename &&
+            oldProduct
+          ) {
+            return {
+              kind,
+              filename: row.name,
+              data: oldProduct
+            };
+          }
+
+          const { data } = await readFile(
+            token,
+            filePath(kind, row.name),
+            branch
+          );
+
+          return {
+            kind,
+            filename: row.name,
+            data
+          };
+        })
+    )
+  );
+
+  const other = all.filter(
+    item =>
+      !(
+        item.kind === 'products' &&
+        item.filename === filename
+      )
+  );
+
+  const categoryMap = new Map(
+    all
+      .filter(
+        item =>
+          item.kind === 'categories'
+      )
+      .map(
+        item => [
+          item.data.slug,
+          item.data
+        ]
+      )
+  );
+
+  if (
+    !categoryMap.has(
+      product.category
+    )
+  ) {
+    exception(
+      'Chuyên mục sản phẩm không tồn tại.',
+      400,
+      { field: 'category' }
+    );
+  }
+
+  let category =
+    product.category;
+
+  const visited = new Set();
+
+  while (category) {
+    if (
+      visited.has(category)
+    ) {
+      exception(
+        'Chuyên mục có vòng lặp.',
+        400,
+        { field: 'category' }
+      );
+    }
+
+    visited.add(category);
+
+    const current =
+      categoryMap.get(category);
+
+    if (!current) {
+      exception(
+        'Chuyên mục cha không tồn tại.',
+        400,
+        { field: 'category' }
+      );
+    }
+
+    if (
+      product.status === 'published' &&
+      current.status !== 'published'
+    ) {
+      exception(
+        'Chuyên mục đang ẩn, không thể xuất bản sản phẩm.',
+        400,
+        { field: 'category' }
+      );
+    }
+
+    category =
+      current.parent || '';
   }
 
   if (
-    field === 'name' ||
-    field === 'title' ||
-    field === 'image_alt'
+    other.some(
+      item =>
+        item.kind === 'products' &&
+        item.data.id === product.id
+    )
   ) {
-    return 200;
+    exception(
+      'Mã nội bộ đã được sản phẩm khác sử dụng.',
+      409,
+      { field: 'id' }
+    );
   }
-
-  return 5000;
-}
-
-function getField(data, field) {
-  if (field.startsWith('seo.')) {
-    return data.seo?.[
-      field.slice(4)
-    ];
-  }
-
-  return data[field];
-}
-
-function setField(data, field, value) {
-  if (field.startsWith('seo.')) {
-    if (!isObject(data.seo)) {
-      data.seo = {};
-    }
-
-    data.seo[field.slice(4)] = value;
-    return;
-  }
-
-  data[field] = value;
-}
-
-function validateChanges(kind, changes) {
-  if (!isObject(changes)) {
-    return 'changes phải là object.';
-  }
-
-  const entries = Object.entries(changes);
 
   if (
-    entries.length === 0 ||
-    entries.length > 6
+    other.some(
+      item =>
+        item.kind === 'products' &&
+        item.data.slug === product.slug
+    )
   ) {
-    return 'Cần thay đổi từ 1 đến 6 trường.';
+    exception(
+      'Slug sản phẩm đã tồn tại.',
+      409,
+      { field: 'slug' }
+    );
   }
 
-  for (const [field, value] of entries) {
+  for (
+    const kind of [
+      'products',
+      'articles'
+    ]
+  ) {
+    const related =
+      product[`related_${kind}`] || [];
+
+    for (const slug of related) {
+      if (
+        !other.some(
+          item =>
+            item.kind === kind &&
+            item.data.slug === slug
+        )
+      ) {
+        exception(
+          `Liên kết ${kind}: ${slug} không tồn tại hoặc tự liên kết.`,
+          400,
+          {
+            field:
+              `related_${kind}`
+          }
+        );
+      }
+
+      if (
+        kind === 'products' &&
+        slug === product.slug
+      ) {
+        exception(
+          'Không thể liên kết tới chính sản phẩm.',
+          400,
+          {
+            field:
+              'related_products'
+          }
+        );
+      }
+    }
+  }
+
+  const activePaths = new Set([
+    ...other.map(
+      item =>
+        urlFor(
+          item.kind,
+          item.data.slug
+        )
+    ),
+
+    urlFor(
+      'products',
+      product.slug
+    )
+  ]);
+
+  const aliases = new Set(
+    other.flatMap(
+      item =>
+        item.data.redirect_from || []
+    )
+  );
+
+  const reserved =
+    /^\/(?:admin(?:\/|$)|api(?:\/|$)|assets(?:\/|$)|css(?:\/|$)|content(?:\/|$)|scripts(?:\/|$)|(?:index|dat-hang|gio-hang)\.html$|(?:sitemap\.xml|robots\.txt|_redirects|_headers)$)/i;
+
+  for (
+    const from of
+    product.redirect_from || []
+  ) {
     if (
-      !EDITABLE_FIELDS[kind].includes(field)
+      !/^\/[a-z0-9/-]+\.html$/.test(from) ||
+      from.includes('//') ||
+      reserved.test(from)
     ) {
-      return `Chưa cho phép sửa trường: ${field}`;
+      exception(
+        'URL chuyển hướng không hợp lệ.',
+        400,
+        {
+          field:
+            'redirect_from'
+        }
+      );
     }
 
     if (
-      typeof value !== 'string' ||
-      value.includes('\u0000')
+      activePaths.has(from) ||
+      aliases.has(from)
     ) {
-      return `${field} phải là văn bản hợp lệ.`;
-    }
-
-    if (
-      REQUIRED_FIELDS.has(field) &&
-      !value.trim()
-    ) {
-      return `${field} không được để trống.`;
-    }
-
-    if (
-      value.length > fieldLimit(field)
-    ) {
-      return (
-        `${field} vượt quá ` +
-        `${fieldLimit(field)} ký tự.`
+      exception(
+        `URL chuyển hướng đã được sử dụng: ${from}`,
+        409,
+        {
+          field:
+            'redirect_from'
+        }
       );
     }
   }
 
-  return null;
+  return true;
 }
 
-// Kiểm tra API sẵn sàng.
-// Không trả token hoặc giá trị Secret.
+function applyLegacy(
+  kind,
+  original,
+  changes
+) {
+  if (
+    !isObj(changes) ||
+    !Object.keys(changes).length ||
+    Object.keys(changes).length > 6
+  ) {
+    exception(
+      'Cần thay đổi từ 1 đến 6 trường văn bản.'
+    );
+  }
 
-export function onRequestGet({ env }) {
-  return json({
+  const data =
+    structuredClone(original);
+
+  for (
+    const [field, value] of
+    Object.entries(changes)
+  ) {
+    if (
+      !LEGACY_FIELDS[kind].includes(field) ||
+      typeof value !== 'string' ||
+      value.includes('\u0000')
+    ) {
+      exception(
+        'Trường không được phép sửa: ' +
+        field
+      );
+    }
+
+    const max =
+      field === 'seo.title'
+        ? 70
+        : field === 'seo.description'
+          ? 180
+          : field === 'excerpt'
+            ? 300
+            : [
+              'name',
+              'title',
+              'image_alt'
+            ].includes(field)
+              ? 200
+              : 5000;
+
+    if (
+      value.length > max ||
+      (
+        REQUIRED.has(field) &&
+        !value.trim()
+      )
+    ) {
+      exception(
+        'Dữ liệu trường không hợp lệ: ' +
+        field
+      );
+    }
+
+    if (
+      field.startsWith('seo.')
+    ) {
+      data.seo =
+        isObj(data.seo)
+          ? data.seo
+          : {};
+
+      data.seo[
+        field.slice(4)
+      ] = value;
+    } else {
+      data[field] = value;
+    }
+  }
+
+  return data;
+}
+
+export function onRequestGet({
+  env
+}) {
+  return reply({
     success: true,
-    service: 'Admin content save API',
+
+    service:
+      'Admin content save API',
+
     ready: Boolean(
       env.GITHUB_CONTENT_TOKEN
     ),
-    mode: 'Existing files only',
-    editable_fields: EDITABLE_FIELDS
+
+    branch_configured:
+      Boolean(
+        env.GITHUB_CONTENT_BRANCH
+      ),
+
+    mode:
+      'Products full create/update; articles and categories legacy text update',
+
+    editable_fields:
+      LEGACY_FIELDS
   });
 }
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
-
+export async function onRequestPost({
+  request,
+  env
+}) {
   try {
-    // API này nằm dưới /admin/* và phải được
-    // Cloudflare Access bảo vệ.
-    //
-    // Kiểm tra Origin bổ sung để hạn chế
-    // yêu cầu ghi từ website khác.
-
-    const expectedOrigin =
-      new URL(request.url).origin;
-
-    const requestOrigin =
-      request.headers.get('Origin');
-
     if (
-      requestOrigin !== expectedOrigin
+      request.headers.get('Origin') !==
+      new URL(request.url).origin
     ) {
-      return json(
-        {
-          success: false,
-          message: 'Nguồn yêu cầu không hợp lệ.'
-        },
+      exception(
+        'Nguồn yêu cầu không hợp lệ.',
         403
       );
     }
 
-    const contentType =
-      request.headers.get(
-        'Content-Type'
-      ) || '';
-
     if (
       !/^application\/json(?:\s*;|$)/i.test(
-        contentType
+        request.headers.get(
+          'Content-Type'
+        ) || ''
       )
     ) {
-      return json(
-        {
-          success: false,
-          message:
-            'Yêu cầu phải gửi JSON.'
-        },
+      exception(
+        'Yêu cầu phải gửi JSON.',
         415
       );
     }
 
-    const raw = await request.text();
+    if (
+      Number(
+        request.headers.get(
+          'Content-Length'
+        )
+      ) > MAX_BYTES
+    ) {
+      exception(
+        'Dữ liệu quá lớn.',
+        413
+      );
+    }
+
+    const raw =
+      await request.text();
 
     if (
       new TextEncoder()
         .encode(raw)
-        .length > MAX_REQUEST_BYTES
+        .length > MAX_BYTES
     ) {
-      return json(
-        {
-          success: false,
-          message: 'Dữ liệu gửi lên quá lớn.'
-        },
+      exception(
+        'Dữ liệu quá lớn.',
         413
       );
     }
@@ -303,383 +707,419 @@ export async function onRequestPost(context) {
     let input;
 
     try {
-      input = JSON.parse(raw);
+      input =
+        JSON.parse(raw);
     } catch {
-      return json(
-        {
-          success: false,
-          message: 'JSON không hợp lệ.'
-        },
-        400
+      exception(
+        'JSON không hợp lệ.'
       );
     }
-
-    if (!isObject(input)) {
-      return json(
-        {
-          success: false,
-          message:
-            'Dữ liệu yêu cầu không hợp lệ.'
-        },
-        400
-      );
-    }
-
-    const {
-      kind,
-      filename,
-      sha,
-      changes,
-      dry_run,
-      confirm_write
-    } = input;
 
     if (
-      typeof kind !== 'string' ||
-      !Object.hasOwn(FOLDERS, kind)
+      !isObj(input) ||
+      typeof input.kind !== 'string' ||
+      !Object.hasOwn(
+        FOLDERS,
+        input.kind
+      )
     ) {
-      return json(
-        {
-          success: false,
-          message: 'Loại nội dung không hợp lệ.'
-        },
-        400
+      exception(
+        'Loại nội dung không hợp lệ.'
       );
     }
+
+    const kind =
+      input.kind;
+
+    const filename =
+      input.filename ||
+      (
+        kind === 'products' &&
+        input.action === 'create' &&
+        typeof input.data?.slug === 'string'
+          ? `${input.data.slug}.json`
+          : null
+      );
 
     if (
       typeof filename !== 'string' ||
       !filename.endsWith('.json') ||
-      !SLUG_PATTERN.test(
+      !SLUG.test(
         filename.slice(0, -5)
       )
     ) {
-      return json(
-        {
-          success: false,
-          message: 'Tên file không hợp lệ.'
-        },
-        400
+      exception(
+        'Tên file không hợp lệ.'
+      );
+    }
+
+    const action =
+      input.action === 'create'
+        ? 'create'
+        : 'update';
+
+    if (
+      action === 'create' &&
+      kind !== 'products'
+    ) {
+      exception(
+        'Chỉ hỗ trợ tạo sản phẩm trong đợt này.'
       );
     }
 
     if (
-      typeof sha !== 'string' ||
-      !SHA_PATTERN.test(sha)
+      action === 'update' &&
+      !SHA.test(
+        input.sha || ''
+      )
     ) {
-      return json(
-        {
-          success: false,
-          message:
-            'Thiếu hoặc sai mã phiên bản sha.'
-        },
-        400
+      exception(
+        'Thiếu hoặc sai sha của file.'
       );
     }
-
-    const validationError =
-      validateChanges(
-        kind,
-        changes
-      );
-
-    if (validationError) {
-      return json(
-        {
-          success: false,
-          message: validationError
-        },
-        400
-      );
-    }
-
-    // Muốn ghi thực sự phải xác nhận rõ.
-    // dry_run = true chỉ xem trước, không ghi.
 
     if (
-      dry_run !== true &&
-      confirm_write !== true
+      input.dry_run !== true &&
+      input.confirm_write !== true
     ) {
-      return json(
-        {
-          success: false,
-          message:
-            'Chưa xác nhận thao tác lưu.'
-        },
-        400
+      exception(
+        'Chưa xác nhận thao tác lưu.'
+      );
+    }
+
+    if (
+      !env.GITHUB_CONTENT_TOKEN
+    ) {
+      exception(
+        'Thiếu GitHub token.',
+        503
+      );
+    }
+
+    // Không cho API tự đoán nhánh main.
+    // Nhánh được quyền ghi phải cấu hình
+    // tại Cloudflare Pages.
+
+    const branch = String(
+      env.GITHUB_CONTENT_BRANCH || ''
+    ).trim();
+
+    if (
+      !/^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/.test(
+        branch
+      )
+    ) {
+      exception(
+        'Chưa cấu hình GITHUB_CONTENT_BRANCH cho Pages.',
+        503
       );
     }
 
     const token =
       env.GITHUB_CONTENT_TOKEN;
 
-    if (!token) {
-      return json(
-        {
-          success: false,
-          message:
-            'Chưa cấu hình GitHub token.'
-        },
-        503
-      );
-    }
-
-    const filePath =
-      `${FOLDERS[kind]}/${filename}`;
-
-    const githubUrl =
-      `https://api.github.com/repos/` +
-      `${OWNER}/${REPO}/contents/` +
-      filePath;
-
-    // Luôn đọc phiên bản mới nhất từ GitHub
-    // trước khi xử lý thay đổi.
-
-    const currentResponse =
-      await fetch(
-        `${githubUrl}?ref=${BRANCH}`,
-        {
-          method: 'GET',
-          headers: githubHeaders(token),
-          cache: 'no-store'
-        }
+    const path =
+      filePath(
+        kind,
+        filename
       );
 
-    if (currentResponse.status === 404) {
-      return json(
-        {
-          success: false,
-          message:
-            'File không còn tồn tại trên GitHub.'
-        },
-        404
-      );
-    }
-
-    if (!currentResponse.ok) {
-      console.error(
-        'Read before save failed:',
-        currentResponse.status,
-        filePath
-      );
-
-      return json(
-        {
-          success: false,
-          message:
-            'Không đọc được phiên bản mới nhất từ GitHub.',
-          github_status:
-            currentResponse.status
-        },
-        502
-      );
-    }
-
-    const current =
-      await currentResponse.json();
+    const existing =
+      action === 'update'
+        ? await readFile(
+            token,
+            path,
+            branch
+          )
+        : null;
 
     if (
-      current.type !== 'file' ||
-      current.encoding !== 'base64' ||
-      typeof current.content !== 'string' ||
-      typeof current.sha !== 'string'
+      action === 'create'
     ) {
-      return json(
-        {
-          success: false,
-          message:
-            'Phản hồi file GitHub không hợp lệ.'
-        },
-        502
-      );
-    }
-
-    // Không âm thầm ghi đè khi file đã đổi.
-
-    if (current.sha !== sha) {
-      return json(
-        {
-          success: false,
-          message:
-            'Nội dung đã có phiên bản mới. ' +
-            'Vui lòng tải lại trước khi sửa.',
-          current_sha: current.sha
-        },
-        409
-      );
-    }
-
-    const currentText =
-      decodeBase64Utf8(
-        current.content
-      );
-
-    const data =
-      JSON.parse(currentText);
-
-    if (!isObject(data)) {
-      return json(
-        {
-          success: false,
-          message:
-            'File nguồn không phải JSON object.'
-        },
-        502
-      );
-    }
-
-    const updated =
-      structuredClone(data);
-
-    const changedFields = [];
-
-    for (
-      const [field, value] of
-      Object.entries(changes)
-    ) {
-      if (
-        getField(updated, field) !== value
-      ) {
-        setField(
-          updated,
-          field,
-          value
+      const rows =
+        await listFiles(
+          token,
+          'products',
+          branch
         );
 
-        changedFields.push(field);
+      if (
+        rows.some(
+          item =>
+            item.name === filename
+        )
+      ) {
+        exception(
+          'Tên file sản phẩm đã tồn tại.',
+          409,
+          {
+            field:
+              'filename'
+          }
+        );
+      }
+    } else if (
+      existing.sha !== input.sha
+    ) {
+      exception(
+        'File đã có phiên bản mới, hãy tải lại trước khi lưu.',
+        409,
+        {
+          current_sha:
+            existing.sha
+        }
+      );
+    }
+
+    let data;
+
+    if (
+      kind === 'products' &&
+      isObj(input.data)
+    ) {
+      data = existing
+        ? {
+            ...existing.data,
+            ...input.data,
+
+            seo: {
+              ...(existing.data.seo || {}),
+              ...(input.data.seo || {})
+            }
+          }
+        : structuredClone(
+            input.data
+          );
+
+      if (
+        existing &&
+        data.id !== existing.data.id
+      ) {
+        exception(
+          'Mã nội bộ sản phẩm không được thay đổi.',
+          400,
+          {
+            field: 'id'
+          }
+        );
+      }
+
+      if (
+        existing &&
+        data.slug !==
+          existing.data.slug
+      ) {
+        const oldUrl =
+          urlFor(
+            'products',
+            existing.data.slug
+          );
+
+        data.redirect_from = [
+          ...new Set([
+            ...(data.redirect_from || []),
+            oldUrl
+          ])
+        ];
+      }
+
+      const check =
+        validateProduct(data);
+
+      if (!check.valid) {
+        return reply(
+          {
+            success: false,
+
+            message:
+              'Sản phẩm có dữ liệu chưa hợp lệ.',
+
+            errors:
+              check.errors
+          },
+          400
+        );
+      }
+
+      data =
+        check.product;
+
+      await checkReferences(
+        token,
+        branch,
+        data,
+        filename,
+        existing?.data || null
+      );
+
+    } else {
+      if (
+        action === 'create' ||
+        !existing ||
+        !isObj(input.changes)
+      ) {
+        exception(
+          'Thiếu dữ liệu sản phẩm hoặc thay đổi văn bản.'
+        );
+      }
+
+      data =
+        applyLegacy(
+          kind,
+          existing.data,
+          input.changes
+        );
+
+      if (
+        kind === 'products'
+      ) {
+        const check =
+          validateProduct(data);
+
+        if (!check.valid) {
+          return reply(
+            {
+              success: false,
+
+              message:
+                'Sản phẩm không hợp lệ.',
+
+              errors:
+                check.errors
+            },
+            400
+          );
+        }
+
+        data =
+          check.product;
+
+        await checkReferences(
+          token,
+          branch,
+          data,
+          filename,
+          existing.data
+        );
       }
     }
 
-    // Không có thay đổi thì không tạo commit.
-
-    if (!changedFields.length) {
-      return json({
+    if (
+      existing &&
+      JSON.stringify(existing.data) ===
+        JSON.stringify(data)
+    ) {
+      return reply({
         success: true,
-        changed: false,
+
         saved: false,
+        changed: false,
+
         message:
-          'Không có nội dung mới cần lưu.',
-        sha: current.sha
+          'Nội dung đã được lưu, không có thay đổi mới.',
+
+        sha:
+          existing.sha
       });
     }
 
-    // Xem trước thay đổi, không gọi API ghi.
-
-    if (dry_run === true) {
-      return json({
+    if (
+      input.dry_run === true
+    ) {
+      return reply({
         success: true,
+
         dry_run: true,
         saved: false,
+
         kind,
         filename,
-        changed_fields: changedFields,
-        data: updated
+        data
       });
     }
 
     const newText =
       JSON.stringify(
-        updated,
+        data,
         null,
         2
       ) + '\n';
 
-    const encoded =
-      encodeBase64Utf8(newText);
+    const body = {
+      message:
+        `Admin: ${action} ${kind}/${filename}`,
 
-    // sha được gửi kèm PUT để GitHub
-    // kiểm tra xung đột khi cập nhật.
+      content:
+        textToBase64(newText),
 
-    const saveResponse =
-      await fetch(
-        githubUrl,
+      branch
+    };
+
+    if (existing) {
+      body.sha =
+        existing.sha;
+    }
+
+    const saved =
+      await gh(
+        token,
+
+        `contents/${path}`,
+
         {
           method: 'PUT',
+
           headers: {
-            ...githubHeaders(token),
             'Content-Type':
               'application/json'
           },
 
-          body: JSON.stringify({
-            message:
-              `Admin: update ${kind}/${filename}`,
-
-            content: encoded,
-            sha: current.sha,
-            branch: BRANCH
-          })
+          body:
+            JSON.stringify(body)
         }
       );
 
-    if (
-      saveResponse.status === 409 ||
-      saveResponse.status === 422
-    ) {
-      return json(
-        {
-          success: false,
-          message:
-            'GitHub từ chối lưu do xung đột ' +
-            'hoặc dữ liệu không hợp lệ. ' +
-            'Vui lòng tải lại trước khi thử tiếp.',
-          github_status:
-            saveResponse.status
-        },
-        409
-      );
-    }
-
-    if (!saveResponse.ok) {
-      console.error(
-        'GitHub save failed:',
-        saveResponse.status,
-        filePath
-      );
-
-      return json(
-        {
-          success: false,
-          message:
-            'Không thể lưu nội dung lên GitHub.',
-          github_status:
-            saveResponse.status
-        },
-        502
-      );
-    }
-
-    const saved =
-      await saveResponse.json();
-
-    return json({
+    return reply({
       success: true,
-      changed: true,
       saved: true,
+
       kind,
       filename,
-      changed_fields: changedFields,
+
       sha:
-        saved.content?.sha || null,
+        saved.content?.sha ||
+        null,
+
       commit_sha:
-        saved.commit?.sha || null,
+        saved.commit?.sha ||
+        null,
+
+      branch,
+
       message:
-        'Đã lưu lên GitHub. Website sẽ cập nhật sau khi build thành công.'
+        'Đã lưu lên GitHub; đang chờ build và triển khai.'
     });
 
   } catch (error) {
     console.error(
-      'Admin save content error:',
-      error
+      'Admin save:',
+      error.status || 500,
+      error.message
     );
 
-    return json(
+    return reply(
       {
         success: false,
+
         message:
-          'Không thể xử lý yêu cầu lưu nội dung.'
+          error.status
+            ? error.message
+            : 'Không thể xử lý yêu cầu lưu nội dung.',
+
+        ...(error.extra || {})
       },
-      500
+
+      error.status || 500
     );
   }
 }
