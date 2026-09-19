@@ -2,30 +2,34 @@ name: Rebuild CMS content
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - admin-products-final
     paths:
       - 'content/**'
       - 'scripts/**'
       - 'assets/js/app.js'
       - '.github/workflows/rebuild-content.yml'
       - '.pages.yml'
+
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: cms-build-main
+  group: cms-build-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout current branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -41,11 +45,15 @@ jobs:
       - name: Commit generated pages
         run: |
           git add -A -- index.html san-pham cam-nang chuyen-muc sitemap.xml _redirects .cms-build-manifest.json assets/js/cms-catalog.js
+
           if git diff --cached --quiet; then
             echo "No generated changes"
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "4189822+github-actions[bot]@users.noreply.github.com"
+
           git commit -m "Auto build: update product and article pages"
-          git push
+
+          git push origin "HEAD:${{ github.ref_name }}"
