@@ -14,9 +14,7 @@
     content="noindex,nofollow,noarchive"
   >
 
-  <title>
-    Quản trị | Shop Uyên Ương
-  </title>
+  <title>Quản trị | Shop Uyên Ương</title>
 
   <link
     rel="preconnect"
@@ -35,1115 +33,697 @@
   >
 
   <style>
-    :root{
-      --brand:#244c36;
-      --brand-dark:#183726;
-      --brand-soft:#edf5ef;
+    :root {
+      --brand: #244c36;
+      --brand-dark: #183726;
+      --brand-soft: #edf5ef;
 
-      --gold:#b58a3c;
-      --gold-soft:#f7f1e4;
+      --bg: #f6f3ec;
+      --surface: #ffffff;
 
-      --bg:#f5f2eb;
-      --surface:#ffffff;
+      --text: #28312b;
+      --muted: #707872;
+      --line: #e2ddd2;
 
-      --text:#28312b;
-      --muted:#707872;
-
-      --line:#e2ddd2;
-
-      --danger:#b84336;
-      --warning:#9b6d1e;
-      --success:#34774c;
+      --danger: #b84336;
+      --warning: #9b6d1e;
+      --success: #34774c;
 
       --shadow:
-        0 14px 40px
-        rgba(28,43,33,.07);
+        0 8px 28px rgba(28,43,33,.06);
 
-      --shadow-hover:
-        0 20px 50px
-        rgba(28,43,33,.12);
+      --radius: 15px;
 
-      --radius:18px;
-    }
-
-
-    *{
-      box-sizing:border-box;
-    }
-
-
-    html{
-      scroll-behavior:smooth;
-    }
-
-
-    body{
-      margin:0;
-
-      min-height:100vh;
-
-      font-family:
+      --font:
         "Be Vietnam Pro",
         Arial,
         sans-serif;
 
-      color:var(--text);
-
-      background:var(--bg);
-
-      -webkit-font-smoothing:
-        antialiased;
+      --display:
+        "Playfair Display",
+        Georgia,
+        serif;
     }
 
-
-    a{
-      color:inherit;
-      text-decoration:none;
+    * {
+      box-sizing: border-box;
     }
 
-
-    button{
-      font:inherit;
+    html {
+      scroll-behavior: smooth;
     }
 
+    body {
+      min-height: 100vh;
+      margin: 0;
+
+      background: var(--bg);
+      color: var(--text);
+
+      font-family: var(--font);
+
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
 
     /* =========================
        HEADER
        ========================= */
 
-    .site-header{
-      position:sticky;
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
 
-      top:0;
-
-      z-index:50;
+      background: rgba(255,255,255,.96);
 
       border-bottom:
         1px solid var(--line);
 
-      background:
-        rgba(255,255,255,.94);
-
-      backdrop-filter:
-        blur(12px);
+      backdrop-filter: blur(12px);
     }
 
+    .header-inner {
+      width: min(
+        1240px,
+        calc(100% - 36px)
+      );
 
-    .header-inner{
-      width:
-        min(
-          1240px,
-          calc(100% - 40px)
-        );
+      min-height: 62px;
+      margin: auto;
 
-      min-height:72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-      margin:auto;
-
-      display:flex;
-
-      align-items:center;
-
-      justify-content:
-        space-between;
-
-      gap:18px;
+      gap: 16px;
     }
 
+    .brand {
+      min-width: 0;
 
-    .brand{
-      display:flex;
+      display: flex;
+      align-items: center;
 
-      align-items:center;
-
-      gap:11px;
+      gap: 10px;
     }
 
+    .brand-logo {
+      width: 42px;
+      height: 42px;
 
-    .brand-mark{
-      width:44px;
-      height:44px;
+      flex: 0 0 42px;
 
-      display:grid;
+      display: block;
 
-      place-items:center;
+      object-fit: contain;
 
-      border-radius:50%;
-
-      background:
-        var(--brand);
-
-      color:#fff;
-
-      font-family:
-        "Playfair Display",
-        serif;
-
-      font-size:21px;
-
-      font-weight:700;
+      border-radius: 11px;
     }
 
+    .brand-text strong {
+      display: block;
 
-    .brand-text strong{
-      display:block;
+      color: var(--brand-dark);
 
-      color:
-        var(--brand-dark);
-
-      font-size:15px;
+      font-size: 14px;
+      line-height: 1.3;
     }
 
+    .brand-text span {
+      display: block;
 
-    .brand-text span{
-      display:block;
+      margin-top: 2px;
 
-      margin-top:2px;
+      color: var(--muted);
 
-      color:
-        var(--muted);
-
-      font-size:11px;
+      font-size: 10px;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
 
-    .header-actions{
-      display:flex;
-
-      gap:8px;
-
-      align-items:center;
+      gap: 8px;
     }
 
+    .btn {
+      min-height: 36px;
 
-    /* =========================
-       BUTTON
-       ========================= */
+      padding: 8px 12px;
 
-    .btn{
-      min-height:42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
-      padding:
-        10px 15px;
-
-      display:inline-flex;
-
-      align-items:center;
-
-      justify-content:center;
-
-      gap:7px;
+      gap: 6px;
 
       border:
-        1px solid transparent;
+        1px solid var(--line);
 
-      border-radius:11px;
+      border-radius: 10px;
 
-      background:#fff;
+      background: #fff;
+      color: var(--text);
 
-      color:var(--text);
+      font-size: 11px;
+      font-weight: 700;
 
-      font-size:13px;
-
-      font-weight:700;
+      white-space: nowrap;
 
       transition:
-        transform .15s ease,
         background .15s ease,
         border-color .15s ease;
     }
 
-
-    .btn:hover{
-      transform:
-        translateY(-1px);
+    .btn:hover {
+      background: #f8faf8;
+      border-color: #bccdc0;
     }
 
-
-    .btn-primary{
-      background:
-        var(--brand);
-
-      color:#fff;
+    .btn-logout {
+      color: #a53e34;
+      border-color: #efd3ce;
+      background: #fff7f6;
     }
-
-
-    .btn-primary:hover{
-      background:
-        var(--brand-dark);
-    }
-
-
-    .btn-secondary{
-      border-color:
-        var(--line);
-
-      background:#fff;
-    }
-
-
-    .btn-small{
-      min-height:36px;
-
-      padding:
-        7px 11px;
-
-      font-size:12px;
-    }
-
 
     /* =========================
-       LAYOUT
+       MAIN
        ========================= */
 
-    .container{
-      width:
-        min(
-          1240px,
-          calc(100% - 40px)
-        );
+    .container {
+      width: min(
+        1240px,
+        calc(100% - 36px)
+      );
 
-      margin:auto;
+      margin: auto;
     }
 
-
-    main{
-      padding:
-        34px 0 60px;
+    main {
+      padding: 25px 0 32px;
     }
 
+    .section-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-    /* =========================
-       HERO
-       ========================= */
+      gap: 14px;
 
-    .hero{
-      margin-bottom:24px;
+      margin-bottom: 14px;
+    }
 
-      padding:28px;
+    .section-heading h1,
+    .section-heading h2 {
+      margin: 0;
 
-      display:grid;
+      color: var(--brand-dark);
 
-      grid-template-columns:
-        1fr auto;
+      font-family: var(--display);
 
-      gap:24px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
 
-      align-items:center;
+    .section-heading p {
+      margin: 4px 0 0;
+
+      color: var(--muted);
+
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .update-status {
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      color: var(--muted);
+
+      font-size: 10px;
+      text-align: right;
+    }
+
+    .refresh-btn {
+      min-height: 31px;
+
+      padding: 6px 10px;
 
       border:
         1px solid var(--line);
 
-      border-radius:22px;
+      border-radius: 9px;
 
-      background:
-        linear-gradient(
-          135deg,
-          #fffdf8,
-          #f4f7f1
-        );
+      background: #fff;
+      color: var(--brand-dark);
 
-      box-shadow:
-        var(--shadow);
+      font-size: 11px;
+      font-weight: 700;
     }
 
-
-    .eyebrow{
-      margin-bottom:7px;
-
-      color:
-        var(--gold);
-
-      font-size:11px;
-
-      font-weight:800;
-
-      letter-spacing:.09em;
-
-      text-transform:
-        uppercase;
+    .refresh-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
     }
-
-
-    h1{
-      margin:0;
-
-      color:
-        var(--brand-dark);
-
-      font-family:
-        "Playfair Display",
-        serif;
-
-      font-size:
-        clamp(
-          31px,
-          5vw,
-          46px
-        );
-
-      line-height:1.08;
-    }
-
-
-    .hero p{
-      max-width:680px;
-
-      margin:
-        10px 0 0;
-
-      color:
-        var(--muted);
-
-      font-size:14px;
-
-      line-height:1.7;
-    }
-
-
-    .hero-status{
-      min-width:250px;
-
-      padding:17px;
-
-      border:
-        1px solid #d7e4da;
-
-      border-radius:15px;
-
-      background:
-        var(--brand-soft);
-    }
-
-
-    .hero-status-label{
-      display:block;
-
-      color:
-        var(--muted);
-
-      font-size:11px;
-
-      font-weight:700;
-    }
-
-
-    .hero-status-value{
-      display:flex;
-
-      align-items:center;
-
-      gap:7px;
-
-      margin-top:5px;
-
-      color:
-        var(--brand-dark);
-
-      font-size:13px;
-
-      font-weight:800;
-    }
-
-
-    .status-dot{
-      width:8px;
-      height:8px;
-
-      flex:none;
-
-      border-radius:50%;
-
-      background:
-        var(--success);
-    }
-
 
     /* =========================
-       ORDER QUICK LINKS
+       KPI
        ========================= */
 
-    .order-summary{
-      margin-bottom:24px;
-
-      display:grid;
+    .stats {
+      display: grid;
 
       grid-template-columns:
-        repeat(
-          3,
-          minmax(0,1fr)
-        );
+        repeat(5, minmax(0,1fr));
 
-      gap:12px;
+      gap: 10px;
     }
 
+    .stat {
+      min-width: 0;
+      min-height: 95px;
 
-    .summary-card{
-      min-height:118px;
+      padding: 14px 15px;
 
-      padding:18px;
-
-      display:flex;
-
-      flex-direction:column;
-
-      justify-content:
-        space-between;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
       border:
         1px solid var(--line);
 
-      border-radius:15px;
+      border-radius: var(--radius);
 
-      background:
-        var(--surface);
+      background: var(--surface);
 
-      box-shadow:
-        0 6px 20px
-        rgba(30,46,35,.04);
+      box-shadow: var(--shadow);
 
       transition:
-        transform .17s ease,
-        box-shadow .17s ease;
+        transform .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease;
     }
 
+    .stat:hover {
+      transform: translateY(-2px);
 
-    .summary-card:hover{
-      transform:
-        translateY(-2px);
+      border-color: #c3d2c7;
 
       box-shadow:
-        var(--shadow-hover);
+        0 12px 30px rgba(28,43,33,.09);
     }
 
+    .stat-label {
+      display: flex;
+      align-items: center;
 
-    .summary-label{
-      color:
-        var(--muted);
+      gap: 7px;
 
-      font-size:12px;
+      color: var(--muted);
 
-      font-weight:600;
+      font-size: 11px;
+      font-weight: 600;
     }
 
+    .stat-dot {
+      width: 7px;
+      height: 7px;
 
-    .summary-value{
-      margin-top:10px;
+      flex: 0 0 7px;
 
-      color:
-        var(--brand-dark);
-
-      font-size:30px;
-
-      font-weight:800;
-
-      line-height:1;
+      border-radius: 50%;
     }
 
+    .stat-value {
+      display: block;
 
-    .summary-card.new{
-      border-left:
-        4px solid var(--danger);
+      margin-top: 7px;
+
+      color: var(--brand-dark);
+
+      font-size: 28px;
+      font-weight: 800;
+
+      line-height: 1;
+
+      font-variant-numeric: tabular-nums;
     }
 
-
-    .summary-card.processing{
-      border-left:
-        4px solid var(--gold);
+    .stat.new {
+      border-top:
+        3px solid var(--danger);
     }
 
-
-    .summary-card.total{
-      border-left:
-        4px solid var(--brand);
+    .stat.new .stat-dot {
+      background: var(--danger);
     }
 
+    .stat.processing {
+      border-top:
+        3px solid #bb8a2f;
+    }
+
+    .stat.processing .stat-dot {
+      background: #bb8a2f;
+    }
+
+    .stat.completed {
+      border-top:
+        3px solid var(--success);
+    }
+
+    .stat.completed .stat-dot {
+      background: var(--success);
+    }
+
+    .stat.cancelled {
+      border-top:
+        3px solid #9fa7a1;
+    }
+
+    .stat.cancelled .stat-dot {
+      background: #9fa7a1;
+    }
+
+    .stat.total {
+      border-top:
+        3px solid var(--brand);
+    }
+
+    .stat.total .stat-dot {
+      background: var(--brand);
+    }
+
+    .summary-line {
+      min-height: 30px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      flex-wrap: wrap;
+
+      gap: 8px;
+
+      margin-top: 7px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+    }
+
+    .pending {
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+
+    .summary-error {
+      color: var(--danger);
+    }
 
     /* =========================
-       SECTION
+       MANAGEMENT
        ========================= */
 
-    .section-head{
-      margin:
-        30px 0 13px;
-
-      display:flex;
-
-      align-items:flex-end;
-
-      justify-content:
-        space-between;
-
-      gap:15px;
+    .management {
+      margin-top: 18px;
     }
 
-
-    .section-head h2{
-      margin:0;
-
-      color:
-        var(--brand-dark);
-
-      font-family:
-        "Playfair Display",
-        serif;
-
-      font-size:24px;
+    .management .section-top {
+      margin-bottom: 11px;
     }
 
-
-    .section-head p{
-      margin:
-        4px 0 0;
-
-      color:
-        var(--muted);
-
-      font-size:12px;
-    }
-
-
-    /* =========================
-       ADMIN CARDS
-       ========================= */
-
-    .admin-grid{
-      display:grid;
+    .admin-grid {
+      display: grid;
 
       grid-template-columns:
-        repeat(
-          3,
-          minmax(0,1fr)
-        );
+        repeat(5, minmax(0,1fr));
 
-      gap:13px;
+      gap: 10px;
     }
 
+    .admin-card {
+      min-width: 0;
+      min-height: 128px;
 
-    .admin-card{
-      position:relative;
+      padding: 15px;
 
-      min-height:185px;
-
-      padding:20px;
-
-      display:flex;
-
-      flex-direction:column;
+      display: flex;
+      flex-direction: column;
 
       border:
         1px solid var(--line);
 
-      border-radius:
-        var(--radius);
+      border-radius: var(--radius);
 
-      background:
-        var(--surface);
+      background: var(--surface);
 
-      box-shadow:
-        var(--shadow);
+      box-shadow: var(--shadow);
 
       transition:
-        transform .17s ease,
-        box-shadow .17s ease,
-        border-color .17s ease;
+        transform .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease;
     }
 
+    .admin-card:hover {
+      transform: translateY(-2px);
 
-    .admin-card:hover{
-      transform:
-        translateY(-3px);
-
-      border-color:
-        #cfd8d1;
+      border-color: #c3d2c7;
 
       box-shadow:
-        var(--shadow-hover);
+        0 12px 30px rgba(28,43,33,.09);
     }
 
+    .admin-card.primary {
+      background: var(--brand);
+      border-color: var(--brand);
 
-    .admin-card.primary-card{
+      color: #fff;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 8px;
+
+      margin-bottom: 10px;
+    }
+
+    .card-icon {
+      width: 30px;
+      height: 30px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 9px;
+
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .primary .card-icon {
       background:
-        linear-gradient(
-          145deg,
-          #244c36,
-          #173825
-        );
+        rgba(255,255,255,.15);
 
-      color:#fff;
-
-      border-color:
-        transparent;
+      color: #fff;
     }
 
+    .card-arrow {
+      color: var(--brand);
 
-    .card-icon{
-      width:44px;
-      height:44px;
-
-      display:grid;
-
-      place-items:center;
-
-      margin-bottom:15px;
-
-      border-radius:12px;
-
-      background:
-        var(--brand-soft);
-
-      color:
-        var(--brand-dark);
-
-      font-size:21px;
+      font-size: 15px;
+      font-weight: 800;
     }
 
-
-    .primary-card .card-icon{
-      background:
-        rgba(255,255,255,.13);
-
-      color:#fff;
+    .primary .card-arrow {
+      color: #fff;
     }
 
+    .card-title {
+      margin: 0;
 
-    .card-title{
-      margin:0;
+      color: var(--brand-dark);
 
-      color:
-        var(--brand-dark);
+      font-size: 13px;
+      font-weight: 800;
 
-      font-size:16px;
-
-      font-weight:800;
+      line-height: 1.4;
     }
 
-
-    .primary-card .card-title{
-      color:#fff;
+    .primary .card-title {
+      color: #fff;
     }
 
+    .card-desc {
+      margin: 5px 0 0;
 
-    .card-desc{
-      margin:
-        7px 0 20px;
+      color: var(--muted);
 
-      color:
-        var(--muted);
-
-      font-size:12px;
-
-      line-height:1.65;
+      font-size: 10px;
+      line-height: 1.55;
     }
 
-
-    .primary-card .card-desc{
-      color:
-        rgba(255,255,255,.76);
+    .primary .card-desc {
+      color: rgba(255,255,255,.82);
     }
-
-
-    .card-link{
-      margin-top:auto;
-
-      display:flex;
-
-      align-items:center;
-
-      justify-content:
-        space-between;
-
-      gap:10px;
-
-      color:
-        var(--brand);
-
-      font-size:12px;
-
-      font-weight:800;
-    }
-
-
-    .primary-card .card-link{
-      color:#fff;
-    }
-
-
-    .card-arrow{
-      font-size:17px;
-    }
-
-
-    /* =========================
-       CMS LABEL
-       ========================= */
-
-    .external-tag{
-      position:absolute;
-
-      top:17px;
-
-      right:17px;
-
-      padding:
-        5px 8px;
-
-      border-radius:
-        999px;
-
-      background:
-        var(--gold-soft);
-
-      color:#836324;
-
-      font-size:9px;
-
-      font-weight:800;
-
-      text-transform:
-        uppercase;
-    }
-
-
-    /* =========================
-       FOOTER
-       ========================= */
-
-    footer{
-      padding:
-        20px 0 34px;
-
-      color:
-        var(--muted);
-
-      font-size:11px;
-
-      text-align:center;
-    }
-
 
     /* =========================
        RESPONSIVE
        ========================= */
 
-    @media(max-width:900px){
-
-      .hero{
-        grid-template-columns:1fr;
-      }
-
-
-      .hero-status{
-        min-width:0;
-      }
-
-
-      .admin-grid{
+    @media (max-width: 1100px) {
+      .stats {
         grid-template-columns:
-          repeat(
-            2,
-            minmax(0,1fr)
-          );
+          repeat(3, minmax(0,1fr));
       }
 
+      .admin-grid {
+        grid-template-columns:
+          repeat(3, minmax(0,1fr));
+      }
     }
 
-
-    @media(max-width:640px){
-
-      .container,
-      .header-inner{
+    @media (max-width: 700px) {
+      .header-inner,
+      .container {
         width:
           calc(100% - 24px);
       }
 
-
-      .header-inner{
-        min-height:64px;
+      .header-inner {
+        min-height: 58px;
       }
 
+      .brand-logo {
+        width: 37px;
+        height: 37px;
 
-      .brand-text span{
-        display:none;
+        flex-basis: 37px;
       }
 
-
-      .header-actions .btn span{
-        display:none;
+      .brand-text strong {
+        font-size: 12px;
       }
 
-
-      main{
-        padding-top:20px;
+      .brand-text span {
+        display: none;
       }
 
-
-      .hero{
-        padding:20px;
-
-        border-radius:17px;
+      .header-actions {
+        gap: 5px;
       }
 
+      .btn {
+        min-height: 34px;
 
-      .order-summary{
+        padding: 7px 9px;
+
+        font-size: 10px;
+      }
+
+      main {
+        padding-top: 19px;
+      }
+
+      .section-heading h1,
+      .section-heading h2 {
+        font-size: 22px;
+      }
+
+      .stats,
+      .admin-grid {
         grid-template-columns:
-          1fr;
+          repeat(2, minmax(0,1fr));
+
+        gap: 9px;
       }
 
-
-      .admin-grid{
-        grid-template-columns:
-          1fr;
+      .stat {
+        min-height: 89px;
       }
 
-
-      .admin-card{
-        min-height:160px;
+      .stat-value {
+        font-size: 25px;
       }
 
+      .admin-card {
+        min-height: 116px;
+      }
+
+      .update-status {
+        font-size: 9px;
+      }
     }
 
+    @media (max-width: 390px) {
+      .header-actions .btn span {
+        display: none;
+      }
+
+      .section-top {
+        align-items: flex-start;
+      }
+
+      .stat {
+        padding: 11px;
+      }
+
+      .stat-label {
+        font-size: 10px;
+      }
+    }
   </style>
 </head>
 
 
 <body>
 
+  <!-- HEADER -->
 
-<!-- =========================
-     HEADER
-     ========================= -->
+  <header class="site-header">
 
-<header class="site-header">
-
-  <div class="header-inner">
-
-    <a
-      class="brand"
-      href="/admin/"
-    >
-
-      <div class="brand-mark">
-        U
-      </div>
-
-      <div class="brand-text">
-
-        <strong>
-          Shop Uyên Ương
-        </strong>
-
-        <span>
-          Trung tâm quản trị
-        </span>
-
-      </div>
-
-    </a>
-
-
-    <div class="header-actions">
+    <div class="header-inner">
 
       <a
-        class="btn btn-secondary btn-small"
-        href="/index.html"
-        target="_blank"
-        rel="noopener"
+        class="brand"
+        href="/admin/"
       >
-        ↗
 
-        <span>
-          Mở website
-        </span>
+        <img
+          class="brand-logo"
+          src="/assets/images/logo.jpg"
+          alt="Logo Shop Uyên Ương"
+          width="42"
+          height="42"
+        >
 
-      </a>
+        <div class="brand-text">
 
-
-      <a
-        class="btn btn-primary btn-small"
-        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
-      >
-        ◫
-
-        <span>
-          Đơn hàng
-        </span>
-
-      </a>
-
-    </div>
-
-  </div>
-
-</header>
-
-
-<!-- =========================
-     MAIN
-     ========================= -->
-
-<main>
-
-  <div class="container">
-
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-      <div>
-
-        <div class="eyebrow">
-          Quản trị Shop
-        </div>
-
-        <h1>
-          Xin chào
-        </h1>
-
-        <p>
-          Từ đây có thể vào quản lý đơn hàng,
-          sản phẩm, bài viết, chuyên mục và hình ảnh
-          từ một cổng quản trị duy nhất.
-        </p>
-
-      </div>
-
-
-      <div class="hero-status">
-
-        <span class="hero-status-label">
-          Bảo mật trang quản trị
-        </span>
-
-        <div class="hero-status-value">
-
-          <span class="status-dot"></span>
+          <strong>
+            Shop Uyên Ương
+          </strong>
 
           <span>
-            Đã bảo vệ bởi Cloudflare Access
-          </span>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         ORDER QUICK LINKS
-         ========================= -->
-
-    <section class="order-summary">
-
-
-      <a
-        class="summary-card new"
-        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
-      >
-
-        <span class="summary-label">
-          Quản lý đơn hàng
-        </span>
-
-        <strong class="summary-value">
-          Mở
-        </strong>
-
-      </a>
-
-
-      <a
-        class="summary-card processing"
-        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
-      >
-
-        <span class="summary-label">
-          Trạng thái xử lý
-        </span>
-
-        <strong class="summary-value">
-          4
-        </strong>
-
-      </a>
-
-
-      <a
-        class="summary-card total"
-        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
-      >
-
-        <span class="summary-label">
-          Lưu trữ đơn hàng
-        </span>
-
-        <strong class="summary-value">
-          D1
-        </strong>
-
-      </a>
-
-
-    </section>
-
-
-    <!-- =========================
-         MANAGEMENT
-         ========================= -->
-
-    <div class="section-head">
-
-      <div>
-
-        <h2>
-          Quản lý
-        </h2>
-
-        <p>
-          Chọn khu vực cần làm việc.
-        </p>
-
-      </div>
-
-    </div>
-
-
-    <section class="admin-grid">
-
-
-      <!-- =========================
-           ORDERS
-           ========================= -->
-
-      <a
-        class="admin-card primary-card"
-        href="https://uyenuong-order-api.phuoc-loki1990.workers.dev/admin/"
-      >
-
-        <div class="card-icon">
-          ◫
-        </div>
-
-        <h3 class="card-title">
-          Đơn hàng
-        </h3>
-
-        <p class="card-desc">
-          Xem đơn mới, thông tin khách,
-          sản phẩm đã đặt và chuyển trạng thái
-          Mới → Đang xử lý → Hoàn thành / Đã hủy.
-        </p>
-
-        <div class="card-link">
-
-          <span>
-            Quản lý đơn hàng
-          </span>
-
-          <span class="card-arrow">
-            →
+            Trung tâm quản trị
           </span>
 
         </div>
@@ -1151,238 +731,666 @@
       </a>
 
 
-      <!-- =========================
-           PRODUCTS
-           ========================= -->
+      <div class="header-actions">
 
-      <a
-        class="admin-card"
-        href="https://app.pagescms.org/"
-        target="_blank"
-        rel="noopener"
-      >
-
-        <span class="external-tag">
-          Pages CMS
-        </span>
-
-        <div class="card-icon">
-          ♢
-        </div>
-
-        <h3 class="card-title">
-          Sản phẩm
-        </h3>
-
-        <p class="card-desc">
-          Chỉnh tên sản phẩm, nội dung,
-          hình ảnh và các thông tin bán hàng
-          đang hiển thị trên website.
-        </p>
-
-        <div class="card-link">
-
-          <span>
-            Mở quản lý sản phẩm
-          </span>
-
-          <span class="card-arrow">
-            ↗
-          </span>
-
-        </div>
-
-      </a>
-
-
-      <!-- =========================
-           ARTICLES
-           ========================= -->
-
-      <a
-        class="admin-card"
-        href="https://app.pagescms.org/"
-        target="_blank"
-        rel="noopener"
-      >
-
-        <span class="external-tag">
-          Pages CMS
-        </span>
-
-        <div class="card-icon">
-          ✎
-        </div>
-
-        <h3 class="card-title">
-          Bài viết
-        </h3>
-
-        <p class="card-desc">
-          Tạo và chỉnh sửa nội dung Cẩm nang,
-          tiêu đề SEO và các bài viết
-          hỗ trợ khách hàng.
-        </p>
-
-        <div class="card-link">
-
-          <span>
-            Mở quản lý bài viết
-          </span>
-
-          <span class="card-arrow">
-            ↗
-          </span>
-
-        </div>
-
-      </a>
-
-
-      <!-- =========================
-           CATEGORIES
-           ========================= -->
-
-      <a
-        class="admin-card"
-        href="https://app.pagescms.org/"
-        target="_blank"
-        rel="noopener"
-      >
-
-        <span class="external-tag">
-          Pages CMS
-        </span>
-
-        <div class="card-icon">
-          ☷
-        </div>
-
-        <h3 class="card-title">
-          Chuyên mục
-        </h3>
-
-        <p class="card-desc">
-          Quản lý nhóm nội dung và chuyên mục
-          sử dụng cho Cẩm nang của website.
-        </p>
-
-        <div class="card-link">
-
-          <span>
-            Mở chuyên mục
-          </span>
-
-          <span class="card-arrow">
-            ↗
-          </span>
-
-        </div>
-
-      </a>
-
-
-      <!-- =========================
-           MEDIA
-           ========================= -->
-
-      <a
-        class="admin-card"
-        href="https://app.pagescms.org/"
-        target="_blank"
-        rel="noopener"
-      >
-
-        <span class="external-tag">
-          Pages CMS
-        </span>
-
-        <div class="card-icon">
-          ▧
-        </div>
-
-        <h3 class="card-title">
-          Hình ảnh & Media
-        </h3>
-
-        <p class="card-desc">
-          Quản lý hình ảnh dùng cho sản phẩm,
-          bài viết và các nội dung khác
-          trên website.
-        </p>
-
-        <div class="card-link">
-
-          <span>
-            Mở Media
-          </span>
-
-          <span class="card-arrow">
-            ↗
-          </span>
-
-        </div>
-
-      </a>
-
-
-      <!-- =========================
-           WEBSITE
-           ========================= -->
-
-      <a
-        class="admin-card"
-        href="/index.html"
-        target="_blank"
-        rel="noopener"
-      >
-
-        <div class="card-icon">
+        <a
+          class="btn"
+          href="/"
+          target="_blank"
+          rel="noopener"
+        >
           ↗
+          <span>Mở website</span>
+        </a>
+
+        <a
+          class="btn btn-logout"
+          href="/cdn-cgi/access/logout"
+        >
+          ↪
+          <span>Đăng xuất</span>
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+
+  <main>
+
+    <div class="container">
+
+
+      <!-- TỔNG QUAN -->
+
+      <section aria-labelledby="overview-title">
+
+        <div class="section-top">
+
+          <div class="section-heading">
+
+            <h1 id="overview-title">
+              Tổng quan đơn hàng
+            </h1>
+
+            <p>
+              Theo dõi tình hình xử lý đơn của shop.
+            </p>
+
+          </div>
+
+
+          <div class="update-status">
+
+            <span id="updated-at">
+              Đang tải dữ liệu...
+            </span>
+
+            <button
+              class="refresh-btn"
+              id="refresh-btn"
+              type="button"
+            >
+              ↻ Làm mới
+            </button>
+
+          </div>
+
         </div>
 
-        <h3 class="card-title">
-          Xem website
-        </h3>
 
-        <p class="card-desc">
-          Mở website Shop Uyên Ương
-          để kiểm tra nội dung sau khi
-          cập nhật sản phẩm hoặc bài viết.
-        </p>
+        <!-- 5 KPI -->
 
-        <div class="card-link">
+        <div class="stats">
 
-          <span>
-            Mở trang khách hàng
-          </span>
+          <a
+            class="stat new"
+            href="/admin/orders?status=new"
+            aria-label="Xem đơn mới"
+          >
 
-          <span class="card-arrow">
-            →
-          </span>
+            <span class="stat-label">
+              <span class="stat-dot"></span>
+              Đơn mới
+            </span>
+
+            <strong
+              class="stat-value"
+              id="stat-new"
+            >—</strong>
+
+          </a>
+
+
+          <a
+            class="stat processing"
+            href="/admin/orders?status=processing"
+            aria-label="Xem đơn đang xử lý"
+          >
+
+            <span class="stat-label">
+              <span class="stat-dot"></span>
+              Đang xử lý
+            </span>
+
+            <strong
+              class="stat-value"
+              id="stat-processing"
+            >—</strong>
+
+          </a>
+
+
+          <a
+            class="stat completed"
+            href="/admin/orders?status=completed"
+            aria-label="Xem đơn hoàn thành"
+          >
+
+            <span class="stat-label">
+              <span class="stat-dot"></span>
+              Hoàn thành
+            </span>
+
+            <strong
+              class="stat-value"
+              id="stat-completed"
+            >—</strong>
+
+          </a>
+
+
+          <a
+            class="stat cancelled"
+            href="/admin/orders?status=cancelled"
+            aria-label="Xem đơn đã hủy"
+          >
+
+            <span class="stat-label">
+              <span class="stat-dot"></span>
+              Đã hủy
+            </span>
+
+            <strong
+              class="stat-value"
+              id="stat-cancelled"
+            >—</strong>
+
+          </a>
+
+
+          <a
+            class="stat total"
+            href="/admin/orders"
+            aria-label="Xem tất cả đơn hàng"
+          >
+
+            <span class="stat-label">
+              <span class="stat-dot"></span>
+              Tổng số đơn
+            </span>
+
+            <strong
+              class="stat-value"
+              id="stat-total"
+            >—</strong>
+
+          </a>
 
         </div>
 
-      </a>
+
+        <!-- DÒNG CẦN XỬ LÝ -->
+
+        <div class="summary-line">
+
+          <span
+            class="pending"
+            id="pending-text"
+            aria-live="polite"
+          >
+            Đang kiểm tra đơn cần xử lý...
+          </span>
+
+          <span id="summary-message"></span>
+
+        </div>
+
+      </section>
 
 
-    </section>
+      <!-- QUẢN LÝ -->
+
+      <section
+        class="management"
+        aria-labelledby="management-title"
+      >
+
+        <div class="section-top">
+
+          <div class="section-heading">
+
+            <h2 id="management-title">
+              Quản lý
+            </h2>
+
+            <p>
+              Chọn công việc cần thực hiện.
+            </p>
+
+          </div>
+
+        </div>
 
 
-  </div>
-
-</main>
+        <div class="admin-grid">
 
 
-<footer>
+          <!-- ĐƠN HÀNG -->
 
-  <div class="container">
-    © 2026 Shop Uyên Ương · Trang quản trị nội bộ
-  </div>
+          <a
+            class="admin-card primary"
+            href="/admin/orders"
+          >
 
-</footer>
+            <div class="card-top">
 
+              <span class="card-icon">
+                ◫
+              </span>
+
+              <span class="card-arrow">
+                →
+              </span>
+
+            </div>
+
+            <h3 class="card-title">
+              Đơn hàng
+            </h3>
+
+            <p class="card-desc">
+              Xem và xử lý đơn.
+            </p>
+
+          </a>
+
+
+          <!-- SẢN PHẨM -->
+
+          <a
+            class="admin-card"
+            href="https://app.pagescms.org/"
+            target="_blank"
+            rel="noopener"
+          >
+
+            <div class="card-top">
+
+              <span class="card-icon">
+                ◇
+              </span>
+
+              <span class="card-arrow">
+                ↗
+              </span>
+
+            </div>
+
+            <h3 class="card-title">
+              Sản phẩm
+            </h3>
+
+            <p class="card-desc">
+              Nội dung và giá bán.
+            </p>
+
+          </a>
+
+
+          <!-- BÀI VIẾT -->
+
+          <a
+            class="admin-card"
+            href="https://app.pagescms.org/"
+            target="_blank"
+            rel="noopener"
+          >
+
+            <div class="card-top">
+
+              <span class="card-icon">
+                ✎
+              </span>
+
+              <span class="card-arrow">
+                ↗
+              </span>
+
+            </div>
+
+            <h3 class="card-title">
+              Bài viết
+            </h3>
+
+            <p class="card-desc">
+              Nội dung Cẩm nang.
+            </p>
+
+          </a>
+
+
+          <!-- CHUYÊN MỤC -->
+
+          <a
+            class="admin-card"
+            href="https://app.pagescms.org/"
+            target="_blank"
+            rel="noopener"
+          >
+
+            <div class="card-top">
+
+              <span class="card-icon">
+                ☷
+              </span>
+
+              <span class="card-arrow">
+                ↗
+              </span>
+
+            </div>
+
+            <h3 class="card-title">
+              Chuyên mục
+            </h3>
+
+            <p class="card-desc">
+              Nhóm nội dung.
+            </p>
+
+          </a>
+
+
+          <!-- MEDIA -->
+
+          <a
+            class="admin-card"
+            href="https://app.pagescms.org/"
+            target="_blank"
+            rel="noopener"
+          >
+
+            <div class="card-top">
+
+              <span class="card-icon">
+                ▧
+              </span>
+
+              <span class="card-arrow">
+                ↗
+              </span>
+
+            </div>
+
+            <h3 class="card-title">
+              Hình ảnh & Media
+            </h3>
+
+            <p class="card-desc">
+              Thư viện hình ảnh.
+            </p>
+
+          </a>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <script>
+    (function () {
+
+      'use strict';
+
+      const SUMMARY_API =
+        '/admin/api/orders/summary';
+
+      const STATUS_IDS = {
+        new: 'stat-new',
+        processing: 'stat-processing',
+        completed: 'stat-completed',
+        cancelled: 'stat-cancelled',
+        total: 'stat-total'
+      };
+
+      const updatedAt =
+        document.getElementById(
+          'updated-at'
+        );
+
+      const pendingText =
+        document.getElementById(
+          'pending-text'
+        );
+
+      const summaryMessage =
+        document.getElementById(
+          'summary-message'
+        );
+
+      const refreshBtn =
+        document.getElementById(
+          'refresh-btn'
+        );
+
+      let loading = false;
+
+
+      function setCounts(stats) {
+
+        Object.entries(
+          STATUS_IDS
+        ).forEach(
+          function ([key, id]) {
+
+            document.getElementById(
+              id
+            ).textContent =
+              Number(
+                stats[key]
+              ).toLocaleString(
+                'vi-VN'
+              );
+
+          }
+        );
+
+      }
+
+
+      function clearCounts() {
+
+        Object.values(
+          STATUS_IDS
+        ).forEach(
+          function (id) {
+
+            document.getElementById(
+              id
+            ).textContent =
+              '—';
+
+          }
+        );
+
+      }
+
+
+      function formatUpdateTime() {
+
+        return new Intl.DateTimeFormat(
+          'vi-VN',
+          {
+            timeZone:
+              'Asia/Ho_Chi_Minh',
+
+            hour: '2-digit',
+            minute: '2-digit'
+          }
+        ).format(
+          new Date()
+        );
+
+      }
+
+
+      async function loadSummary() {
+
+        if (loading) {
+          return;
+        }
+
+        loading = true;
+
+        refreshBtn.disabled =
+          true;
+
+        updatedAt.textContent =
+          'Đang cập nhật...';
+
+        summaryMessage.textContent =
+          '';
+
+        try {
+
+          const response =
+            await fetch(
+              SUMMARY_API,
+              {
+                credentials:
+                  'same-origin',
+
+                cache:
+                  'no-store',
+
+                headers: {
+                  'Accept':
+                    'application/json'
+                }
+              }
+            );
+
+          const contentType =
+            response.headers.get(
+              'content-type'
+            ) || '';
+
+          if (
+            !contentType.includes(
+              'application/json'
+            )
+          ) {
+            throw new Error(
+              'Phiên đăng nhập đã hết hạn hoặc API không trả về JSON.'
+            );
+          }
+
+          const data =
+            await response.json();
+
+          if (
+            !response.ok ||
+            data.success !== true ||
+            !data.stats
+          ) {
+            throw new Error(
+              data.message ||
+              'Không tải được dữ liệu.'
+            );
+          }
+
+          const stats =
+            data.stats;
+
+          const required = [
+            'new',
+            'processing',
+            'completed',
+            'cancelled',
+            'total'
+          ];
+
+          if (
+            required.some(
+              function (key) {
+
+                return (
+                  !Number.isFinite(
+                    Number(
+                      stats[key]
+                    )
+                  ) ||
+                  stats[key] === null
+                );
+
+              }
+            )
+          ) {
+            throw new Error(
+              'Dữ liệu thống kê không hợp lệ.'
+            );
+          }
+
+          setCounts(
+            stats
+          );
+
+          const pending =
+            Number(
+              stats.new
+            ) +
+            Number(
+              stats.processing
+            );
+
+          pendingText.textContent =
+            'Cần xử lý: ' +
+            pending.toLocaleString(
+              'vi-VN'
+            ) +
+            ' đơn';
+
+          updatedAt.textContent =
+            'Cập nhật ' +
+            formatUpdateTime();
+
+        } catch (error) {
+
+          console.error(
+            'Dashboard summary error:',
+            error
+          );
+
+          clearCounts();
+
+          pendingText.textContent =
+            'Chưa xác định được số đơn cần xử lý.';
+
+          summaryMessage.textContent =
+            'Không tải được dữ liệu. Hãy thử Làm mới.';
+
+          summaryMessage.classList.add(
+            'summary-error'
+          );
+
+          updatedAt.textContent =
+            'Chưa cập nhật';
+
+        } finally {
+
+          loading = false;
+
+          refreshBtn.disabled =
+            false;
+
+        }
+
+      }
+
+
+      refreshBtn.addEventListener(
+        'click',
+        loadSummary
+      );
+
+
+      document.addEventListener(
+        'visibilitychange',
+        function () {
+
+          if (
+            !document.hidden
+          ) {
+            loadSummary();
+          }
+
+        }
+      );
+
+
+      loadSummary();
+
+    })();
+  </script>
 
 </body>
-
 </html>
