@@ -119,34 +119,21 @@ export async function onRequestPost(context) {
     }
 
     /*
-      Tạo mã đơn:
-      UU-YYYYMMDD-HHMMSS-XXXX
+      Tạo mã tạm để insert trước.
+
+      Sau khi D1 cấp ID cho đơn,
+      hệ thống sẽ tạo mã chính thức:
+
+      UU-YYYYMMDD-001
+      UU-YYYYMMDD-002
+      UU-YYYYMMDD-003
+
+      Số cuối là thứ tự đơn trong ngày
+      theo múi giờ Việt Nam (UTC+7).
     */
 
-    const now =
-      new Date();
-
-    const datePart =
-      now
-        .toISOString()
-        .slice(0, 10)
-        .replaceAll('-', '');
-
-    const timePart =
-      now
-        .toISOString()
-        .slice(11, 19)
-        .replaceAll(':', '');
-
-    const randomPart =
-      crypto
-        .randomUUID()
-        .replaceAll('-', '')
-        .slice(0, 4)
-        .toUpperCase();
-
-    const orderCode =
-      `UU-${datePart}-${timePart}-${randomPart}`;
+    const temporaryOrderCode =
+      `TMP-${crypto.randomUUID()}`;
 
     const itemsJson =
       JSON.stringify(items);
@@ -186,7 +173,7 @@ export async function onRequestPost(context) {
           )
         `)
         .bind(
-          orderCode,
+          temporaryOrderCode,
           requestId,
           customerName,
           phone,
@@ -197,11 +184,97 @@ export async function onRequestPost(context) {
         )
         .run();
 
+    const orderId =
+      result.meta.last_row_id;
+
+    /*
+      Lấy ngày tạo đơn và số thứ tự
+      của đơn trong ngày theo UTC+7.
+
+      Dùng ID để xác định thứ tự,
+      tránh việc hai đơn cùng lúc
+      lấy cùng một số thứ tự.
+    */
+
+    const orderSequence =
+      await env.DB
+        .prepare(`
+          SELECT
+            strftime(
+              '%Y%m%d',
+              current_order.created_at,
+              '+7 hours'
+            ) AS date_part,
+
+            (
+              SELECT COUNT(*)
+              FROM orders AS counted_order
+              WHERE
+                date(
+                  counted_order.created_at,
+                  '+7 hours'
+                ) =
+                date(
+                  current_order.created_at,
+                  '+7 hours'
+                )
+
+                AND counted_order.id <=
+                    current_order.id
+            ) AS daily_sequence
+
+          FROM orders AS current_order
+
+          WHERE
+            current_order.id = ?1
+
+          LIMIT 1
+        `)
+        .bind(orderId)
+        .first();
+
+    if (
+      !orderSequence ||
+      !orderSequence.date_part ||
+      !orderSequence.daily_sequence
+    ) {
+      throw new Error(
+        'Không thể tạo mã đơn.'
+      );
+    }
+
+    const sequencePart =
+      String(
+        orderSequence.daily_sequence
+      ).padStart(3, '0');
+
+    const orderCode =
+      `UU-${orderSequence.date_part}-${sequencePart}`;
+
+    /*
+      Cập nhật mã đơn chính thức
+      thay cho mã tạm.
+    */
+
+    await env.DB
+      .prepare(`
+        UPDATE orders
+        SET
+          order_code = ?1,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?2
+      `)
+      .bind(
+        orderCode,
+        orderId
+      )
+      .run();
+
     return json({
       success: true,
       duplicate: false,
       id:
-        result.meta.last_row_id,
+        orderId,
       order_code:
         orderCode
     });
