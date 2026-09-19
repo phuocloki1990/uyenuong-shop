@@ -1,21 +1,23 @@
 // functions/admin/api/content/index.js
 //
-// A1.1 — Đọc danh sách nội dung từ GitHub.
-// Bổ sung thông tin chẩn đoán lỗi GitHub 403.
+// Danh sách nội dung cho Admin.
 //
-// GET /admin/api/content?kind=products
-// GET /admin/api/content?kind=articles
-// GET /admin/api/content?kind=categories
+// Production: đọc nhánh main.
+// Preview: đọc nhánh GITHUB_CONTENT_BRANCH.
+//
+// Chỉ đọc GitHub, không ghi dữ liệu.
 
-const GITHUB_OWNER = 'phuocloki1990';
-const GITHUB_REPO = 'uyenuong-shop';
-const GITHUB_BRANCH = 'main';
+const OWNER = 'phuocloki1990';
+const REPO = 'uyenuong-shop';
 
-const CONTENT_PATHS = {
+const FOLDERS = {
   products: 'content/products',
   articles: 'content/articles',
   categories: 'content/categories'
 };
+
+const BRANCH_PATTERN =
+  /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/;
 
 function json(data, status = 200) {
   return Response.json(data, {
@@ -36,112 +38,91 @@ export async function onRequestGet(context) {
       url.searchParams.get('kind') || ''
     ).trim();
 
-    if (!Object.hasOwn(CONTENT_PATHS, kind)) {
+    if (!Object.hasOwn(FOLDERS, kind)) {
       return json(
         {
           success: false,
-          message: 'Loại nội dung không hợp lệ.',
-          allowed: [
-            'products',
-            'articles',
-            'categories'
-          ]
+          message: 'Loại nội dung không hợp lệ.'
         },
         400
       );
     }
 
-    const folder = CONTENT_PATHS[kind];
+    if (!env.GITHUB_CONTENT_TOKEN) {
+      return json(
+        {
+          success: false,
+          message: 'Chưa cấu hình GitHub token.'
+        },
+        503
+      );
+    }
+
+    // Không để Preview âm thầm đọc main
+    // nếu quên cấu hình nhánh thử nghiệm.
+
+    const isProduction =
+      url.hostname === 'uyenuong-shop.pages.dev';
+
+    const branch = isProduction
+      ? 'main'
+      : String(
+          env.GITHUB_CONTENT_BRANCH || ''
+        ).trim();
+
+    if (!BRANCH_PATTERN.test(branch)) {
+      return json(
+        {
+          success: false,
+          message:
+            'Preview chưa được cấu hình nhánh GitHub.'
+        },
+        503
+      );
+    }
+
+    if (!isProduction && branch === 'main') {
+      return json(
+        {
+          success: false,
+          message:
+            'Preview không được đọc nhánh main trong đợt kiểm thử này.'
+        },
+        503
+      );
+    }
+
+    const folder = FOLDERS[kind];
 
     const githubUrl =
       `https://api.github.com/repos/` +
-      `${GITHUB_OWNER}/${GITHUB_REPO}/` +
-      `contents/${folder}` +
-      `?ref=${GITHUB_BRANCH}`;
-
-    const headers = {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': 'uyenuong-shop-admin',
-      'X-GitHub-Api-Version': '2022-11-28'
-    };
-
-    // Chưa yêu cầu tạo token.
-    // Chỉ sử dụng token nếu đã được cấu hình
-    // trong Cloudflare Secrets.
-
-    const hasToken =
-      Boolean(env.GITHUB_CONTENT_TOKEN);
-
-    if (hasToken) {
-      headers.Authorization =
-        `Bearer ${env.GITHUB_CONTENT_TOKEN}`;
-    }
+      `${OWNER}/${REPO}/contents/${folder}` +
+      `?ref=${encodeURIComponent(branch)}`;
 
     const response = await fetch(
       githubUrl,
       {
         method: 'GET',
-        headers,
+        headers: {
+          Accept: 'application/vnd.github+json',
+
+          Authorization:
+            `Bearer ${env.GITHUB_CONTENT_TOKEN}`,
+
+          'User-Agent': 'uyenuong-shop-admin',
+
+          'X-GitHub-Api-Version': '2022-11-28'
+        },
         cache: 'no-store'
       }
     );
 
-    // Đọc phản hồi của GitHub một lần,
-    // dùng được cho cả thành công và thất bại.
-
-    const responseText = await response.text();
-
-    let result;
-
-    try {
-      result = JSON.parse(responseText);
-    } catch {
-      result = null;
-    }
-
     if (!response.ok) {
-      const githubMessage =
-        typeof result?.message === 'string'
-          ? result.message
-          : 'GitHub không trả về thông báo lỗi dạng JSON.';
-
-      const rateRemaining =
-        response.headers.get(
-          'x-ratelimit-remaining'
-        );
-
-      const rateLimit =
-        response.headers.get(
-          'x-ratelimit-limit'
-        );
-
-      const rateResource =
-        response.headers.get(
-          'x-ratelimit-resource'
-        );
-
-      const rateReset =
-        response.headers.get(
-          'x-ratelimit-reset'
-        );
-
-      const retryAfter =
-        response.headers.get(
-          'retry-after'
-        );
-
       console.error(
-        'GitHub content API error:',
-        {
-          status: response.status,
-          message: githubMessage,
-          rateRemaining,
-          rateLimit,
-          rateResource,
-          rateReset,
-          retryAfter,
-          hasToken
-        }
+        'GitHub content list error:',
+        response.status,
+        kind,
+        branch
       );
 
       return json(
@@ -149,34 +130,20 @@ export async function onRequestGet(context) {
           success: false,
           message:
             'Chưa đọc được danh sách nội dung từ GitHub.',
-
-          github_status:
-            response.status,
-
-          github_message:
-            githubMessage,
-
-          github_rate_limit: {
-            remaining: rateRemaining,
-            limit: rateLimit,
-            resource: rateResource,
-            reset: rateReset,
-            retry_after: retryAfter
-          },
-
-          github_token_configured:
-            hasToken
+          github_status: response.status
         },
         502
       );
     }
+
+    const result = await response.json();
 
     if (!Array.isArray(result)) {
       return json(
         {
           success: false,
           message:
-            'GitHub không trả về danh sách file như dự kiến.'
+            'GitHub không trả về danh sách file hợp lệ.'
         },
         502
       );
@@ -202,6 +169,7 @@ export async function onRequestGet(context) {
 
     return json({
       success: true,
+      branch,
       kind,
       count: items.length,
       items
@@ -209,7 +177,7 @@ export async function onRequestGet(context) {
 
   } catch (error) {
     console.error(
-      'Admin content API error:',
+      'Admin content list error:',
       error
     );
 
