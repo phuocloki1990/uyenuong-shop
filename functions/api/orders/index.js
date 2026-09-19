@@ -1,31 +1,15 @@
-const ALLOWED_STATUSES = [
-  'new',
-  'processing',
-  'completed',
-  'cancelled'
-];
-
 function json(data, status = 200) {
   return Response.json(data, { status });
-}
-
-function isAdmin(request, env) {
-  const auth =
-    request.headers.get('Authorization') || '';
-
-  if (!env.ADMIN_API_KEY) {
-    return false;
-  }
-
-  return auth ===
-    `Bearer ${env.ADMIN_API_KEY}`;
 }
 
 
 /* ========================================
    POST /api/orders
    KHÁCH TẠO ĐƠN
-   Không yêu cầu quyền Admin
+
+   API công khai dành cho website đặt hàng.
+   Phần quản trị đã chuyển sang:
+   /admin/api/orders
    ======================================== */
 
 export async function onRequestPost(context) {
@@ -70,6 +54,11 @@ export async function onRequestPost(context) {
         ? body.items
         : [];
 
+
+    /* =====================================
+       VALIDATE
+       ===================================== */
+
     if (
       !requestId ||
       !customerName ||
@@ -88,11 +77,13 @@ export async function onRequestPost(context) {
       );
     }
 
-    /*
-      Chống gửi trùng:
-      nếu request_id đã tồn tại,
-      trả lại mã đơn cũ.
-    */
+
+    /* =====================================
+       CHỐNG GỬI TRÙNG
+
+       Nếu request_id đã tồn tại,
+       trả lại đúng đơn cũ.
+       ===================================== */
 
     const existing =
       await env.DB
@@ -107,6 +98,7 @@ export async function onRequestPost(context) {
         .bind(requestId)
         .first();
 
+
     if (existing) {
       return json({
         success: true,
@@ -118,25 +110,29 @@ export async function onRequestPost(context) {
       });
     }
 
-    /*
-      Tạo mã tạm để insert trước.
 
-      Sau khi D1 cấp ID cho đơn,
-      hệ thống sẽ tạo mã chính thức:
+    /* =====================================
+       TẠO MÃ ĐƠN TẠM
 
-      UU-YYYYMMDD-001
-      UU-YYYYMMDD-002
-      UU-YYYYMMDD-003
+       Insert trước để D1 cấp ID.
 
-      Số cuối là thứ tự đơn trong ngày
-      theo múi giờ Việt Nam (UTC+7).
-    */
+       Sau đó hệ thống tạo mã chính thức:
+
+       UU-YYYYMMDD-001
+       UU-YYYYMMDD-002
+       UU-YYYYMMDD-003
+
+       Thứ tự tính theo ngày
+       Việt Nam UTC+7.
+       ===================================== */
 
     const temporaryOrderCode =
       `TMP-${crypto.randomUUID()}`;
 
+
     const itemsJson =
       JSON.stringify(items);
+
 
     const result =
       await env.DB
@@ -184,22 +180,31 @@ export async function onRequestPost(context) {
         )
         .run();
 
+
     const orderId =
       result.meta.last_row_id;
 
-    /*
-      Lấy ngày tạo đơn và số thứ tự
-      của đơn trong ngày theo UTC+7.
 
-      Dùng ID để xác định thứ tự,
-      tránh việc hai đơn cùng lúc
-      lấy cùng một số thứ tự.
-    */
+    if (!orderId) {
+      throw new Error(
+        'Không thể xác định ID đơn hàng.'
+      );
+    }
+
+
+    /* =====================================
+       TÍNH SỐ THỨ TỰ ĐƠN TRONG NGÀY
+
+       Dùng ID để xác định thứ tự nhằm
+       tránh hai đơn cùng lúc lấy chung
+       một số thứ tự.
+       ===================================== */
 
     const orderSequence =
       await env.DB
         .prepare(`
           SELECT
+
             strftime(
               '%Y%m%d',
               current_order.created_at,
@@ -208,12 +213,16 @@ export async function onRequestPost(context) {
 
             (
               SELECT COUNT(*)
+
               FROM orders AS counted_order
+
               WHERE
+
                 date(
                   counted_order.created_at,
                   '+7 hours'
                 ) =
+
                 date(
                   current_order.created_at,
                   '+7 hours'
@@ -221,6 +230,7 @@ export async function onRequestPost(context) {
 
                 AND counted_order.id <=
                     current_order.id
+
             ) AS daily_sequence
 
           FROM orders AS current_order
@@ -233,6 +243,7 @@ export async function onRequestPost(context) {
         .bind(orderId)
         .first();
 
+
     if (
       !orderSequence ||
       !orderSequence.date_part ||
@@ -243,32 +254,46 @@ export async function onRequestPost(context) {
       );
     }
 
+
     const sequencePart =
       String(
         orderSequence.daily_sequence
-      ).padStart(3, '0');
+      ).padStart(
+        3,
+        '0'
+      );
+
 
     const orderCode =
       `UU-${orderSequence.date_part}-${sequencePart}`;
 
-    /*
-      Cập nhật mã đơn chính thức
-      thay cho mã tạm.
-    */
+
+    /* =====================================
+       CẬP NHẬT MÃ ĐƠN CHÍNH THỨC
+       ===================================== */
 
     await env.DB
       .prepare(`
         UPDATE orders
+
         SET
           order_code = ?1,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?2
+          updated_at =
+            CURRENT_TIMESTAMP
+
+        WHERE
+          id = ?2
       `)
       .bind(
         orderCode,
         orderId
       )
       .run();
+
+
+    /* =====================================
+       RESPONSE
+       ===================================== */
 
     return json({
       success: true,
@@ -279,217 +304,20 @@ export async function onRequestPost(context) {
         orderCode
     });
 
+
   } catch (error) {
+
     console.error(
       'Create order error:',
       error
     );
+
 
     return json(
       {
         success: false,
         message:
           'Không thể ghi nhận đơn hàng.'
-      },
-      500
-    );
-  }
-}
-
-
-/* ========================================
-   GET /api/orders
-   ADMIN LẤY DANH SÁCH ĐƠN
-   ======================================== */
-
-export async function onRequestGet(context) {
-  const { request, env } = context;
-
-  if (
-    !isAdmin(request, env)
-  ) {
-    return json(
-      {
-        success: false,
-        message:
-          'Không có quyền truy cập.'
-      },
-      401
-    );
-  }
-
-  try {
-    const url =
-      new URL(request.url);
-
-    const status =
-      String(
-        url.searchParams.get(
-          'status'
-        ) || ''
-      ).trim();
-
-    const search =
-      String(
-        url.searchParams.get(
-          'search'
-        ) || ''
-      ).trim();
-
-    const rawLimit =
-      Number(
-        url.searchParams.get(
-          'limit'
-        ) || 50
-      );
-
-    const rawOffset =
-      Number(
-        url.searchParams.get(
-          'offset'
-        ) || 0
-      );
-
-    const limit =
-      Math.min(
-        Math.max(
-          rawLimit || 50,
-          1
-        ),
-        100
-      );
-
-    const offset =
-      Math.max(
-        rawOffset || 0,
-        0
-      );
-
-    let where =
-      'WHERE 1 = 1';
-
-    const binds = [];
-
-    if (
-      status &&
-      ALLOWED_STATUSES.includes(
-        status
-      )
-    ) {
-      binds.push(status);
-
-      where +=
-        ` AND status = ?${binds.length}`;
-    }
-
-    if (search) {
-      binds.push(
-        `%${search}%`
-      );
-
-      const n =
-        binds.length;
-
-      where += `
-        AND (
-          order_code LIKE ?${n}
-          OR phone LIKE ?${n}
-          OR customer_name LIKE ?${n}
-        )
-      `;
-    }
-
-    binds.push(limit);
-
-    const limitIndex =
-      binds.length;
-
-    binds.push(offset);
-
-    const offsetIndex =
-      binds.length;
-
-    const query = `
-      SELECT
-        id,
-        order_code,
-        customer_name,
-        phone,
-        receive_date,
-        address,
-        note,
-        items_json,
-        status,
-        source,
-        telegram_sent,
-        internal_note,
-        created_at,
-        updated_at
-      FROM orders
-
-      ${where}
-
-      ORDER BY
-        CASE status
-          WHEN 'new' THEN 1
-          WHEN 'processing' THEN 2
-          WHEN 'completed' THEN 3
-          WHEN 'cancelled' THEN 4
-          ELSE 5
-        END,
-        created_at DESC
-
-      LIMIT ?${limitIndex}
-      OFFSET ?${offsetIndex}
-    `;
-
-    const result =
-      await env.DB
-        .prepare(query)
-        .bind(...binds)
-        .all();
-
-    const orders =
-      (result.results || [])
-        .map(order => {
-          let items = [];
-
-          try {
-            items =
-              JSON.parse(
-                order.items_json ||
-                '[]'
-              );
-          } catch (e) {
-            items = [];
-          }
-
-          return {
-            ...order,
-            items,
-            items_json:
-              undefined
-          };
-        });
-
-    return json({
-      success: true,
-      orders,
-      count:
-        orders.length
-    });
-
-  } catch (error) {
-    console.error(
-      'Get orders error:',
-      error
-    );
-
-    return json(
-      {
-        success: false,
-        message:
-          'Không thể tải danh sách đơn.'
       },
       500
     );
