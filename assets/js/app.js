@@ -1163,7 +1163,7 @@
             };
 
             const lines = [
-              'YÊU CẦU ĐẶT HÀNG - SHOP UYÊN ƯƠNG',
+              '🛒 ĐƠN HÀNG MỚI - SHOP UYÊN ƯƠNG',
               ''
             ];
 
@@ -1283,7 +1283,11 @@
               }
 
               lines.push(
-                `- Bánh phu thê: ${region}, ${wrapOption}, ${qty} bánh | Giá liên hệ`
+                  '🍰 SẢN PHẨM',
+                `Bánh phu thê ${region}`,
+                `• Đóng gói: ${wrapOption}`,
+                `• Số lượng: ${qty} bánh`,
+                '• Giá: Liên hệ'
               );
 
               orderPayload
@@ -1484,17 +1488,27 @@ if (successCodeEl) {
             /* Thêm mã đơn vào Telegram */
 
             lines.unshift(
-              `MÃ ĐƠN: ${orderCode}`,
+              `Mã đơn: ${orderCode}`,
               ''
             );
 
+            function formatDateVN(value) {
+              if (!value) return '';
+              
+              const parts = String(value).split('-');
+              
+              if (parts.length !== 3) {
+                return value;
+              }
+              return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
             lines.push(
               '',
-              `Khách hàng: ${orderPayload.customer_name}`,
-              `SĐT: ${orderPayload.phone}`,
-              `Ngày nhận: ${orderPayload.receive_date}`,
-              `Địa chỉ: ${orderPayload.address}`,
-              `Ghi chú: ${orderPayload.note || 'Không có'}`
+              `👤 Tên: ${orderPayload.customer_name}`,
+              `📞 SĐT: ${orderPayload.phone}`,
+              `📅 Ngày nhận: ${formatDateVN(orderPayload.receive_date)}`,
+              `📍 Địa chỉ: ${orderPayload.address}`,
+              `📝 Ghi chú: ${orderPayload.note || 'Không có'}`
             );
 
             const text =
