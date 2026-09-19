@@ -1,14 +1,8 @@
 // functions/admin/api/content/index.js
 //
-// API quản trị nội dung Shop Uyên Ương.
+// A1.1 — Đọc danh sách nội dung từ GitHub.
+// Bổ sung thông tin chẩn đoán lỗi GitHub 403.
 //
-// Giai đoạn A1.1:
-// - Chỉ đọc danh sách file JSON từ GitHub.
-// - Chưa có chức năng ghi hoặc xóa.
-// - Không sử dụng D1.
-// - Không thay đổi API Đơn hàng.
-//
-// Đường dẫn:
 // GET /admin/api/content?kind=products
 // GET /admin/api/content?kind=articles
 // GET /admin/api/content?kind=categories
@@ -42,9 +36,6 @@ export async function onRequestGet(context) {
       url.searchParams.get('kind') || ''
     ).trim();
 
-    // Không cho người dùng tự truyền đường dẫn GitHub.
-    // API chỉ được đọc ba thư mục đã khai báo.
-
     if (!Object.hasOwn(CONTENT_PATHS, kind)) {
       return json(
         {
@@ -74,12 +65,14 @@ export async function onRequestGet(context) {
       'X-GitHub-Api-Version': '2022-11-28'
     };
 
-    // Chưa bắt buộc tạo token ở A1.1.
-    // Repository công khai có thể đọc bằng GitHub API.
-    // Nếu repository riêng tư, token sẽ được cấu hình
-    // ở bước sau, trong Cloudflare Secrets.
+    // Chưa yêu cầu tạo token.
+    // Chỉ sử dụng token nếu đã được cấu hình
+    // trong Cloudflare Secrets.
 
-    if (env.GITHUB_CONTENT_TOKEN) {
+    const hasToken =
+      Boolean(env.GITHUB_CONTENT_TOKEN);
+
+    if (hasToken) {
       headers.Authorization =
         `Bearer ${env.GITHUB_CONTENT_TOKEN}`;
     }
@@ -93,11 +86,62 @@ export async function onRequestGet(context) {
       }
     );
 
+    // Đọc phản hồi của GitHub một lần,
+    // dùng được cho cả thành công và thất bại.
+
+    const responseText = await response.text();
+
+    let result;
+
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      result = null;
+    }
+
     if (!response.ok) {
+      const githubMessage =
+        typeof result?.message === 'string'
+          ? result.message
+          : 'GitHub không trả về thông báo lỗi dạng JSON.';
+
+      const rateRemaining =
+        response.headers.get(
+          'x-ratelimit-remaining'
+        );
+
+      const rateLimit =
+        response.headers.get(
+          'x-ratelimit-limit'
+        );
+
+      const rateResource =
+        response.headers.get(
+          'x-ratelimit-resource'
+        );
+
+      const rateReset =
+        response.headers.get(
+          'x-ratelimit-reset'
+        );
+
+      const retryAfter =
+        response.headers.get(
+          'retry-after'
+        );
+
       console.error(
-        'GitHub content list error:',
-        response.status,
-        kind
+        'GitHub content API error:',
+        {
+          status: response.status,
+          message: githubMessage,
+          rateRemaining,
+          rateLimit,
+          rateResource,
+          rateReset,
+          retryAfter,
+          hasToken
+        }
       );
 
       return json(
@@ -105,13 +149,27 @@ export async function onRequestGet(context) {
           success: false,
           message:
             'Chưa đọc được danh sách nội dung từ GitHub.',
-          github_status: response.status
+
+          github_status:
+            response.status,
+
+          github_message:
+            githubMessage,
+
+          github_rate_limit: {
+            remaining: rateRemaining,
+            limit: rateLimit,
+            resource: rateResource,
+            reset: rateReset,
+            retry_after: retryAfter
+          },
+
+          github_token_configured:
+            hasToken
         },
         502
       );
     }
-
-    const result = await response.json();
 
     if (!Array.isArray(result)) {
       return json(
@@ -136,7 +194,10 @@ export async function onRequestGet(context) {
         sha: file.sha
       }))
       .sort((a, b) =>
-        a.filename.localeCompare(b.filename, 'vi')
+        a.filename.localeCompare(
+          b.filename,
+          'vi'
+        )
       );
 
     return json({
