@@ -2,7 +2,9 @@ name: Rebuild CMS content
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - admin-products-final
     paths:
       - 'content/**'
       - 'scripts/**'
