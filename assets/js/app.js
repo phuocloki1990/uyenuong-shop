@@ -1573,6 +1573,13 @@
 
           event.preventDefault();
 
+          // Xóa thông báo cũ khi thử gửi lại; giữ nguyên dữ liệu biểu mẫu.
+          const orderError = document.getElementById('order-submit-error');
+          if (orderError) {
+            orderError.textContent = '';
+            orderError.hidden = true;
+          }
+
           if (
             typeof orderForm.reportValidity ===
               'function' &&
@@ -1947,11 +1954,13 @@
               error
             );
 
-            if (status) {
-
-              status.textContent =
+            // copy-status nằm trong hộp THÀNH CÔNG (đang ẩn),
+            // không dùng để hiển thị lỗi từ API như HTTP 429.
+            if (orderError) {
+              orderError.textContent =
                 error.message ||
                 'Chưa thể ghi nhận yêu cầu. Vui lòng thử lại.';
+              orderError.hidden = false;
             }
 
             document.dispatchEvent(
