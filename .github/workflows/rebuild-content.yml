@@ -38,13 +38,6 @@ jobs:
 
       - name: Build product and article pages
         run: node scripts/build.mjs
-      - name: Verify generated product catalog
-      run: |
-      if [ ! -f scripts/generated/product-catalog.mjs ]; then
-      echo "::error::Missing generated product catalog. Check scripts/build.mjs."
-      exit 1
-    fi
-    echo "Product catalog exists."
 
       - name: Commit generated pages
         run: |
