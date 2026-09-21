@@ -94,18 +94,27 @@ test('the public API rejects tampered orders before any D1 write', async () => {
 
 test('valid API request writes CMS-derived values and preserves request idempotency', async () => {
   const saved = [];
+  const rateCounts = new Map();
   const DB = {
     prepare(sql) {
       let params = [];
       return {
         bind(...args) {params = args; return this;},
         async first() {
+          if (/INSERT INTO order_rate_limits/.test(sql)) {
+            const key = params.slice(0,2).join(':');
+            const count = rateCounts.get(key) || 0;
+            if (count >= params[2]) return null;
+            rateCounts.set(key,count + 1);
+            return {request_count:count+1};
+          }
           if (/WHERE request_id/.test(sql)) return saved.find(row => row.request_id === params[0]) || null;
           if (/WHERE id = \?1/.test(sql) && /SELECT \*/.test(sql)) return saved.find(row => row.id === params[0]) || null;
           if (/daily_sequence/.test(sql)) return {date_part:'20990101', daily_sequence: 1};
           throw new Error(`Unexpected SELECT: ${sql}`);
         },
         async run() {
+          if (/DELETE FROM order_rate_limits/.test(sql)) return {meta:{changes:0}};
           if (/INSERT INTO orders/.test(sql)) {
             const [order_code, request_id, customer_name, phone, receive_date, address, note, items_json] = params;
             const id = saved.length + 1;
@@ -127,11 +136,11 @@ test('valid API request writes CMS-derived values and preserves request idempote
     receive_date:'2099-01-01', address:'TP.HCM', note:'',
     items:[{...linh(), price_text:'1đ', name:'Tên gian lận'}]
   };
-  const send = async () => {
+  const send = async (requestId = body.request_id) => {
     const context = {
       request:new Request('https://example.com/api/orders', {
-        method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body)
-      }), env:{DB}
+        method:'POST', headers:{'content-type':'application/json','cf-connecting-ip':'203.0.113.42'}, body:JSON.stringify({...body, request_id:requestId})
+      }), env:{DB, RATE_LIMIT_SECRET:'local-test-key-at-least-32-characters-only'}
     };
     const response = await onRequestPost(context);
     assert.equal(response.status, 200);
@@ -145,5 +154,30 @@ test('valid API request writes CMS-derived values and preserves request idempote
   const second = await send();
   assert.equal(second.duplicate, true);
   assert.equal(saved.length, 1);
+  assert.equal(rateCounts.size, 1);
+  assert.equal([...rateCounts.values()][0], 1, 'idempotent retry must not consume another rate slot');
   assert.equal(second.order_code, first.order_code);
+  for (let i = 0; i < 5; i++) await send(`new-order-${i}`);
+  const context = {
+    request: new Request('https://example.com/api/orders', {
+      method: 'POST', headers: {'content-type':'application/json','cf-connecting-ip':'203.0.113.42'},
+      body: JSON.stringify({...body,request_id:'new-order-blocked'})
+    }),
+    env: {DB, RATE_LIMIT_SECRET:'local-test-key-at-least-32-characters-only'}
+  };
+  const blocked = await onRequestPost(context);
+  assert.equal(blocked.status, 429);
+  assert.ok(Number(blocked.headers.get('Retry-After')) > 0);
+  assert.equal(saved.length, 6, 'blocked request must not create a seventh order');
+  assert.equal((await send()).duplicate, true, 'retry still works after reaching the limit');
+  assert.equal([...rateCounts.values()][0], 6);
+  const unconfigured = await onRequestPost({
+    request: new Request('https://example.com/api/orders', {
+      method:'POST', headers:{'content-type':'application/json','cf-connecting-ip':'203.0.113.42'},
+      body:JSON.stringify({...body, request_id:'must-not-create'})
+    }),
+    env:{DB}
+  });
+  assert.equal(unconfigured.status, 503, 'missing secret must not silently disable protection');
+  assert.equal(saved.length,6);
 });
