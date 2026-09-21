@@ -1,4 +1,5 @@
 import { normalizeTrustedItems, minReceiveDate } from '../../../scripts/order-policy.mjs';
+import { consumeOrderRateLimit, RateLimitConfigurationError } from '../../../scripts/order-rate-limit.mjs';
 
 // functions/api/orders/index.js
 // POST public: ghi D1, tạo mã đơn, gửi Telegram tại server.
@@ -742,6 +743,32 @@ async function processOrder(context) {
       Boolean(order);
 
     if (!order) {
+      // Retries of the same request_id are handled above; only NEW, valid
+      // orders consume a rate-limit slot. Never silently bypass a broken limit.
+      let limit;
+      try {
+        limit = await consumeOrderRateLimit({ env, request });
+      } catch (error) {
+        if (error instanceof RateLimitConfigurationError) {
+          console.error('Order rate limit is not configured:', error.message);
+        } else {
+          console.error('Order rate limit unavailable:', error);
+        }
+        return json({ success: false, message: 'Hệ thống đặt hàng tạm thời bận. Vui lòng thử lại sau.' }, 503);
+      }
+      if (!limit.allowed) {
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Đã nhận quá nhiều đơn hàng trong thời gian ngắn. Vui lòng thử lại sau.'
+        }), {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'no-store',
+            'Retry-After': String(limit.retryAfter)
+          }
+        });
+      }
 
       const temporaryOrderCode =
         `TMP-${crypto.randomUUID()}`;
