@@ -40,6 +40,10 @@ jobs:
 
       - name: Build product and article pages
         run: node scripts/build.mjs
+      - name: Verify generated catalog
+      run: |
+          test -f scripts/generated/product-catalog.mjs
+          echo "Product catalog OK"
 
       - name: Commit generated pages
         run: |
