@@ -433,3 +433,7 @@ body.order-modal-open{
   font-weight:600;
   color:var(--muted);
 }
+
+/* B1.6.1: Thông báo lỗi đặt hàng phải xuất hiện ngay dưới nút gửi. */
+.order-submit-error{margin:12px 0 0;padding:12px 14px;border:1px solid #f1c6ab;border-radius:12px;background:#fff6ef;color:#873b17;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.order-submit-error[hidden]{display:none}
