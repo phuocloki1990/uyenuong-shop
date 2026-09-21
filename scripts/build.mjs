@@ -737,6 +737,21 @@ export function build(root = process.cwd(), { check = false } = {}) {
     `// ${OWNER}\nwindow.UUCMS = { products: ${json(catalog)}, quote: ${quoteProduct.toString()} };\n`
   );
 
+  // Private catalog for the order API. Never trust browser-supplied names/prices.
+  // Keep it inside the builder manifest and generate it from the same CMS snapshot.
+  const trustedCatalog = Object.fromEntries(
+    published.products.map(p => [p.id, Object.fromEntries(
+      ['id', 'name', 'status', 'quantity', 'option_groups', 'price_mode', 'base_price', 'price_rules']
+        .filter(key => p[key] !== undefined)
+        .map(key => [key, p[key]])
+    )])
+  );
+
+  outputs.set(
+    'scripts/generated/product-catalog.mjs',
+    `// ${OWNER}\nexport const products = ${json(trustedCatalog)};\n`
+  );
+
   const indexFile = disk('index.html');
 
   if (!fs.existsSync(indexFile)) {
@@ -968,6 +983,7 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const isPagePath = p =>
     p === 'assets/js/cms-catalog.js' ||
+    p === 'scripts/generated/product-catalog.mjs' ||
     /^(san-pham|cam-nang|chuyen-muc)\/[a-z0-9]+(?:-[a-z0-9]+)*\.html$/.test(p);
 
   for (const [relative, digest] of Object.entries(previous.pages)) {

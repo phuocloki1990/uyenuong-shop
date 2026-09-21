@@ -2,25 +2,23 @@
 //
 // Đọc chi tiết một file JSON từ GitHub.
 //
-// Production đọc main.
-// Preview đọc GITHUB_CONTENT_BRANCH.
+// Ví dụ:
+// GET /admin/api/content/item?kind=products&slug=banh-phu-the-hue
 //
-// Chỉ đọc dữ liệu, không ghi GitHub hoặc D1.
+// Chỉ đọc, chưa ghi hoặc xóa dữ liệu.
+// Không sử dụng D1.
 
-const OWNER = 'phuocloki1990';
-const REPO = 'uyenuong-shop';
+const GITHUB_OWNER = 'phuocloki1990';
+const GITHUB_REPO = 'uyenuong-shop';
+const GITHUB_BRANCH = 'main';
 
-const FOLDERS = {
+const CONTENT_PATHS = {
   products: 'content/products',
   articles: 'content/articles',
   categories: 'content/categories'
 };
 
-const FILE_PATTERN =
-  /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-const BRANCH_PATTERN =
-  /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/;
+const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function json(data, status = 200) {
   return Response.json(data, {
@@ -32,19 +30,16 @@ function json(data, status = 200) {
 }
 
 function decodeBase64Utf8(value) {
-  const binary = atob(
-    value.replace(/\s/g, '')
-  );
+  const binary = atob(value.replace(/\s/g, ''));
 
   const bytes = Uint8Array.from(
     binary,
     character => character.charCodeAt(0)
   );
 
-  return new TextDecoder(
-    'utf-8',
-    { fatal: true }
-  ).decode(bytes);
+  return new TextDecoder('utf-8', {
+    fatal: true
+  }).decode(bytes);
 }
 
 export async function onRequestGet(context) {
@@ -57,11 +52,12 @@ export async function onRequestGet(context) {
       url.searchParams.get('kind') || ''
     ).trim();
 
-    const filenameWithoutExtension = String(
+    const slug = String(
       url.searchParams.get('slug') || ''
     ).trim();
 
-    if (!Object.hasOwn(FOLDERS, kind)) {
+    // Chỉ cho đọc các thư mục nội dung được khai báo.
+    if (!Object.hasOwn(CONTENT_PATHS, kind)) {
       return json(
         {
           success: false,
@@ -71,11 +67,8 @@ export async function onRequestGet(context) {
       );
     }
 
-    if (
-      !FILE_PATTERN.test(
-        filenameWithoutExtension
-      )
-    ) {
+    // Không cho truyền đường dẫn tùy ý.
+    if (!SLUG_PATTERN.test(slug)) {
       return json(
         {
           success: false,
@@ -86,82 +79,41 @@ export async function onRequestGet(context) {
     }
 
     if (!env.GITHUB_CONTENT_TOKEN) {
+      console.error(
+        'Missing GITHUB_CONTENT_TOKEN'
+      );
+
       return json(
         {
           success: false,
           message:
-            'Chưa cấu hình GitHub token.'
+            'Chưa cấu hình kết nối GitHub cho Admin.'
         },
         503
       );
     }
 
-    // Website chính luôn đọc main.
-    // Bản Preview bắt buộc có nhánh riêng.
-
-    const isProduction =
-      url.hostname ===
-      'uyenuong-shop.pages.dev';
-
-    const branch = isProduction
-      ? 'main'
-      : String(
-          env.GITHUB_CONTENT_BRANCH || ''
-        ).trim();
-
-    if (!BRANCH_PATTERN.test(branch)) {
-      return json(
-        {
-          success: false,
-          message:
-            'Preview chưa được cấu hình nhánh GitHub.'
-        },
-        503
-      );
-    }
-
-    if (
-      !isProduction &&
-      branch === 'main'
-    ) {
-      return json(
-        {
-          success: false,
-          message:
-            'Preview không được đọc nhánh main trong đợt kiểm thử này.'
-        },
-        503
-      );
-    }
-
-    const filename =
-      `${filenameWithoutExtension}.json`;
+    const filename = `${slug}.json`;
 
     const filePath =
-      `${FOLDERS[kind]}/${filename}`;
+      `${CONTENT_PATHS[kind]}/${filename}`;
 
     const githubUrl =
       `https://api.github.com/repos/` +
-      `${OWNER}/${REPO}/contents/` +
-      `${filePath}?ref=` +
-      encodeURIComponent(branch);
+      `${GITHUB_OWNER}/${GITHUB_REPO}/` +
+      `contents/${filePath}` +
+      `?ref=${GITHUB_BRANCH}`;
 
     const response = await fetch(
       githubUrl,
       {
         method: 'GET',
         headers: {
-          Accept:
-            'application/vnd.github+json',
-
+          Accept: 'application/vnd.github+json',
           Authorization:
             `Bearer ${env.GITHUB_CONTENT_TOKEN}`,
-
-          'User-Agent':
-            'uyenuong-shop-admin',
-
-          'X-GitHub-Api-Version':
-            '2022-11-28'
+          'User-Agent': 'uyenuong-shop-admin',
+          'X-GitHub-Api-Version': '2022-11-28'
         },
         cache: 'no-store'
       }
@@ -171,8 +123,7 @@ export async function onRequestGet(context) {
       return json(
         {
           success: false,
-          message:
-            'Không tìm thấy nội dung trên nhánh đang sử dụng.'
+          message: 'Không tìm thấy nội dung.'
         },
         404
       );
@@ -180,10 +131,9 @@ export async function onRequestGet(context) {
 
     if (!response.ok) {
       console.error(
-        'GitHub detail error:',
+        'GitHub content detail error:',
         response.status,
-        filePath,
-        branch
+        filePath
       );
 
       return json(
@@ -209,14 +159,15 @@ export async function onRequestGet(context) {
         {
           success: false,
           message:
-            'GitHub trả về định dạng file không hợp lệ.'
+            'Định dạng file GitHub không hợp lệ.'
         },
         502
       );
     }
 
-    const fileText =
-      decodeBase64Utf8(result.content);
+    const fileText = decodeBase64Utf8(
+      result.content
+    );
 
     const data = JSON.parse(fileText);
 
@@ -237,7 +188,6 @@ export async function onRequestGet(context) {
 
     return json({
       success: true,
-      branch,
       kind,
       filename,
       path: filePath,

@@ -7,7 +7,7 @@
   "featured": true,
   "featured_order": 2,
   "image": "/assets/images/Anh1.jpg",
-  "short_description": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh; nhận đặt tối thiểu 20 bánh, có thể chọn hộp giấy hoặc lá dừa.",
+  "short_description": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh; nhận đặt từ 20 bánh, có thể chọn hộp giấy hoặc lá dừa. ",
   "lead": "Bánh phu thê Huế có vỏ bánh kèm sợi dừa, nhân đậu xanh và có thể chọn hộp giấy hoặc lá dừa.",
   "price_mode": "contact",
   "price_text": "Giá liên hệ",
@@ -17,7 +17,7 @@
     "min": 20,
     "default": 20,
     "step": 1,
-    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng 70, 80, 90 bánh vẫn có thể nhận sau khi Shop xác nhận!"
+    "hint": "Nhận từ 20 bánh, nhập số lượng tự do. Gợi ý 65 hoặc 105 bánh; số lượng khác vẫn nhận sau khi Shop xác nhận."
   },
   "option_groups": [
     {
@@ -69,14 +69,6 @@
   ],
   "seo": {
     "title": "Bánh phu thê Huế tại TPHCM | Shop Uyên Ương",
-    "description": "Đặt bánh phu thê Huế tại TPHCM. Vỏ bánh có sợi dừa, nhân đậu xanh, có hộp giấy và lá dừa, nhận từ 20 bánh.",
-    "focus_keyword": "",
-    "secondary_keywords": []
-  },
-  "image_alt": "",
-  "card_highlights": [],
-  "price_rules": [],
-  "related_products": [],
-  "related_articles": [],
-  "redirect_from": []
+    "description": "Đặt bánh phu thê Huế tại TPHCM. Vỏ bánh có sợi dừa, nhân đậu xanh, có hộp giấy và lá dừa, nhận từ 20 bánh."
+  }
 }

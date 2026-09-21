@@ -1,16 +1,27 @@
-# Shop Uyên Ương – V7 CMS-ready
+# Shop Uyên Ương
 
-Bản V7 giữ website tĩnh hiện tại nhưng bổ sung hệ thống quản trị nội dung miễn phí bằng Pages CMS + GitHub Actions.
+Website tĩnh được quản lý bằng Pages CMS + GitHub Actions; đơn hàng sử dụng Cloudflare Pages Functions và D1. README này mô tả mã nguồn hiện có; không phải xác nhận cấu hình Cloudflare Production.
 
-## Quản trị
-- Sản phẩm: `content/products/*.json`
-- Bài viết SEO: `content/articles/*.json`
-- Chuyên mục/chuyên mục con: `content/categories/*.json`
-- Cấu hình Pages CMS: `.pages.yml`
-- Script sinh HTML: `scripts/build.mjs`
-- GitHub Action tự build: `.github/workflows/rebuild-content.yml`
+## Nguồn dữ liệu và quy trình build
 
-Xem `ADMIN_SETUP.md` để cài lần đầu.
+- Sản phẩm: `content/products/*.json`; bài viết: `content/articles/*.json`; chuyên mục: `content/categories/*.json`.
+- Cấu hình Pages CMS: `.pages.yml`; builder: `scripts/build.mjs`.
+- Builder tạo HTML, sitemap, redirect, catalog cho trình duyệt và `scripts/generated/product-catalog.mjs` cho API server. Hai catalog sinh từ **cùng dữ liệu CMS đã published**.
+- Không chỉnh trực tiếp file generated hoặc `.cms-build-manifest.json`. Builder từ chối ghi đè file generated bị sửa ngoài CMS.
+- Giỏ hàng/đặt hàng: `assets/js/app.js`, `dat-hang.html`, `gio-hang.html`.
+- API tạo đơn: `functions/api/orders/index.js`; quy tắc đơn và giá: `scripts/order-policy.mjs`; Admin: `/admin/` và `/admin/api/`.
+- Không thay đổi bảng D1 hoặc dữ liệu đơn đã lưu ở bước B1.
 
-## Đơn hàng
-Giai đoạn này chưa có backend đơn hàng. Phần này sẽ được nối Cloudflare D1 sau khi CMS nội dung chạy ổn.
+## Kiểm tra trước khi triển khai
+
+```sh
+node --version  # Workflow dùng Node.js 24
+node --test scripts/build.test.mjs scripts/order-policy.test.mjs
+node scripts/build.mjs --check
+node scripts/build.mjs
+node scripts/build.mjs --check
+```
+
+Trong GitHub Actions, workflow thực sự chạy là `.github/workflows/rebuild-content.yml` (bản `rebuild-content.yml` tại gốc chỉ là bản sao tham khảo). Workflow phải được commit với Node.js 24 và phải commit luôn `scripts/generated/product-catalog.mjs` để API không dùng catalog cũ khi CMS đổi giá hoặc trạng thái sản phẩm.
+
+**Đọc `B1-BAO-CAO-VA-NGHIEM-THU.md` trước khi đưa bản B1 lên Production.** Các kiểm tra Cloudflare Access, WAF/giới hạn tần suất và kết nối D1/Telegram trên Production cần làm riêng; bài kiểm thử cục bộ không thay thế được kiểm tra hạ tầng.

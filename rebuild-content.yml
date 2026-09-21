@@ -6,6 +6,7 @@ on:
     paths:
       - 'content/**'
       - 'scripts/**'
+      - 'functions/api/orders/**'
       - 'assets/js/app.js'
       - '.github/workflows/rebuild-content.yml'
       - '.pages.yml'
@@ -30,17 +31,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Test CMS builder
-        run: node --test scripts/build.test.mjs
+        run: node --test scripts/build.test.mjs scripts/order-policy.test.mjs
 
       - name: Build product and article pages
         run: node scripts/build.mjs
 
       - name: Commit generated pages
         run: |
-          git add -A -- index.html san-pham cam-nang chuyen-muc sitemap.xml _redirects .cms-build-manifest.json assets/js/cms-catalog.js
+          git add -A -- index.html san-pham cam-nang chuyen-muc sitemap.xml _redirects .cms-build-manifest.json assets/js/cms-catalog.js scripts/generated/product-catalog.mjs
           if git diff --cached --quiet; then
             echo "No generated changes"
             exit 0

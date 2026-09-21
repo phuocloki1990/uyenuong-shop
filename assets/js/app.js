@@ -1539,16 +1539,24 @@
 
       if (receive) {
 
-        const tomorrow =
-          new Date(
-            Date.now() +
-            86400000
-          );
-
-        receive.min =
-          tomorrow
-            .toISOString()
-            .slice(0, 10);
+        // Asia/Ho_Chi_Minh: tránh lệch ngày gần 00:00 UTC.
+        const vnToday = new Date(Date.now() + 7 * 3600000)
+          .toISOString().slice(0, 10);
+        const hasMamQua = items.some(i => i.id === 'mamqua') ||
+          Boolean(document.querySelector('[name="want_mamqua"]:checked'));
+        const days = hasMamQua ? 3 : 1;
+        const start = new Date(`${vnToday}T00:00:00Z`);
+        start.setUTCDate(start.getUTCDate() + days);
+        receive.min = start.toISOString().slice(0, 10);
+        if (receive.value && receive.value < receive.min) receive.value = '';
+        const mamquaChoice = document.querySelector('[name="want_mamqua"]');
+        mamquaChoice?.addEventListener('change', () => {
+          const newDays = items.some(i => i.id === 'mamqua') || mamquaChoice.checked ? 3 : 1;
+          const date = new Date(`${vnToday}T00:00:00Z`);
+          date.setUTCDate(date.getUTCDate() + newDays);
+          receive.min = date.toISOString().slice(0, 10);
+          if (receive.value && receive.value < receive.min) receive.value = '';
+        });
       }
 
 
@@ -1655,6 +1663,9 @@
               option:
                 itemLabel(item),
 
+              options:
+                itemChoices(item),
+
               quantity:
                 Number(
                   item.qty || 1
@@ -1689,6 +1700,15 @@
                   ) ||
                   'chưa chọn gói'
                 ),
+
+              options: {
+                package: ({
+                  '4 mâm': 'Gói 4 mâm',
+                  '6 mâm': 'Gói 6 mâm',
+                  '8 mâm': 'Gói 8 mâm',
+                  'Theo yêu cầu': 'Theo yêu cầu'
+                })[String(fd.get('mamqua_option') || '')] || ''
+              },
 
               quantity:
                 1,
@@ -1746,13 +1766,22 @@
               return;
             }
 
+            if (
+              !['Huế', 'Miền Bắc'].includes(region) ||
+              !(region === 'Huế' ? ['Hộp giấy', 'Lá dừa'] : ['Hộp giấy']).includes(wrapOption)
+            ) {
+              alert('Vui lòng chọn dòng bánh và kiểu đóng gói hợp lệ.');
+              document.dispatchEvent(new CustomEvent('order-send-failed'));
+              return;
+            }
+
             orderPayload.items.push({
 
               id:
-                'phuthe',
+                region === 'Huế' ? 'phuthehue' : 'phuthebac',
 
               name:
-                'Bánh phu thê',
+                region === 'Huế' ? 'Bánh phu thê Huế' : 'Bánh phu thê miền Bắc',
 
               option:
                 [
@@ -1761,6 +1790,8 @@
                 ]
                   .filter(Boolean)
                   .join(' · '),
+
+              options: { wrap: wrapOption },
 
               quantity:
                 qty,
@@ -1827,6 +1858,8 @@
 
               option:
                 flavor,
+
+              options: { flavor },
 
               quantity:
                 qty,
