@@ -103,11 +103,13 @@ test('product image saving rejects paths outside library before any GitHub acces
   assert.equal(called,0);
 });
 
-test('product Admin UI has upload and image-select actions wired to media API',()=>{
+test('product Admin has visual gallery, preview, upload and modular controller',()=>{
   const html=readFileSync(join(dirname(fileURLToPath(import.meta.url)),'../admin/products.html'),'utf8');
-  assert.match(html,/id="productImageSelect"/);
-  assert.match(html,/id="uploadProductImage"/);
-  assert.match(html,/MEDIA_API = '\/admin\/api\/media'/);
-  assert.match(html,/fields\.image\.addEventListener\('change'/);
-  assert.match(html,/elements\.imageUpload\.addEventListener\('click', uploadImage\)/);
+  const controller=readFileSync(join(dirname(fileURLToPath(import.meta.url)),'../assets/js/admin-products.js'),'utf8');
+  for (const id of ['mediaGallery','savedImage','selectedImage','uploadProductImage','newProduct','confirmDialog','saveProduct']) assert.match(html,new RegExp('id="'+id+'"'));
+  assert.match(html,/assets\/js\/admin-products\.js/);
+  assert.match(controller,/const MEDIA='\/admin\/api\/media'/);
+  assert.match(controller,/assignPath/);
+  assert.match(controller,/addRepeater/);
+  assert.match(controller,/pendingPayload/);
 });

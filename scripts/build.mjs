@@ -203,7 +203,13 @@ export function build(root = process.cwd(), { check = false } = {}) {
             ? ['title', 'slug', 'category', 'status', 'thumbnail', 'excerpt', 'body']
             : ['title', 'slug', 'status'];
 
-      fields.forEach(key => textField(x, key, label));
+      fields.forEach(key => {
+        // Drafts are not exposed to customers; copy and image can be finished later.
+        if (kind === 'products' && x.status === 'draft' &&
+            ['image','short_description','lead','price_text'].includes(key)) {
+          textField(x, key, label, false);
+        } else textField(x, key, label);
+      });
 
       if (!slugPattern.test(x.slug)) fail(`${label}: slug không hợp lệ`);
 

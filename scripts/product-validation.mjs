@@ -90,6 +90,9 @@ export function validateProduct(source) {
     }
   }
 
+  // Draft may omit marketing copy and image, but not product identity or quantity.
+  const draft = p.status === 'draft';
+
   // Các trường bắt buộc.
 
   for (const key of [
@@ -104,6 +107,7 @@ export function validateProduct(source) {
     'price_mode',
     'price_text'
   ]) {
+    if (draft && ['image','short_description','lead','price_text'].includes(key) && p[key] === '') continue;
     if (!TEXT(p[key])) {
       err(key, 'Không được để trống.');
     }
@@ -188,6 +192,8 @@ export function validateProduct(source) {
   }
 
   // Hình ảnh.
+
+  if (p.image !== undefined && typeof p.image !== 'string') err('image', 'Phải là văn bản.');
 
   if (
     TEXT(p.image) &&
