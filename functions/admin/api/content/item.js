@@ -1,3 +1,5 @@
+import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
+
 // functions/admin/api/content/item.js
 //
 // Đọc chi tiết một file JSON từ GitHub.
@@ -10,7 +12,6 @@
 
 const GITHUB_OWNER = 'phuocloki1990';
 const GITHUB_REPO = 'uyenuong-shop';
-const GITHUB_BRANCH = 'main';
 
 const CONTENT_PATHS = {
   products: 'content/products',
@@ -47,6 +48,7 @@ export async function onRequestGet(context) {
 
   try {
     const url = new URL(request.url);
+    const branch = resolveContentBranch(request, env);
 
     const kind = String(
       url.searchParams.get('kind') || ''
@@ -102,7 +104,7 @@ export async function onRequestGet(context) {
       `https://api.github.com/repos/` +
       `${GITHUB_OWNER}/${GITHUB_REPO}/` +
       `contents/${filePath}` +
-      `?ref=${GITHUB_BRANCH}`;
+      `?ref=${encodeURIComponent(branch)}`;
 
     const response = await fetch(
       githubUrl,
@@ -207,7 +209,7 @@ export async function onRequestGet(context) {
         message:
           'Không thể tải chi tiết nội dung.'
       },
-      500
+      error.status || 500
     );
   }
 }

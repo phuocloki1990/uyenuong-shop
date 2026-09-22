@@ -1,5 +1,7 @@
 # B1 – Báo cáo kỹ thuật và điều kiện nghiệm thu (21/09/2026)
 
+> **Cập nhật 22/09/2026:** Các số liệu 20 test và trạng thái “chưa triển khai” bên dưới là bản ghi lịch sử ngày 21/09. Sau bản sửa pre-merge, bộ kiểm thử dự kiến **31 test** (Builder + Policy + Rate limit + Content branch). B1.6 đã được thử chặn trên Preview; D1 và Secret Production được người quản trị xác nhận đã chuẩn bị. **Chưa merge vào main, chưa nghiệm thu Production**, và phải kiểm tra GitHub Actions chạy thực tế đủ 31 test trên Node.js 24. Không dựa vào dòng “Success” nếu số test không đủ.
+
 ## Phạm vi đã chỉnh sửa ở bản mã nguồn này
 
 | Mã | Hạng mục | Kết quả trong bản ZIP |

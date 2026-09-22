@@ -1,3 +1,5 @@
+import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
+
 // functions/admin/api/content/save.js
 //
 // A1.4 — API lưu nội dung về GitHub.
@@ -14,7 +16,6 @@
 
 const OWNER = 'phuocloki1990';
 const REPO = 'uyenuong-shop';
-const BRANCH = 'main';
 
 const FOLDERS = {
   products: 'content/products',
@@ -424,6 +425,8 @@ export async function onRequestPost(context) {
       );
     }
 
+    const branch = resolveContentBranch(request, env);
+
     const filePath =
       `${FOLDERS[kind]}/${filename}`;
 
@@ -437,7 +440,7 @@ export async function onRequestPost(context) {
 
     const currentResponse =
       await fetch(
-        `${githubUrl}?ref=${BRANCH}`,
+        `${githubUrl}?ref=${encodeURIComponent(branch)}`,
         {
           method: 'GET',
           headers: githubHeaders(token),
@@ -607,7 +610,7 @@ export async function onRequestPost(context) {
 
             content: encoded,
             sha: current.sha,
-            branch: BRANCH
+            branch
           })
         }
       );
@@ -679,7 +682,7 @@ export async function onRequestPost(context) {
         message:
           'Không thể xử lý yêu cầu lưu nội dung.'
       },
-      500
+      error.status || 500
     );
   }
 }

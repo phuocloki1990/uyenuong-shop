@@ -1,3 +1,5 @@
+import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
+
 // functions/admin/api/content/index.js
 //
 // A1.1 — Đọc danh sách nội dung từ GitHub.
@@ -9,7 +11,6 @@
 
 const GITHUB_OWNER = 'phuocloki1990';
 const GITHUB_REPO = 'uyenuong-shop';
-const GITHUB_BRANCH = 'main';
 
 const CONTENT_PATHS = {
   products: 'content/products',
@@ -31,6 +32,7 @@ export async function onRequestGet(context) {
 
   try {
     const url = new URL(request.url);
+    const branch = resolveContentBranch(request, env);
 
     const kind = String(
       url.searchParams.get('kind') || ''
@@ -57,7 +59,7 @@ export async function onRequestGet(context) {
       `https://api.github.com/repos/` +
       `${GITHUB_OWNER}/${GITHUB_REPO}/` +
       `contents/${folder}` +
-      `?ref=${GITHUB_BRANCH}`;
+      `?ref=${encodeURIComponent(branch)}`;
 
     const headers = {
       Accept: 'application/vnd.github+json',
@@ -219,7 +221,7 @@ export async function onRequestGet(context) {
         message:
           'Không thể tải danh sách nội dung.'
       },
-      500
+      error.status || 500
     );
   }
 }

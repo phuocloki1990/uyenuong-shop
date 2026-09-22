@@ -2,11 +2,14 @@ name: Rebuild CMS content
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - admin-products-final
     paths:
       - 'content/**'
       - 'scripts/**'
       - 'functions/api/orders/**'
+      - 'functions/admin/api/content/**'
       - 'assets/js/app.js'
       - '.github/workflows/rebuild-content.yml'
       - '.pages.yml'
@@ -16,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: cms-build-main
+  group: cms-build-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -25,8 +28,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -34,19 +35,26 @@ jobs:
           node-version: '24'
 
       - name: Test CMS builder
-        run: node --test scripts/build.test.mjs scripts/order-policy.test.mjs
+        run: node --test scripts/build.test.mjs scripts/order-policy.test.mjs scripts/order-rate-limit.test.mjs scripts/content-branch.test.mjs
 
       - name: Build product and article pages
         run: node scripts/build.mjs
+
+      - name: Verify generated catalog
+        run: |
+          if [ ! -f scripts/generated/product-catalog.mjs ]; then
+            echo '::error::Missing scripts/generated/product-catalog.mjs after build. Check scripts/build.mjs on this branch.'
+            exit 1
+          fi
 
       - name: Commit generated pages
         run: |
           git add -A -- index.html san-pham cam-nang chuyen-muc sitemap.xml _redirects .cms-build-manifest.json assets/js/cms-catalog.js scripts/generated/product-catalog.mjs
           if git diff --cached --quiet; then
-            echo "No generated changes"
+            echo 'No generated changes'
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "4189822+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Auto build: update product and article pages"
-          git push
+          git config user.name 'github-actions[bot]'
+          git config user.email '4189822+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Auto build: update product and article pages'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
