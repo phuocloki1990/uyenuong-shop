@@ -393,7 +393,8 @@
     }
 
     .field input,
-    .field textarea {
+    .field textarea,
+    .field select {
       width: 100%;
       padding: 11px 12px;
       color: var(--text);
@@ -672,7 +673,7 @@
 
           <p class="note">
             Giai đoạn này chỉ chỉnh sửa nội dung văn bản
-            và SEO. Giá, số lượng, quy cách, ảnh và trạng thái
+            và SEO. Giá, số lượng, quy cách và trạng thái
             đang ở chế độ xem; chúng ta sẽ mở chỉnh sửa
             những phần đó sau khi bổ sung kiểm tra dữ liệu.
           </p>
@@ -719,6 +720,20 @@
               maxlength="5000"
               required
             ></textarea>
+          </div>
+
+          <h3 class="section-title">Ảnh sản phẩm</h3>
+          <div class="field">
+            <label for="productImageSelect">Chọn ảnh trong thư viện</label>
+            <select id="productImageSelect" name="productImageSelect"></select>
+            <small class="hint">Chọn ảnh rồi bấm Lưu thay đổi để cập nhật sản phẩm. Ảnh mới có thể chờ Pages triển khai trước khi xem được.</small>
+          </div>
+          <div class="field">
+            <label for="productImageFile">Tải ảnh JPG, PNG hoặc WebP (tối đa 900 KB)</label>
+            <input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp">
+            <button id="uploadProductImage" type="button" class="button button-secondary" style="margin-top:8px">Tải ảnh lên thư viện</button>
+            <small id="uploadImageStatus" class="hint" role="status" aria-live="polite"></small>
+            <small class="hint">Tải lên sẽ tạo file ảnh ngay trên nhánh hiện tại. Sau đó cần bấm Lưu thay đổi để gắn ảnh vào sản phẩm.</small>
           </div>
 
           <div class="field">
@@ -811,8 +826,10 @@
       'use strict';
 
       const API = '/admin/api/content';
+      const MEDIA_API = '/admin/api/media';
 
       const fields = {
+        image: document.getElementById('productImageSelect'),
         name: document.getElementById('name'),
         short_description:
           document.getElementById('short_description'),
@@ -854,12 +871,16 @@
         previewFile:
           document.getElementById('previewFile'),
         viewProduct:
-          document.getElementById('viewProduct')
+          document.getElementById('viewProduct'),
+        imageFile: document.getElementById('productImageFile'),
+        imageUpload: document.getElementById('uploadProductImage'),
+        imageStatus: document.getElementById('uploadImageStatus')
       };
 
       let products = [];
       let current = null;
       let busy = false;
+      let media = [];
 
       function message(text, type = '') {
         elements.message.textContent = text;
@@ -918,6 +939,8 @@
 
         elements.save.disabled = value;
         elements.reload.disabled = value;
+        elements.imageFile.disabled = value;
+        elements.imageUpload.disabled = value;
 
         for (const input of Object.values(fields)) {
           input.disabled = value;
@@ -958,6 +981,56 @@
         }
 
         return data;
+      }
+
+      function renderImageChoices(selected = '') {
+        const select = fields.image;
+        select.replaceChildren();
+        // Preserve the current image even if the listing API is unavailable.
+        const choices = new Set([selected, ...media.map(item => item.path)].filter(Boolean));
+        for (const path of choices) {
+          const option = new Option(path, path);
+          select.add(option);
+        }
+        select.value = selected;
+      }
+
+      async function loadMedia() {
+        const result = await readJson(MEDIA_API);
+        media = Array.isArray(result.items) ? result.items : [];
+        renderImageChoices(fields.image.value || current?.data?.image || '');
+      }
+
+      async function uploadImage() {
+        if (busy || !current) return;
+        const file = elements.imageFile.files?.[0];
+        if (!file) {
+          elements.imageStatus.textContent = 'Hãy chọn một ảnh.';
+          return;
+        }
+        if (file.size < 1 || file.size > 900000 || !['image/jpeg','image/png','image/webp'].includes(file.type)) {
+          elements.imageStatus.textContent = 'Chỉ nhận JPG/PNG/WebP tối đa 900 KB.';
+          return;
+        }
+        if (!confirm('Tải ảnh lên nhánh thử nghiệm của GitHub?')) return;
+        setBusy(true);
+        elements.imageStatus.textContent = 'Đang tải ảnh lên...';
+        try {
+          const form = new FormData();
+          form.set('file', file);
+          const result = await readJson(MEDIA_API, { method: 'POST', body: form });
+          media = [...media.filter(item => item.path !== result.path), {
+            path: result.path, name: result.name
+          }];
+          renderImageChoices(result.path);
+          elements.previewImage.src = productImage(result.path);
+          elements.imageStatus.textContent = 'Đã tải ảnh. Bấm Lưu thay đổi để gắn vào sản phẩm.';
+          elements.imageFile.value = '';
+        } catch (error) {
+          elements.imageStatus.textContent = error.message;
+        } finally {
+          setBusy(false);
+        }
       }
 
       function productImage(value) {
@@ -1082,6 +1155,8 @@
         elements.title.textContent =
           'Chỉnh sửa: ' + data.name;
 
+        renderImageChoices(data.image);
+        elements.imageStatus.textContent = '';
         elements.previewImage.src =
           productImage(data.image);
 
@@ -1144,6 +1219,9 @@
           );
 
           showProduct(detail);
+          try { await loadMedia(); } catch (error) {
+            elements.imageStatus.textContent = 'Chưa tải được thư viện: ' + error.message;
+          }
           message('');
 
         } catch (error) {
@@ -1347,6 +1425,11 @@
             'Lưu thay đổi';
         }
       }
+
+      elements.imageUpload.addEventListener('click', uploadImage);
+      fields.image.addEventListener('change', () => {
+        if (current) elements.previewImage.src = productImage(fields.image.value);
+      });
 
       elements.editor.addEventListener(
         'submit',

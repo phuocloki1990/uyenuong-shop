@@ -1,3 +1,5 @@
+import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
+
 // functions/admin/api/media/index.js
 //
 // GET  /admin/api/media
@@ -23,49 +25,18 @@ const MAX_BYTES = 900_000;
 const ROOT = 'assets/images';
 const UPLOADS = 'assets/images/uploads';
 
-const BRANCH =
-  /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*$/;
-
 const json = (data, status = 200) =>
   Response.json(data, {
     status,
-    headers: {
-      'Cache-Control': 'no-store'
-    }
+    headers: { 'Cache-Control': 'no-store' }
   });
 
 function config(request, env) {
   if (!env.GITHUB_CONTENT_TOKEN) {
-    throw Object.assign(
-      new Error('Chưa cấu hình GitHub token.'),
-      { status: 503 }
-    );
+    throw Object.assign(new Error('Chưa cấu hình GitHub token.'), { status: 503 });
   }
-
-  const production =
-    new URL(request.url).hostname ===
-    'uyenuong-shop.pages.dev';
-
-  const branch = production
-    ? 'main'
-    : String(
-        env.GITHUB_CONTENT_BRANCH || ''
-      ).trim();
-
-  if (
-    !BRANCH.test(branch) ||
-    (!production && branch === 'main')
-  ) {
-    throw Object.assign(
-      new Error(
-        'Chưa cấu hình nhánh Preview hợp lệ.'
-      ),
-      { status: 503 }
-    );
-  }
-
   return {
-    branch,
+    branch: resolveContentBranch(request, env),
     token: env.GITHUB_CONTENT_TOKEN
   };
 }

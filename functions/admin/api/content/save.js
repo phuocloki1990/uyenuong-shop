@@ -33,6 +33,7 @@ const EDITABLE_FIELDS = {
     'short_description',
     'lead',
     'image_alt',
+    'image',
     'seo.title',
     'seo.description'
   ],
@@ -183,9 +184,9 @@ function validateChanges(kind, changes) {
 
   if (
     entries.length === 0 ||
-    entries.length > 6
+    entries.length > (kind === 'products' ? 7 : 6)
   ) {
-    return 'Cần thay đổi từ 1 đến 6 trường.';
+    return 'Số trường thay đổi không hợp lệ.';
   }
 
   for (const [field, value] of entries) {
@@ -200,6 +201,10 @@ function validateChanges(kind, changes) {
       value.includes('\u0000')
     ) {
       return `${field} phải là văn bản hợp lệ.`;
+    }
+
+    if (field === 'image' && !/^\/assets\/images\/(?:uploads\/)?[A-Za-z0-9_.-]+\.(?:jpe?g|png|webp)$/i.test(value)) {
+      return 'Đường dẫn ảnh không hợp lệ. Hãy chọn ảnh trong thư viện.';
     }
 
     if (
@@ -426,6 +431,25 @@ export async function onRequestPost(context) {
     }
 
     const branch = resolveContentBranch(request, env);
+
+    if (kind === 'products' && Object.hasOwn(changes, 'image')) {
+      // Avoid saving a broken image URL; confirm file exists in this branch.
+      const imagePath = changes.image.slice(1);
+      const imageCheck = await fetch(
+        `https://api.github.com/repos/${OWNER}/${REPO}/contents/${imagePath}?ref=${encodeURIComponent(branch)}`,
+        { headers: githubHeaders(token), cache: 'no-store' }
+      );
+      if (imageCheck.status === 404) {
+        return json({ success: false, message: 'Ảnh chưa tồn tại trên nhánh này. Hãy đợi tải ảnh hoàn tất.' }, 400);
+      }
+      if (!imageCheck.ok) {
+        return json({ success: false, message: 'Chưa kiểm tra được ảnh trên GitHub.' }, 502);
+      }
+      const imageEntry = await imageCheck.json();
+      if (imageEntry.type !== 'file') {
+        return json({ success: false, message: 'Đường dẫn ảnh không phải file.' }, 400);
+      }
+    }
 
     const filePath =
       `${FOLDERS[kind]}/${filename}`;
