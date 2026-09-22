@@ -23,15 +23,29 @@
     {
       "key": "wrap",
       "label": "Kiểu đóng gói",
-      "values": ["Hộp giấy"]
+      "values": [
+        "Hộp giấy"
+      ]
     }
   ],
   "price_rules": [],
   "details": [
-    {"label": "Trọng lượng", "value": "53g/bánh"},
-    {"label": "Đóng gói", "value": "Hộp giấy"},
-    {"label": "Số lượng tối thiểu", "value": "20 bánh"},
-    {"label": "Khu vực", "value": "TPHCM"}
+    {
+      "label": "Trọng lượng",
+      "value": "53g/bánh"
+    },
+    {
+      "label": "Đóng gói",
+      "value": "Hộp giấy"
+    },
+    {
+      "label": "Số lượng tối thiểu",
+      "value": "20 bánh"
+    },
+    {
+      "label": "Khu vực",
+      "value": "TPHCM"
+    }
   ],
   "features": [
     "53g/bánh: trọng lượng cố định cho sản phẩm.",
@@ -40,12 +54,22 @@
     "Shop xác nhận trước: CSKH sẽ liên hệ lại sau khi tiếp nhận yêu cầu."
   ],
   "faq": [
-    {"question": "Loại này có lá dừa không?", "answer": "Không. Bánh phu thê miền Bắc hiện chỉ có đóng gói hộp giấy."},
-    {"question": "Có nhận đặt 70 hoặc 105 bánh không?", "answer": "Có thể. Shop sẽ tiếp nhận và xác nhận lại theo từng yêu cầu cụ thể."},
-    {"question": "Website có hiện giá chính xác chưa?", "answer": "Chưa. Sản phẩm này đang để giá liên hệ để Shop tư vấn theo nhu cầu."}
+    {
+      "question": "Loại này có lá dừa không?",
+      "answer": "Không. Bánh phu thê miền Bắc hiện chỉ có đóng gói hộp giấy."
+    },
+    {
+      "question": "Có nhận đặt 70 hoặc 105 bánh không?",
+      "answer": "Có thể. Shop sẽ tiếp nhận và xác nhận lại theo từng yêu cầu cụ thể."
+    },
+    {
+      "question": "Website có hiện giá chính xác chưa?",
+      "answer": "Chưa. Sản phẩm này đang để giá liên hệ để Shop tư vấn theo nhu cầu."
+    }
   ],
   "seo": {
     "title": "Bánh phu thê miền Bắc tại TPHCM | Shop Uyên Ương",
     "description": "Đặt bánh phu thê miền Bắc tại TPHCM. Vỏ bánh không có sợi dừa, nhân đậu xanh, đóng gói hộp giấy, nhận từ 20 bánh."
-  }
+  },
+  "image_alt": "Bánh phu thê miền bắc"
 }
