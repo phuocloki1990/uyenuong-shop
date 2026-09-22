@@ -1,20 +1,20 @@
 {
   "version": 1,
   "pages": {
-    "san-pham/banh-phu-the-hue-tphcm.html": "5055cb08d9b56b5577036372423cf1696f3e1ca79b502336c0879dba131d4da3",
-    "san-pham/banh-phu-the-mien-bac-tphcm.html": "9447224d627c5b58e3776f92174281d1a277185cf4315a02281894ff6487711b",
+    "san-pham/banh-phu-the-hue-tphcm.html": "aaebb5bd2fb2103ec9b39458f517a5fdb2005b6356ccc565bd312952b56a7397",
+    "san-pham/banh-phu-the-mien-bac-tphcm.html": "7f95fc28f1c84f1cd8cbe097ff5d6f899e0579cab07c0839850d4e0ccac7fe10",
     "san-pham/banh-phuc-linh-tphcm.html": "32740a4bf2385695ce7d80b37fc2fe126da1406e4374271beb13c309717b9ef8",
     "san-pham/mam-qua-cuoi-tphcm.html": "287d9d2a20db4c7ff4d06f314384a39229eb060018432a232c07fa9dbd6c1948",
     "cam-nang/goi-y-chon-mam-qua-4-mam-va-6-mam.html": "78ca0279eea2118c0e49c3727c0a7351e2993696eba775afb9fc15fb0fa49911",
     "cam-nang/mam-qua-cuoi-gom-nhung-gi.html": "621280447096bc08673b3935d435e785efbf08b68886fd594a76ef724737ad12",
-    "cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html": "41ea4c6c9db4bfc43120546edeb74c4a7c18a37347e5b08c0d886a5a2b73b3bd",
+    "cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html": "71d245164fe8981aeb5b3408682eac35ca767eb9f794d9f321aba2c51e7fb502",
     "chuyen-muc/banh-cuoi-bai-viet.html": "8acc1d3d281377a539658022b81982c8c93e9f798084b339b8b3046accd68c7d",
-    "chuyen-muc/banh-cuoi-hoi.html": "a1a8ba96bdbe0681a465c94b9a0972f9a8afa8e93f1ddc24b4f2356b8826d09d",
+    "chuyen-muc/banh-cuoi-hoi.html": "44eb1428856956de75e0888ddf06751295c1a45459d4bd6f1b6a0bcd85c03632",
     "chuyen-muc/banh-phuc-linh.html": "be3cef3ce7abb628438cb07c40176f5c8b09f717446daa1a4c8638a4c7de76f0",
     "chuyen-muc/cam-nang-cuoi.html": "ea2fb79a62385c35da03fd88598174cf8dd32f0ad47a77b70f3de1edfd367ea2",
     "chuyen-muc/mam-qua-cuoi-bai-viet.html": "1701a4aa337f3512b175dad1a8c733eee85bbe5f51ca37ac699674c9f03979c2",
     "chuyen-muc/mam-qua-cuoi.html": "65b399ce31773e26901532b6aa5d15f4b190101e5882fef5f72c452e4c742b63",
-    "assets/js/cms-catalog.js": "463b7306ae0b5504968f99cfe4e5caa6b90bec020a8173f76ee84d9cd72f7473",
+    "assets/js/cms-catalog.js": "e6d0671931b4e1dedbbfb02c193f9bbf28ef8a8b4d359a1ff65da1c2103f6149",
     "scripts/generated/product-catalog.mjs": "50a49cbda9a540b8f944052c5f58410214eaff45039c4a554a0ac93825e73c04"
   }
 }
