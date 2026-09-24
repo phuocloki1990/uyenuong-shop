@@ -146,7 +146,7 @@ test('new published product enters pages and trusted catalog; hiding removes bot
   assert.doesNotMatch(fs.readFileSync(path.join(temp,'scripts/generated/product-catalog.mjs'),'utf8'),/newcake/);
 });
 test('API URL edit persists redirect automatically without renaming JSON identity',async t=>{
-  const gh=mockGithub(t),changed={...structuredClone(item),slug:'banh-phu-the-hue-moi'};
+  const gh = mockGithub(t), changed = {  ...structuredClone(item), slug: 'banh-phu-the-hue-moi', image_alt: 'Bánh phu thê Huế nhân đậu xanh có sợi dừa'};
   const response=await onRequestPost(req(changed,{mode:'update',filename:'banh-phu-the-hue.json',sha:'a'.repeat(40)}));
   assert.equal(response.status,200,JSON.stringify(await response.clone().json()));
   assert.equal(gh.commits[0].relative,'content/products/banh-phu-the-hue.json');
