@@ -2,78 +2,1380 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
   <title>Quản lý sản phẩm | Shop Uyên Ương</title>
-  <link rel="stylesheet" href="/admin/products.css">
-  <script type="module" src="/assets/js/admin-products.js"></script>
+
+  <style>
+    :root {
+      --bg: #f7f8f6;
+      --surface: #ffffff;
+      --text: #24332b;
+      --muted: #6b776e;
+      --green: #26583d;
+      --green-dark: #19432d;
+      --green-light: #edf5ef;
+      --border: #dce5dd;
+      --red: #a33b37;
+      --red-light: #fff0ee;
+      --radius: 15px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family:
+        "Be Vietnam Pro",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .back-link {
+      white-space: nowrap;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    main {
+      padding: 28px 0 48px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 32px);
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 17px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-weight: 650;
+      font-size: 13px;
+      text-decoration: none;
+      transition: background .15s;
+    }
+
+    .button:hover {
+      text-decoration: none;
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--green);
+    }
+
+    .button-primary:hover {
+      background: var(--green-dark);
+    }
+
+    .button-secondary {
+      color: var(--green);
+      background: white;
+      border-color: var(--border);
+    }
+
+    .button-secondary:hover {
+      background: var(--green-light);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .search {
+      width: min(380px, 100%);
+      min-height: 43px;
+      padding: 10px 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      outline-color: var(--green);
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-message {
+      margin: 0 0 16px;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      font-size: 13px;
+    }
+
+    .status-message.error {
+      color: var(--red);
+      border-color: #efc7c3;
+      background: var(--red-light);
+    }
+
+    .status-message.success {
+      color: var(--green-dark);
+      border-color: #bdddc6;
+      background: var(--green-light);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .products {
+      padding: 8px;
+    }
+
+    .product-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      background: white;
+      text-align: left;
+    }
+
+    .product-row:hover {
+      background: #f4f7f3;
+    }
+
+    .product-row.active {
+      border-color: #b8d4c0;
+      background: var(--green-light);
+    }
+
+    .product-row img {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 auto;
+      object-fit: cover;
+      border-radius: 9px;
+      background: #edf0ec;
+    }
+
+    .product-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .product-info strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .product-info small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+      margin-top: 3px;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: #e9f4eb;
+      color: #23633b;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge.draft {
+      background: #fff3dd;
+      color: #8a610d;
+    }
+
+    .badge.hidden {
+      background: #eceeef;
+      color: #687078;
+    }
+
+    .editor-body {
+      padding: 20px;
+    }
+
+    .empty {
+      padding: 48px 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .product-summary {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fafcf9;
+    }
+
+    .product-summary img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #eef1ee;
+    }
+
+    .product-summary strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .product-summary small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      font-size: 12px;
+    }
+
+    .section-title {
+      margin: 24px 0 12px;
+      font-size: 15px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 9px;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: 11px 12px;
+      color: var(--text);
+      background: white;
+      border: 1px solid #cfdad0;
+      border-radius: 9px;
+      outline-color: var(--green);
+      font-size: 13px;
+    }
+
+    .field textarea {
+      min-height: 93px;
+      resize: vertical;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .read-only {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .read-only > div {
+      padding: 10px 12px;
+      background: #f6f8f5;
+      border-radius: 9px;
+      min-width: 0;
+    }
+
+    .read-only small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .read-only strong {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      margin: 0 0 20px;
+      padding: 12px 14px;
+      background: #fff8e9;
+      border: 1px solid #efdfb6;
+      border-radius: 9px;
+      color: #6b5728;
+      font-size: 12px;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 22px -20px -20px;
+      padding: 14px 20px;
+      background: white;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 850px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .wrap {
+        width: min(100% - 22px, 1180px);
+      }
+
+      main {
+        padding-top: 20px;
+      }
+
+      .topbar-inner {
+        min-height: 69px;
+      }
+
+      .brand strong {
+        font-size: 14px;
+      }
+
+      .brand small {
+        font-size: 11px;
+      }
+
+      .read-only {
+        grid-template-columns: 1fr;
+      }
+
+      .actions .button {
+        flex: 1;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header class="topbar"><div class="wrap topbar-inner">
-  <a href="/admin/" class="brand"><img src="/assets/images/logo.jpg" alt=""><span><strong>Shop Uyên Ương</strong><small>Quản trị nội bộ</small></span></a>
-  <a class="back-link" href="/admin/">← Tổng quan</a>
-</div></header>
-<main class="wrap">
-  <div class="heading"><div><h1>Quản lý sản phẩm</h1><p class="muted">Tạo mới và cập nhật sản phẩm. Dữ liệu được lưu vào GitHub, website cập nhật sau khi triển khai.</p></div>
-  <div class="heading-actions"><button class="button ghost" id="reloadProducts" type="button">↻ Tải lại</button><button class="button primary" id="newProduct" type="button">＋ Tạo sản phẩm</button></div></div>
-  <div id="message" class="message" role="status" aria-live="polite" hidden></div>
-  <div class="toolbar"><input type="search" id="search" placeholder="Tìm tên, mã hoặc đường dẫn..." aria-label="Tìm sản phẩm"><select id="statusFilter" aria-label="Lọc trạng thái"><option value="">Tất cả trạng thái</option><option value="published">Đã xuất bản</option><option value="draft">Bản nháp</option><option value="hidden">Đã ẩn</option></select><span id="productCount" class="muted">Đang tải…</span></div>
-  <div class="layout">
-    <section class="panel products-panel"><div class="panel-head"><h2>Danh sách sản phẩm</h2><p>Chọn sản phẩm để sửa hoặc bấm Tạo sản phẩm.</p></div><div id="products" class="products"></div></section>
-    <section class="panel editor-panel"><div class="panel-head"><h2 id="editorTitle">Chỉnh sửa sản phẩm</h2><p id="editorSubtitle">Các trường được lưu thật khi xác nhận.</p></div>
-      <div class="empty" id="editorEmpty">Chọn một sản phẩm bên trái hoặc tạo sản phẩm mới để bắt đầu.</div>
-      <form id="editor" class="editor" novalidate hidden>
-        <div class="editor-top"><div><span id="modeBadge" class="pill">Chỉnh sửa</span><span id="dirtyBadge" class="pill warning" hidden>Chưa lưu</span></div><a id="viewProduct" href="#" target="_blank" rel="noopener" hidden>Xem trang bán hàng ↗</a></div>
-        <p class="intro-note">Dấu <strong>*</strong> là thông tin cần nhập. Mỗi nhóm có <strong>Hướng dẫn ngắn</strong> và các ví dụ dễ làm theo. Sản phẩm mới được lưu ở trạng thái <strong>Bản nháp</strong> trước khi xuất bản.</p>
-        <section class="group" aria-labelledby="identityTitle"><h3 id="identityTitle">1. Thông tin nhận diện</h3>
-          <details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Đặt tên theo cách khách nhận biết. Mã nội bộ dùng cho đơn hàng và không đổi sau khi tạo. Đường dẫn là phần cuối địa chỉ trang, dùng chữ thường không dấu và dấu gạch ngang.</p></details>
-          <div class="form-grid"><div class="field"><label for="id">Mã nội bộ *</label><input id="id" name="id" placeholder="Ví dụ: phuthehue" maxlength="80" required autocomplete="off" pattern="[A-Za-z0-9_-]+"><small>Chỉ nhập lúc tạo mới. Không sửa được sau khi lưu sản phẩm lần đầu.</small></div>
-          <div class="field"><label for="name">Tên sản phẩm *</label><input id="name" name="name" placeholder="Ví dụ: Bánh phu thê Huế" maxlength="200" required><small>Tên hiển thị trên website và yêu cầu đặt hàng.</small></div></div>
-          <div class="field"><label for="slug">Đường dẫn trang (slug) *</label><input id="slug" name="slug" placeholder="Ví dụ: banh-phu-the-hue-tphcm" maxlength="100" required pattern="[a-z0-9]+(-[a-z0-9]+)*"><small>Đổi URL sẽ ảnh hưởng liên kết cũ. Hệ thống sẽ kiểm tra và bổ sung chuyển hướng 301.</small><div id="slugPreview" class="preview-url"></div></div>
-          <div class="form-grid"><div class="field"><label for="category">Chuyên mục *</label><select id="category" name="category" required><option value="">-- Chọn chuyên mục --</option></select><small>Ví dụ: Bánh phục linh tách riêng khỏi Bánh cưới hỏi.</small></div>
-          <div class="field"><label for="status">Trạng thái *</label><select id="status" name="status"><option value="draft">Bản nháp – chưa hiện trên web</option><option value="published">Đã xuất bản – khách có thể đặt</option><option value="hidden">Đã ẩn – ngừng nhận đơn mới</option></select><small>Xuất bản và ẩn sẽ được cảnh báo trước khi lưu.</small></div></div>
-          <div class="form-grid"><div class="field checkbox-line"><label><input type="checkbox" id="featured"> Hiển thị ở mục sản phẩm nổi bật</label><small>Chỉ sản phẩm đã xuất bản mới hiện ngoài trang chủ.</small></div><div class="field"><label for="featured_order">Thứ tự nổi bật</label><input type="number" id="featured_order" placeholder="Ví dụ: 1" step="1" min="0"><small>Số nhỏ sẽ hiển thị trước.</small></div></div>
-        </section>
-        <section class="group" aria-labelledby="imageTitle"><h3 id="imageTitle">2. Hình ảnh sản phẩm</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Chọn hình trực tiếp trong thư viện hoặc tải ảnh mới. <strong>Tải ảnh lên thư viện chưa đổi ảnh sản phẩm</strong>; sau khi chọn ảnh, bấm Lưu và xác nhận. JPG/PNG/WebP, tối đa 900 KB.</p></details>
-          <div class="image-pair"><div class="image-box"><b>Ảnh đã lưu</b><img id="savedImage" alt="Ảnh đại diện đang lưu" src="/assets/images/logo.jpg"><span id="savedImageName" class="muted"></span></div><div class="image-box selected-box"><b>Ảnh đang chọn</b><img id="selectedImage" alt="Ảnh đang chọn" src="/assets/images/logo.jpg"><span id="selectedImageName" class="muted"></span></div></div>
-          <div class="media-tools"><label class="sr-only" for="mediaSearch">Tìm ảnh trong thư viện</label><input type="search" id="mediaSearch" placeholder="Tìm ảnh theo tên file..."><button class="button ghost" type="button" id="refreshMedia">↻ Thư viện</button></div>
-          <div id="mediaGallery" class="gallery" role="group" aria-label="Chọn ảnh trong thư viện"></div><p id="mediaCount" class="muted small"></p>
-          <div class="upload-box"><label for="productImageFile">Thêm ảnh mới vào thư viện (không tự đổi sản phẩm)</label><input id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp"><button class="button ghost" id="uploadProductImage" type="button">Tải ảnh lên thư viện</button><p id="uploadImageStatus" class="small" role="status" aria-live="polite"></p></div>
-          <div class="field"><label for="image_alt">Mô tả ảnh (Alt)</label><input id="image_alt" name="image_alt" placeholder="Ví dụ: Bánh phu thê Huế gói lá dừa" maxlength="200"><small>Mô tả những gì có trong ảnh; không cần nhồi từ khóa. Cần nhập khi xuất bản.</small></div>
-          <div class="field"><label>Đường dẫn ảnh đã chọn</label><div class="path-line"><code id="selectedPath">Chưa chọn ảnh</code><button type="button" id="copyImagePath" class="button ghost">Sao chép</button><button type="button" id="resetImage" class="button ghost">Chọn lại ảnh gốc</button></div></div>
-        </section>
-        <section class="group" aria-labelledby="copyTitle"><h3 id="copyTitle">3. Nội dung bán hàng</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Mô tả ngắn là câu giới thiệu dễ đọc trên thẻ sản phẩm. Nội dung đầu trang giải thích sản phẩm ở trang chi tiết; viết rõ đặc điểm và cách đặt.</p></details>
-          <div class="field"><label for="short_description">Mô tả ngắn</label><textarea id="short_description" maxlength="5000" placeholder="Ví dụ: Bánh phu thê Huế, nhận từ 20 bánh, có hai cách đóng gói..."></textarea><small>Bắt buộc trước khi xuất bản.</small></div>
-          <div class="field"><label for="lead">Nội dung đầu trang</label><textarea id="lead" maxlength="5000" placeholder="Ví dụ: Nhận đặt bánh phu thê Huế tại TPHCM..."></textarea><small>Bắt buộc trước khi xuất bản.</small></div>
-          <div class="field"><label>Hai thông tin ngắn trên thẻ sản phẩm</label><div id="card_highlights" class="repeater"></div><button type="button" class="button ghost add-row" data-add="card_highlights">＋ Thêm thông tin (tối đa 2)</button><small>Ví dụ: “53g/bánh”, “Nhận từ 20 bánh”.</small></div>
-        </section>
-        <section class="group" aria-labelledby="priceTitle"><h3 id="priceTitle">4. Giá bán và số lượng</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p><strong>Giá liên hệ:</strong> shop xác nhận sau. <strong>Giá cố định:</strong> đơn giá một cái × số lượng. <strong>Giá theo quy cách:</strong> tổng tiền cho đúng số lượng và lựa chọn, không nhân thêm lần nữa. Số lượng chưa có giá vẫn gửi yêu cầu để shop báo sau.</p></details>
-          <div class="form-grid"><div class="field"><label for="price_mode">Cách tính giá *</label><select id="price_mode"><option value="contact">Giá liên hệ</option><option value="fixed">Đơn giá cố định</option><option value="hybrid">Theo quy cách cụ thể</option></select></div><div class="field"><label for="price_text">Chữ giá hiển thị</label><input id="price_text" maxlength="200" placeholder="Ví dụ: Giá liên hệ hoặc Từ 180.000đ"><small>Bắt buộc trước khi xuất bản; không tự suy ra từ đơn giá.</small></div></div>
-          <div id="fixedPriceField" class="field" hidden><label for="base_price">Đơn giá (VNĐ) *</label><input id="base_price" type="number" min="1" step="1" placeholder="Ví dụ: 10000"><small>Nhập giá của một bánh/cái/bộ; hệ thống nhân với số lượng khách đặt.</small></div>
-          <div class="form-grid"><div class="field"><label for="quantity_label">Tên ô số lượng *</label><input id="quantity_label" placeholder="Ví dụ: Số lượng bánh" required></div><div class="field"><label for="quantity_unit">Đơn vị *</label><input id="quantity_unit" placeholder="Ví dụ: bánh, cái, bộ" required></div><div class="field"><label for="quantity_min">Ít nhất *</label><input id="quantity_min" type="number" min="1" step="1" placeholder="Ví dụ: 20" required></div><div class="field"><label for="quantity_default">Số lượng gợi ý *</label><input id="quantity_default" type="number" min="1" step="1" placeholder="Ví dụ: 20" required></div><div class="field"><label for="quantity_step">Bước tăng *</label><input id="quantity_step" type="number" min="1" step="1" placeholder="Ví dụ: 1" required></div></div>
-          <div class="field"><label for="quantity_hint">Hướng dẫn số lượng cho khách</label><textarea id="quantity_hint" placeholder="Ví dụ: Nhận từ 20 bánh, nhập số lượng tự do; shop xác nhận lại."></textarea><small>Bánh phu thê nhập số lượng tự do từ 20: để bước tăng là 1.</small></div>
-          <h4>Nhóm lựa chọn sản phẩm</h4><p class="muted small">Ví dụ: mã <code>flavor</code>, tên “Số vị”, các giá trị “2 vị”, “5 vị”. Mã nhóm dùng để nối với bảng giá; sửa mã có thể làm giá không còn khớp.</p>
-          <div id="option_groups" class="repeater"></div><button type="button" class="button ghost add-row" data-add="option_groups">＋ Thêm nhóm lựa chọn</button>
-          <div id="priceRuleArea"><h4>Bảng tổng giá theo quy cách</h4><p class="muted small">Mỗi dòng là <strong>tổng giá</strong> cho đúng số lượng và các lựa chọn ở dòng đó. Không thêm dòng nếu chưa có giá chính xác.</p><div id="price_rules" class="repeater"></div><button type="button" class="button ghost add-row" data-add="price_rules">＋ Thêm dòng giá</button></div>
-        </section>
-        <section class="group" aria-labelledby="detailsTitle"><h3 id="detailsTitle">5. Thông tin chi tiết và câu hỏi</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Chỉ điền thông tin shop có thể xác nhận. Ví dụ trọng lượng 53g/bánh, đóng gói hộp giấy, mâm quả cần đặt trước 3–5 ngày. Thêm từng dòng khi cần, không nhập JSON.</p></details>
-          <h4>Thông tin chi tiết</h4><div id="details" class="repeater"></div><button type="button" class="button ghost add-row" data-add="details">＋ Thêm chi tiết</button>
-          <h4>Điểm nổi bật</h4><div id="features" class="repeater"></div><button type="button" class="button ghost add-row" data-add="features">＋ Thêm điểm nổi bật</button>
-          <h4>Câu hỏi thường gặp</h4><div id="faq" class="repeater"></div><button type="button" class="button ghost add-row" data-add="faq">＋ Thêm câu hỏi</button>
-        </section>
-        <section class="group" aria-labelledby="relatedTitle"><h3 id="relatedTitle">6. Nội dung liên quan</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Chọn sản phẩm hoặc bài viết có liên quan; không cần nhớ hay nhập mã. Mỗi nhóm tối đa 6 nội dung.</p></details><div class="form-grid"><div class="field"><label>Sản phẩm liên quan</label><div id="related_products" class="check-options"></div></div><div class="field"><label>Bài viết liên quan</label><div id="related_articles" class="check-options"></div></div></div></section>
-        <section class="group" aria-labelledby="seoTitle"><h3 id="seoTitle">7. Tìm kiếm và đường dẫn cũ (SEO)</h3><details class="short-help"><summary>Hướng dẫn ngắn</summary><p>Tiêu đề SEO là dòng tiêu đề trên Google; mô tả SEO giới thiệu ngắn nội dung. Khi đổi đường dẫn, website phải giữ chuyển hướng từ đường dẫn cũ để khách vẫn truy cập được.</p></details>
-          <div class="field"><label for="seo_title">Tiêu đề SEO</label><input id="seo_title" maxlength="70" placeholder="Ví dụ: Bánh phu thê Huế tại TPHCM | Shop Uyên Ương"><small><span id="seoTitleCount">0/70</span> ký tự. Cần nhập khi xuất bản.</small></div>
-          <div class="field"><label for="seo_description">Mô tả SEO</label><textarea id="seo_description" maxlength="180" placeholder="Ví dụ: Nhận đặt bánh phu thê Huế tại TPHCM..."></textarea><small><span id="seoDescriptionCount">0/180</span> ký tự. Cần nhập khi xuất bản.</small></div>
-          <div class="field"><label for="seo_focus_keyword">Từ khóa chính (không bắt buộc)</label><input id="seo_focus_keyword" placeholder="Ví dụ: bánh phu thê Huế"></div>
-          <div class="field"><label>Từ khóa phụ</label><div id="secondary_keywords" class="repeater"></div><button type="button" class="button ghost add-row" data-add="secondary_keywords">＋ Thêm từ khóa</button></div>
-          <div class="field"><label>Các URL cũ đang chuyển hướng</label><div id="redirects" class="read-paths"></div><small>Hệ thống tự thêm URL cũ khi đổi slug. Không xóa chuyển hướng đã lưu trong lần sửa này.</small></div>
-        </section>
-        <div class="sticky-actions"><div class="save-state" id="saveState">Chưa có thay đổi</div><div class="action-buttons"><button class="button ghost" id="discardChanges" type="button">Khôi phục dữ liệu</button><button class="button primary" id="saveProduct" type="submit" disabled>Lưu thay đổi</button></div></div>
-      </form>
-    </section>
-  </div>
-</main>
-<dialog id="confirmDialog" aria-labelledby="confirmTitle"><div class="dialog-body"><h2 id="confirmTitle">Kiểm tra trước khi lưu</h2><p id="confirmIntro" class="muted"></p><div id="confirmChanges" class="diff-list"></div><p class="intro-note" id="confirmWarning"></p><div class="dialog-actions"><button class="button ghost" type="button" id="cancelSave">Quay lại sửa</button><button class="button primary" type="button" id="confirmSave">Xác nhận lưu</button></div></div></dialog>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+
+      <div class="brand">
+        <img
+          src="/assets/images/logo.jpg"
+          alt="Logo Shop Uyên Ương"
+        >
+
+        <div>
+          <strong>Shop Uyên Ương</strong>
+          <small>Quản trị nội bộ</small>
+        </div>
+      </div>
+
+      <a class="back-link" href="/admin/">
+        ← Tổng quan
+      </a>
+
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <div class="heading">
+
+      <div>
+        <h1>Quản lý sản phẩm</h1>
+        <p class="subtitle">
+          Chỉnh sửa nội dung sản phẩm ngay trong Admin.
+          Dữ liệu được lưu về GitHub.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="button button-secondary"
+        id="reloadProducts"
+      >
+        ↻ Tải lại
+      </button>
+
+    </div>
+
+    <div
+      id="message"
+      class="status-message"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+    <div class="toolbar">
+
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Tìm tên hoặc mã sản phẩm..."
+        aria-label="Tìm sản phẩm"
+      >
+
+      <span class="count" id="productCount">
+        Đang tải sản phẩm...
+      </span>
+
+    </div>
+
+    <div class="layout">
+
+      <!-- DANH SÁCH SẢN PHẨM -->
+
+      <section class="panel">
+
+        <div class="panel-head">
+          <h2>Danh sách sản phẩm</h2>
+          <p>Chọn sản phẩm để xem và chỉnh sửa.</p>
+        </div>
+
+        <div
+          class="products"
+          id="products"
+        ></div>
+
+      </section>
+
+      <!-- CHỈNH SỬA SẢN PHẨM -->
+
+      <section class="panel">
+
+        <div class="panel-head">
+          <h2 id="editorTitle">
+            Chỉnh sửa sản phẩm
+          </h2>
+
+          <p>
+            Những trường có ô nhập bên dưới
+            đều có thể lưu thật lên GitHub.
+          </p>
+        </div>
+
+        <div
+          id="editorEmpty"
+          class="empty"
+        >
+          Chọn một sản phẩm ở danh sách bên trái
+          để bắt đầu chỉnh sửa.
+        </div>
+
+        <form
+          id="editor"
+          class="editor-body"
+          hidden
+        >
+
+          <div class="product-summary">
+
+            <img
+              id="previewImage"
+              src=""
+              alt="Ảnh sản phẩm"
+            >
+
+            <div>
+              <strong id="previewName"></strong>
+              <small id="previewFile"></small>
+            </div>
+
+          </div>
+
+          <div class="read-only">
+
+            <div>
+              <small>Mã nội bộ</small>
+              <strong id="readId"></strong>
+            </div>
+
+            <div>
+              <small>Slug trang bán hàng</small>
+              <strong id="readSlug"></strong>
+            </div>
+
+            <div>
+              <small>Chuyên mục</small>
+              <strong id="readCategory"></strong>
+            </div>
+
+            <div>
+              <small>Trạng thái</small>
+              <strong id="readStatus"></strong>
+            </div>
+
+            <div>
+              <small>Cách hiển thị giá</small>
+              <strong id="readPriceMode"></strong>
+            </div>
+
+            <div>
+              <small>Giá hiện tại</small>
+              <strong id="readPriceText"></strong>
+            </div>
+
+          </div>
+
+          <p class="note">
+            Giai đoạn này chỉ chỉnh sửa nội dung văn bản
+            và SEO. Giá, số lượng, quy cách, ảnh và trạng thái
+            đang ở chế độ xem; chúng ta sẽ mở chỉnh sửa
+            những phần đó sau khi bổ sung kiểm tra dữ liệu.
+          </p>
+
+          <h3 class="section-title">
+            Thông tin sản phẩm
+          </h3>
+
+          <div class="field">
+            <label for="name">
+              Tên sản phẩm *
+            </label>
+
+            <input
+              id="name"
+              name="name"
+              type="text"
+              maxlength="200"
+              required
+            >
+          </div>
+
+          <div class="field">
+            <label for="short_description">
+              Mô tả ngắn *
+            </label>
+
+            <textarea
+              id="short_description"
+              name="short_description"
+              maxlength="5000"
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="lead">
+              Nội dung đầu trang chi tiết *
+            </label>
+
+            <textarea
+              id="lead"
+              name="lead"
+              maxlength="5000"
+              required
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="image_alt">
+              Mô tả ảnh (Alt)
+            </label>
+
+            <input
+              id="image_alt"
+              name="image_alt"
+              type="text"
+              maxlength="200"
+            >
+
+            <small class="hint">
+              Mô tả đúng nội dung ảnh,
+              không cần nhồi từ khóa.
+            </small>
+          </div>
+
+          <h3 class="section-title">
+            SEO
+          </h3>
+
+          <div class="field">
+            <label for="seo_title">
+              SEO title
+            </label>
+
+            <input
+              id="seo_title"
+              name="seo_title"
+              type="text"
+              maxlength="70"
+            >
+
+            <small class="hint">
+              Tối đa 70 ký tự theo cấu hình CMS.
+            </small>
+          </div>
+
+          <div class="field">
+            <label for="seo_description">
+              Meta description
+            </label>
+
+            <textarea
+              id="seo_description"
+              name="seo_description"
+              maxlength="180"
+            ></textarea>
+
+            <small class="hint">
+              Tối đa 180 ký tự theo cấu hình CMS.
+            </small>
+          </div>
+
+          <div class="actions">
+
+            <a
+              id="viewProduct"
+              class="button button-secondary"
+              href="#"
+              target="_blank"
+              rel="noopener"
+            >
+              Xem trang bán hàng ↗
+            </a>
+
+            <button
+              id="saveProduct"
+              class="button button-primary"
+              type="submit"
+            >
+              Lưu thay đổi
+            </button>
+
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const API = '/admin/api/content';
+
+      const fields = {
+        name: document.getElementById('name'),
+        short_description:
+          document.getElementById('short_description'),
+        lead: document.getElementById('lead'),
+        image_alt:
+          document.getElementById('image_alt'),
+        'seo.title':
+          document.getElementById('seo_title'),
+        'seo.description':
+          document.getElementById('seo_description')
+      };
+
+      const labels = {
+        published: 'Đang hiển thị',
+        draft: 'Bản nháp',
+        hidden: 'Tạm ẩn'
+      };
+
+      const priceLabels = {
+        contact: 'Giá liên hệ',
+        fixed: 'Giá cố định',
+        hybrid: 'Giá theo quy cách'
+      };
+
+      const elements = {
+        list: document.getElementById('products'),
+        count: document.getElementById('productCount'),
+        search: document.getElementById('search'),
+        message: document.getElementById('message'),
+        editor: document.getElementById('editor'),
+        empty: document.getElementById('editorEmpty'),
+        title: document.getElementById('editorTitle'),
+        save: document.getElementById('saveProduct'),
+        reload: document.getElementById('reloadProducts'),
+        previewImage:
+          document.getElementById('previewImage'),
+        previewName:
+          document.getElementById('previewName'),
+        previewFile:
+          document.getElementById('previewFile'),
+        viewProduct:
+          document.getElementById('viewProduct')
+      };
+
+      let products = [];
+      let current = null;
+      let busy = false;
+
+      function message(text, type = '') {
+        elements.message.textContent = text;
+        elements.message.className =
+          'status-message' +
+          (type ? ` ${type}` : '');
+
+        elements.message.hidden = !text;
+      }
+
+      function setText(id, value) {
+        document.getElementById(id).textContent =
+          String(value ?? '—');
+      }
+
+      function getField(data, key) {
+        if (key.startsWith('seo.')) {
+          return data.seo?.[key.slice(4)] ?? '';
+        }
+
+        return data[key] ?? '';
+      }
+
+      function getChanges() {
+        if (!current) return {};
+
+        const changes = {};
+
+        for (const [key, input] of Object.entries(fields)) {
+          const original =
+            String(getField(current.data, key));
+
+          if (input.value !== original) {
+            changes[key] = input.value;
+          }
+        }
+
+        return changes;
+      }
+
+      function isDirty() {
+        return Object.keys(getChanges()).length > 0;
+      }
+
+      function confirmDiscard() {
+        if (!isDirty()) return true;
+
+        return confirm(
+          'Anh có thay đổi chưa lưu. ' +
+          'Bỏ các thay đổi để tiếp tục?'
+        );
+      }
+
+      function setBusy(value) {
+        busy = value;
+
+        elements.save.disabled = value;
+        elements.reload.disabled = value;
+
+        for (const input of Object.values(fields)) {
+          input.disabled = value;
+        }
+      }
+
+      async function readJson(url, options) {
+        const response = await fetch(
+          url,
+          {
+            credentials: 'same-origin',
+            cache: 'no-store',
+            ...options
+          }
+        );
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(
+            'Không đọc được phản hồi API. ' +
+            'Hãy kiểm tra đăng nhập Cloudflare Access.'
+          );
+        }
+
+        if (!response.ok || data.success === false) {
+          const error = new Error(
+            data.message ||
+            `API trả về lỗi ${response.status}`
+          );
+
+          error.status = response.status;
+          error.data = data;
+
+          throw error;
+        }
+
+        return data;
+      }
+
+      function productImage(value) {
+        return (
+          typeof value === 'string' &&
+          value.startsWith('/assets/images/') &&
+          !value.includes('..')
+        )
+          ? value
+          : '/assets/images/logo.jpg';
+      }
+
+      function createProductRow(product) {
+        const button = document.createElement('button');
+
+        button.type = 'button';
+        button.className = 'product-row';
+
+        if (
+          current &&
+          current.filename === product.filename
+        ) {
+          button.classList.add('active');
+        }
+
+        const img = document.createElement('img');
+
+        img.src = productImage(product.image);
+        img.alt = product.name || 'Sản phẩm';
+        img.loading = 'lazy';
+
+        const info = document.createElement('div');
+
+        info.className = 'product-info';
+
+        const name = document.createElement('strong');
+
+        name.textContent =
+          product.name || product.filename;
+
+        const filename = document.createElement('small');
+
+        filename.textContent = product.filename;
+
+        const badge = document.createElement('span');
+
+        badge.className =
+          'badge' +
+          (
+            product.status === 'draft'
+              ? ' draft'
+              : product.status === 'hidden'
+                ? ' hidden'
+                : ''
+          );
+
+        badge.textContent =
+          labels[product.status] ||
+          'Chưa xác định';
+
+        info.append(name, filename, badge);
+
+        button.append(img, info);
+
+        button.addEventListener('click', () => {
+          openProduct(product);
+        });
+
+        return button;
+      }
+
+      function renderList() {
+        const term =
+          elements.search.value
+            .trim()
+            .toLocaleLowerCase('vi');
+
+        const filtered = products.filter(product => {
+          const searchable =
+            `${product.name || ''} ` +
+            `${product.filename || ''} ` +
+            `${product.id || ''}`
+          ;
+
+          return searchable
+            .toLocaleLowerCase('vi')
+            .includes(term);
+        });
+
+        elements.list.replaceChildren();
+
+        elements.count.textContent =
+          `Hiển thị ${filtered.length}/${products.length} sản phẩm`;
+
+        if (!filtered.length) {
+          const empty = document.createElement('p');
+
+          empty.className = 'empty';
+
+          empty.textContent =
+            'Không tìm thấy sản phẩm phù hợp.';
+
+          elements.list.append(empty);
+          return;
+        }
+
+        for (const product of filtered) {
+          elements.list.append(
+            createProductRow(product)
+          );
+        }
+      }
+
+      function showProduct(detail) {
+        current = detail;
+
+        const data = detail.data;
+
+        elements.empty.hidden = true;
+        elements.editor.hidden = false;
+
+        elements.title.textContent =
+          'Chỉnh sửa: ' + data.name;
+
+        elements.previewImage.src =
+          productImage(data.image);
+
+        elements.previewName.textContent =
+          data.name;
+
+        elements.previewFile.textContent =
+          detail.filename;
+
+        setText('readId', data.id);
+        setText('readSlug', data.slug);
+        setText('readCategory', data.category);
+
+        setText(
+          'readStatus',
+          labels[data.status] || data.status
+        );
+
+        setText(
+          'readPriceMode',
+          priceLabels[data.price_mode] ||
+          data.price_mode
+        );
+
+        setText(
+          'readPriceText',
+          data.price_text
+        );
+
+        elements.viewProduct.href =
+          '/san-pham/' +
+          encodeURIComponent(data.slug) +
+          '.html';
+
+        for (const [key, input] of Object.entries(fields)) {
+          input.value = String(
+            getField(data, key)
+          );
+        }
+
+        renderList();
+      }
+
+      async function openProduct(product) {
+        if (busy) return;
+        if (!confirmDiscard()) return;
+
+        setBusy(true);
+
+        message('Đang tải chi tiết sản phẩm...');
+
+        try {
+          const slug =
+            product.filename.replace(/\.json$/, '');
+
+          const detail = await readJson(
+            API +
+            '/item?kind=products&slug=' +
+            encodeURIComponent(slug)
+          );
+
+          showProduct(detail);
+          message('');
+
+        } catch (error) {
+          message(
+            error.message,
+            'error'
+          );
+
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function loadProducts() {
+        if (busy) return;
+        if (!confirmDiscard()) return;
+
+        setBusy(true);
+
+        message('Đang tải sản phẩm từ GitHub...');
+
+        try {
+          const list = await readJson(
+            API + '?kind=products'
+          );
+
+          const details = await Promise.all(
+            list.items.map(async item => {
+              try {
+                const slug =
+                  item.filename.replace(/\.json$/, '');
+
+                const detail = await readJson(
+                  API +
+                  '/item?kind=products&slug=' +
+                  encodeURIComponent(slug)
+                );
+
+                return {
+                  ...detail.data,
+                  filename: item.filename
+                };
+
+              } catch {
+                return {
+                  filename: item.filename,
+                  name: item.filename,
+                  status: 'unknown'
+                };
+              }
+            })
+          );
+
+          products = details;
+
+          current = null;
+
+          elements.editor.hidden = true;
+          elements.empty.hidden = false;
+          elements.title.textContent =
+            'Chỉnh sửa sản phẩm';
+
+          renderList();
+
+          message(
+            `Đã tải ${products.length} sản phẩm.`,
+            'success'
+          );
+
+        } catch (error) {
+          message(
+            error.message,
+            'error'
+          );
+
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      async function saveProduct(event) {
+        event.preventDefault();
+
+        if (busy || !current) return;
+
+        if (!elements.editor.reportValidity()) {
+          return;
+        }
+
+        const changes = getChanges();
+
+        if (!Object.keys(changes).length) {
+          message(
+            'Chưa có thay đổi nào cần lưu.'
+          );
+
+          return;
+        }
+
+        if (
+          !confirm(
+            'Lưu thay đổi của sản phẩm này lên GitHub?'
+          )
+        ) {
+          return;
+        }
+
+        setBusy(true);
+
+        elements.save.textContent =
+          'Đang lưu...';
+
+        message(
+          'Đang lưu nội dung lên GitHub...'
+        );
+
+        try {
+          const result = await readJson(
+            API + '/save',
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type':
+                  'application/json'
+              },
+
+              body: JSON.stringify({
+                kind: 'products',
+                filename: current.filename,
+                sha: current.sha,
+                changes,
+                confirm_write: true
+              })
+            }
+          );
+
+          if (!result.saved) {
+            message(
+              result.message ||
+              'Không có thay đổi cần lưu.'
+            );
+
+            return;
+          }
+
+          // Đọc lại để lấy dữ liệu và SHA
+          // chính thức sau khi GitHub lưu.
+
+          const slug =
+            current.filename
+              .replace(/\.json$/, '');
+
+          const fresh = await readJson(
+            API +
+            '/item?kind=products&slug=' +
+            encodeURIComponent(slug)
+          );
+
+          showProduct(fresh);
+
+          const index = products.findIndex(
+            p => p.filename === fresh.filename
+          );
+
+          if (index !== -1) {
+            products[index] = {
+              ...fresh.data,
+              filename: fresh.filename
+            };
+          }
+
+          renderList();
+
+          message(
+            'Đã lưu lên GitHub. ' +
+            'Website sẽ cập nhật sau khi ' +
+            'GitHub Actions build thành công.',
+            'success'
+          );
+
+        } catch (error) {
+          if (error.status === 409) {
+            message(
+              'File đã có phiên bản mới trên GitHub. ' +
+              'Hãy tải lại sản phẩm trước khi sửa tiếp.',
+              'error'
+            );
+
+          } else {
+            message(
+              error.message,
+              'error'
+            );
+          }
+
+        } finally {
+          setBusy(false);
+
+          elements.save.textContent =
+            'Lưu thay đổi';
+        }
+      }
+
+      elements.editor.addEventListener(
+        'submit',
+        saveProduct
+      );
+
+      elements.reload.addEventListener(
+        'click',
+        loadProducts
+      );
+
+      elements.search.addEventListener(
+        'input',
+        renderList
+      );
+
+      window.addEventListener(
+        'beforeunload',
+        event => {
+          if (!isDirty()) return;
+
+          event.preventDefault();
+          event.returnValue = '';
+        }
+      );
+
+      loadProducts();
+    })();
+  </script>
+
 </body>
 </html>

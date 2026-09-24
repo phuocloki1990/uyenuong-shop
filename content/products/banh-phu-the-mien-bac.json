@@ -5,8 +5,8 @@
   "category": "banh-cuoi-hoi",
   "status": "published",
   "featured": true,
-  "featured_order": 3,
-  "image": "/assets/images/uploads/shop-20260919-3766a4e2-ad49-422a-a8f8-2f29522958ae.jpg",
+  "featured_order": 2,
+  "image": "/assets/images/Banner.jpg",
   "short_description": "Bánh phu thê miền Bắc có nhân đậu xanh, vỏ bánh không có sợi dừa, đóng gói hộp giấy.",
   "lead": "Bánh phu thê miền Bắc có nhân đậu xanh, vỏ bánh không có sợi dừa và hiện đóng gói bằng hộp giấy.",
   "price_mode": "contact",
@@ -17,7 +17,7 @@
     "min": 20,
     "default": 20,
     "step": 1,
-    "hint": "Nhận từ 20 bánh, nhập số lượng tự do. Gợi ý 65 hoặc 105 bánh; số lượng khác vẫn nhận sau khi Shop xác nhận."
+    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng khác vẫn có thể nhận sau khi Shop xác nhận."
   },
   "option_groups": [
     {
@@ -70,6 +70,5 @@
   "seo": {
     "title": "Bánh phu thê miền Bắc tại TPHCM | Shop Uyên Ương",
     "description": "Đặt bánh phu thê miền Bắc tại TPHCM. Vỏ bánh không có sợi dừa, nhân đậu xanh, đóng gói hộp giấy, nhận từ 20 bánh."
-  },
-  "image_alt": "Bánh phu thê miền bắc"
+  }
 }

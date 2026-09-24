@@ -332,13 +332,11 @@
     window.toggleMenu =
       function () {
 
-        document
-          .getElementById(
-            'mobileMenu'
-          )
-          ?.classList.toggle(
-            'open'
-          );
+        const menu = document.getElementById('mobileMenu');
+        const button = document.querySelector('.menu-btn');
+        const expanded = menu?.classList.toggle('open') || false;
+        button?.setAttribute('aria-expanded', String(expanded));
+        button?.setAttribute('aria-label', expanded ? 'Đóng menu' : 'Mở menu');
       };
 
 
@@ -357,7 +355,7 @@
           );
 
         if (
-          innerWidth <= 740 &&
+          innerWidth <= 1020 &&
           menu?.classList.contains(
             'open'
           ) &&
@@ -372,10 +370,23 @@
           menu.classList.remove(
             'open'
           );
+          btn?.setAttribute('aria-expanded', 'false');
+          btn?.setAttribute('aria-label', 'Mở menu');
         }
       }
     );
 
+
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.querySelector('.menu-btn');
+      if (!menu?.classList.contains('open')) return;
+      menu.classList.remove('open');
+      btn?.setAttribute('aria-expanded', 'false');
+      btn?.setAttribute('aria-label', 'Mở menu');
+      btn?.focus();
+    });
 
     /* ======================================
        GALLERY SẢN PHẨM
@@ -1539,24 +1550,16 @@
 
       if (receive) {
 
-        // Asia/Ho_Chi_Minh: tránh lệch ngày gần 00:00 UTC.
-        const vnToday = new Date(Date.now() + 7 * 3600000)
-          .toISOString().slice(0, 10);
-        const hasMamQua = items.some(i => i.id === 'mamqua') ||
-          Boolean(document.querySelector('[name="want_mamqua"]:checked'));
-        const days = hasMamQua ? 3 : 1;
-        const start = new Date(`${vnToday}T00:00:00Z`);
-        start.setUTCDate(start.getUTCDate() + days);
-        receive.min = start.toISOString().slice(0, 10);
-        if (receive.value && receive.value < receive.min) receive.value = '';
-        const mamquaChoice = document.querySelector('[name="want_mamqua"]');
-        mamquaChoice?.addEventListener('change', () => {
-          const newDays = items.some(i => i.id === 'mamqua') || mamquaChoice.checked ? 3 : 1;
-          const date = new Date(`${vnToday}T00:00:00Z`);
-          date.setUTCDate(date.getUTCDate() + newDays);
-          receive.min = date.toISOString().slice(0, 10);
-          if (receive.value && receive.value < receive.min) receive.value = '';
-        });
+        const tomorrow =
+          new Date(
+            Date.now() +
+            86400000
+          );
+
+        receive.min =
+          tomorrow
+            .toISOString()
+            .slice(0, 10);
       }
 
 
@@ -1572,13 +1575,6 @@
         async event => {
 
           event.preventDefault();
-
-          // Xóa thông báo cũ khi thử gửi lại; giữ nguyên dữ liệu biểu mẫu.
-          const orderError = document.getElementById('order-submit-error');
-          if (orderError) {
-            orderError.textContent = '';
-            orderError.hidden = true;
-          }
 
           if (
             typeof orderForm.reportValidity ===
@@ -1670,9 +1666,6 @@
               option:
                 itemLabel(item),
 
-              options:
-                itemChoices(item),
-
               quantity:
                 Number(
                   item.qty || 1
@@ -1707,15 +1700,6 @@
                   ) ||
                   'chưa chọn gói'
                 ),
-
-              options: {
-                package: ({
-                  '4 mâm': 'Gói 4 mâm',
-                  '6 mâm': 'Gói 6 mâm',
-                  '8 mâm': 'Gói 8 mâm',
-                  'Theo yêu cầu': 'Theo yêu cầu'
-                })[String(fd.get('mamqua_option') || '')] || ''
-              },
 
               quantity:
                 1,
@@ -1773,22 +1757,13 @@
               return;
             }
 
-            if (
-              !['Huế', 'Miền Bắc'].includes(region) ||
-              !(region === 'Huế' ? ['Hộp giấy', 'Lá dừa'] : ['Hộp giấy']).includes(wrapOption)
-            ) {
-              alert('Vui lòng chọn dòng bánh và kiểu đóng gói hợp lệ.');
-              document.dispatchEvent(new CustomEvent('order-send-failed'));
-              return;
-            }
-
             orderPayload.items.push({
 
               id:
-                region === 'Huế' ? 'phuthehue' : 'phuthebac',
+                'phuthe',
 
               name:
-                region === 'Huế' ? 'Bánh phu thê Huế' : 'Bánh phu thê miền Bắc',
+                'Bánh phu thê',
 
               option:
                 [
@@ -1797,8 +1772,6 @@
                 ]
                   .filter(Boolean)
                   .join(' · '),
-
-              options: { wrap: wrapOption },
 
               quantity:
                 qty,
@@ -1865,8 +1838,6 @@
 
               option:
                 flavor,
-
-              options: { flavor },
 
               quantity:
                 qty,
@@ -1954,13 +1925,11 @@
               error
             );
 
-            // copy-status nằm trong hộp THÀNH CÔNG (đang ẩn),
-            // không dùng để hiển thị lỗi từ API như HTTP 429.
-            if (orderError) {
-              orderError.textContent =
+            if (status) {
+
+              status.textContent =
                 error.message ||
                 'Chưa thể ghi nhận yêu cầu. Vui lòng thử lại.';
-              orderError.hidden = false;
             }
 
             document.dispatchEvent(

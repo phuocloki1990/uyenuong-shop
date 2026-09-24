@@ -1,5 +1,3 @@
-import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
-
 // functions/admin/api/content/save.js
 //
 // A1.4 — API lưu nội dung về GitHub.
@@ -16,6 +14,7 @@ import { resolveContentBranch } from '../../../../scripts/content-branch.mjs';
 
 const OWNER = 'phuocloki1990';
 const REPO = 'uyenuong-shop';
+const BRANCH = 'main';
 
 const FOLDERS = {
   products: 'content/products',
@@ -33,7 +32,6 @@ const EDITABLE_FIELDS = {
     'short_description',
     'lead',
     'image_alt',
-    'image',
     'seo.title',
     'seo.description'
   ],
@@ -184,9 +182,9 @@ function validateChanges(kind, changes) {
 
   if (
     entries.length === 0 ||
-    entries.length > (kind === 'products' ? 7 : 6)
+    entries.length > 6
   ) {
-    return 'Số trường thay đổi không hợp lệ.';
+    return 'Cần thay đổi từ 1 đến 6 trường.';
   }
 
   for (const [field, value] of entries) {
@@ -201,10 +199,6 @@ function validateChanges(kind, changes) {
       value.includes('\u0000')
     ) {
       return `${field} phải là văn bản hợp lệ.`;
-    }
-
-    if (field === 'image' && !/^\/assets\/images\/(?:uploads\/)?[A-Za-z0-9_.-]+\.(?:jpe?g|png|webp)$/i.test(value)) {
-      return 'Đường dẫn ảnh không hợp lệ. Hãy chọn ảnh trong thư viện.';
     }
 
     if (
@@ -430,27 +424,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    const branch = resolveContentBranch(request, env);
-
-    if (kind === 'products' && Object.hasOwn(changes, 'image')) {
-      // Avoid saving a broken image URL; confirm file exists in this branch.
-      const imagePath = changes.image.slice(1);
-      const imageCheck = await fetch(
-        `https://api.github.com/repos/${OWNER}/${REPO}/contents/${imagePath}?ref=${encodeURIComponent(branch)}`,
-        { headers: githubHeaders(token), cache: 'no-store' }
-      );
-      if (imageCheck.status === 404) {
-        return json({ success: false, message: 'Ảnh chưa tồn tại trên nhánh này. Hãy đợi tải ảnh hoàn tất.' }, 400);
-      }
-      if (!imageCheck.ok) {
-        return json({ success: false, message: 'Chưa kiểm tra được ảnh trên GitHub.' }, 502);
-      }
-      const imageEntry = await imageCheck.json();
-      if (imageEntry.type !== 'file') {
-        return json({ success: false, message: 'Đường dẫn ảnh không phải file.' }, 400);
-      }
-    }
-
     const filePath =
       `${FOLDERS[kind]}/${filename}`;
 
@@ -464,7 +437,7 @@ export async function onRequestPost(context) {
 
     const currentResponse =
       await fetch(
-        `${githubUrl}?ref=${encodeURIComponent(branch)}`,
+        `${githubUrl}?ref=${BRANCH}`,
         {
           method: 'GET',
           headers: githubHeaders(token),
@@ -634,7 +607,7 @@ export async function onRequestPost(context) {
 
             content: encoded,
             sha: current.sha,
-            branch
+            branch: BRANCH
           })
         }
       );
@@ -706,7 +679,7 @@ export async function onRequestPost(context) {
         message:
           'Không thể xử lý yêu cầu lưu nội dung.'
       },
-      error.status || 500
+      500
     );
   }
 }

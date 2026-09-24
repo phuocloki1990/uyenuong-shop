@@ -38,96 +38,14 @@
     rel="stylesheet"
     href="/css/style.css"
   >
+<link rel="stylesheet" href="/css/storefront-ux.css">
 <meta name="robots" content="noindex,follow">
 </head>
 
 
 <body>
 
-<header class="site-header">
-
-  <div class="container nav">
-
-    <a
-      class="brand"
-      href="/index.html"
-    >
-      <img
-        src="/assets/images/logo.jpg"
-        alt="Logo Shop Uyên Ương"
-      >
-
-      <span class="brand-name">
-        UYÊN ƯƠNG
-      </span>
-    </a>
-
-    <button
-      class="menu-btn"
-      type="button"
-      aria-label="Mở menu"
-      onclick="toggleMenu()"
-    >
-      ☰
-    </button>
-
-    <nav
-      class="nav-links"
-      id="mobileMenu"
-      aria-label="Điều hướng chính"
-    >
-
-      <a href="/index.html">
-        Trang chủ
-      </a>
-
-      <a href="/san-pham/mam-qua-cuoi-tphcm.html">
-        Mâm quả cưới
-      </a>
-
-      <a href="/index.html#banh-cuoi-hoi">
-        Bánh cưới hỏi
-      </a>
-
-      <a href="/san-pham/banh-phuc-linh-tphcm.html">
-        Bánh phục linh
-      </a>
-
-      <a href="/index.html#cam-nang">
-        Cẩm nang
-      </a>
-
-      <a href="/index.html#lien-he">
-        Liên hệ
-      </a>
-
-      <a
-        class="cart-link"
-        href="/gio-hang.html"
-      >
-        Giỏ hàng
-
-        <span
-          class="cart-badge"
-          data-cart-count
-        >
-          0
-        </span>
-      </a>
-
-      <a
-        class="nav-order"
-        href="/dat-hang.html"
-        aria-current="page"
-      >
-        Đặt hàng
-      </a>
-
-    </nav>
-
-  </div>
-
-</header>
+<header class="site-header"><div class="container nav"><a class="brand" href="/"><img src="/assets/images/logo.jpg" alt="Shop Uyên Ương"><span class="brand-name">Shop Uyên Ương</span></a><button class="menu-btn" type="button" aria-label="Mở menu" aria-controls="mobileMenu" aria-expanded="false" onclick="toggleMenu()">☰</button><nav class="nav-links" id="mobileMenu" aria-label="Điều hướng chính"><a href="/">Trang chủ</a><a href="/chuyen-muc/mam-qua-cuoi.html">Mâm quả cưới hỏi</a><a href="/chuyen-muc/banh-cuoi-hoi.html">Bánh cưới hỏi</a><a href="/chuyen-muc/banh-phuc-linh.html">Bánh phục linh</a><a href="/chuyen-muc/cam-nang-cuoi.html">Cẩm nang cưới</a><a href="/index.html#lien-he">Liên hệ</a><a class="cart-link" href="/gio-hang.html">Giỏ hàng <span class="cart-badge" data-cart-count>0</span></a><a class="nav-order" href="/dat-hang.html">Đặt hàng</a></nav></div></header>
 
 
 <main class="container">
@@ -448,13 +366,13 @@
 
           <div class="field">
 
-            <label>
+            <label for="checkout-name">
               Họ và tên *
             </label>
 
             <input
               required
-              name="name"
+              id="checkout-name" name="name"
               autocomplete="name"
             >
 
@@ -463,13 +381,13 @@
 
           <div class="field">
 
-            <label>
+            <label for="checkout-phone">
               Số điện thoại *
             </label>
 
             <input
               required
-              name="phone"
+              id="checkout-phone" name="phone"
               inputmode="tel"
               autocomplete="tel"
             >
@@ -479,14 +397,14 @@
 
           <div class="field">
 
-            <label>
+            <label for="checkout-receive_date">
               Ngày cần nhận *
             </label>
 
             <input
               required
               type="date"
-              name="receive_date"
+              id="checkout-receive_date" name="receive_date"
             >
 
           </div>
@@ -494,13 +412,13 @@
 
           <div class="field">
 
-            <label>
+            <label for="checkout-address">
               Địa chỉ nhận hàng *
             </label>
 
             <input
               required
-              name="address"
+              id="checkout-address" name="address"
               autocomplete="street-address"
             >
 
@@ -511,12 +429,12 @@
 
         <div class="field">
 
-          <label>
+          <label for="checkout-note">
             Ghi chú
           </label>
 
           <textarea
-            name="note"
+            id="checkout-note" name="note"
             placeholder="Ví dụ: thời gian giao mong muốn, yêu cầu thêm..."
           ></textarea>
 
@@ -549,9 +467,6 @@
         Gửi yêu cầu đặt hàng
       </button>
 
-      <!-- Lỗi đặt hàng hiển thị cạnh nút, không nằm trong hộp thành công. -->
-      <p id="order-submit-error" class="order-submit-error"
-         role="alert" aria-live="assertive" hidden></p>
 
       <!-- Nội dung kỹ thuật phục vụ JS/Telegram.
            CSS sẽ ẩn khỏi khách hàng. -->
@@ -1003,7 +918,7 @@
 
 
 <script src="/assets/js/cms-catalog.js"></script>
-<script src="/assets/js/app.js"></script>
+<script src="/assets/js/app.js"></script><script src="/assets/js/storefront-ux.js" defer></script>
 
 </body>
 </html>

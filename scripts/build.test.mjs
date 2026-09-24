@@ -21,8 +21,7 @@ test('real data builds 13 pages; settings, metadata, relationships and bundles a
   const root = fixture(t), result = build(root);
   assert.equal(result.products, 4); assert.equal(result.articles, 3); assert.equal(result.categories, 6);
   const manifest = parse(root, '.cms-build-manifest.json');
-  assert.equal(Object.keys(manifest.pages).length, 15); // 13 HTML + public/private catalogs
-  assert.match(read(root, 'scripts/generated/product-catalog.mjs'), /export const products/);
+  assert.equal(Object.keys(manifest.pages).length, 14); // 13 HTML + catalog JS
   const html = read(root, 'san-pham/banh-phuc-linh-tphcm.html');
   assert.match(html, /<option value="">-- Chọn --<\/option>/);
   assert.match(html, /180\.000đ \/ quy cách/);
@@ -124,16 +123,4 @@ test('settings update generated header, footer, home contact and canonical', t =
   for(const file of ['index.html','san-pham/banh-phuc-linh-tphcm.html']){
     const html=read(root,file);assert.match(html,/tel:0901234567/);assert.match(html,/https:\/\/example.com/);assert.ok(!html.includes('zalo.me/0868157858'));
   }
-});
-
-test('private order catalog tracks published products and is protected by the manifest', t => {
-  const root = fixture(t); build(root);
-  const privateFile = 'scripts/generated/product-catalog.mjs';
-  assert.match(read(root, privateFile), /"phuthehue"/);
-  const p = parse(root, pfile); p.status = 'hidden'; write(root, pfile, p);
-  build(root);
-  assert.ok(!read(root, privateFile).includes('"phuclinh":'));
-  assert.ok(!read(root, 'assets/js/cms-catalog.js').includes('"phuclinh":'));
-  fs.appendFileSync(path.join(root, privateFile), '// hand edited');
-  assert.throws(() => build(root), /đã bị sửa/);
 });

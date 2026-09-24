@@ -203,13 +203,7 @@ export function build(root = process.cwd(), { check = false } = {}) {
             ? ['title', 'slug', 'category', 'status', 'thumbnail', 'excerpt', 'body']
             : ['title', 'slug', 'status'];
 
-      fields.forEach(key => {
-        // Drafts are not exposed to customers; copy and image can be finished later.
-        if (kind === 'products' && x.status === 'draft' &&
-            ['image','short_description','lead','price_text'].includes(key)) {
-          textField(x, key, label, false);
-        } else textField(x, key, label);
-      });
+      fields.forEach(key => textField(x, key, label));
 
       if (!slugPattern.test(x.slug)) fail(`${label}: slug không hợp lệ`);
 
@@ -604,21 +598,21 @@ export function build(root = process.cwd(), { check = false } = {}) {
     return `<title>${esc(title(x))}</title><meta name="description" content="${esc(description(x))}"><link rel="canonical" href="${esc(absolute(x._url))}"><meta name="robots" content="index,follow"><meta property="og:title" content="${esc(title(x))}"><meta property="og:description" content="${esc(description(x))}"><meta property="og:url" content="${esc(absolute(x._url))}"><meta property="og:image" content="${esc(absolute(image(x)))}"><meta property="og:type" content="${x._kind === 'articles' ? 'article' : 'website'}"><meta property="og:site_name" content="${esc(site.site_name)}"><meta property="og:locale" content="vi_VN"><script type="application/ld+json">${json({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
   }
 
-  const topCats = published.categories.filter(c => !c.parent);
+  const topCats = published.categories.filter(c => !c.parent).sort((a,b) => ({'mam-qua-cuoi':1,'banh-cuoi-hoi':2,'banh-phuc-linh':3,'cam-nang-cuoi':4}[a.slug]||9)-({'mam-qua-cuoi':1,'banh-cuoi-hoi':2,'banh-phuc-linh':3,'cam-nang-cuoi':4}[b.slug]||9));
 
   function header() {
-    return `<header class="site-header"><div class="container nav"><a class="brand" href="/"><img src="${esc(site.logo)}" alt="${esc(site.site_name)}"><span class="brand-name">${esc(site.brand_name || site.site_name)}</span></a><button class="menu-btn" type="button" aria-label="Mở menu" onclick="toggleMenu()">☰</button><nav class="nav-links" id="mobileMenu" aria-label="Điều hướng chính"><a href="/">Trang chủ</a>${topCats.map(c => `<a href="${c._url}">${esc(c.title)}</a>`).join('')}<a href="/index.html#lien-he">Liên hệ</a><a class="cart-link" href="/gio-hang.html">Giỏ hàng <span class="cart-badge" data-cart-count>0</span></a><a class="nav-order" href="/dat-hang.html">Đặt hàng</a></nav></div></header>`;
+    return `<header class="site-header"><div class="container nav"><a class="brand" href="/"><img src="${esc(site.logo)}" alt="${esc(site.site_name)}"><span class="brand-name">${esc(site.brand_name || site.site_name)}</span></a><button class="menu-btn" type="button" aria-label="Mở menu" aria-controls="mobileMenu" aria-expanded="false" onclick="toggleMenu()">☰</button><nav class="nav-links" id="mobileMenu" aria-label="Điều hướng chính"><a href="/">Trang chủ</a>${topCats.map(c => `<a href="${c._url}">${esc(c.title)}</a>`).join('')}<a href="/index.html#lien-he">Liên hệ</a><a class="cart-link" href="/gio-hang.html">Giỏ hàng <span class="cart-badge" data-cart-count>0</span></a><a class="nav-order" href="/dat-hang.html">Đặt hàng</a></nav></div></header>`;
   }
 
   const contact = () =>
     `<div class="contact-panel"><div><h2>Cần Shop tư vấn thêm?</h2><p>Liên hệ để xác nhận quy cách, số lượng và giá theo nhu cầu.</p></div><div class="contact-actions"><a class="btn btn-secondary" href="tel:${esc(site.phone)}">Gọi ${esc(site.phone_display)}</a><a class="btn btn-primary" href="${esc(site.zalo_url)}">Chat Zalo</a></div></div>`;
 
   function footer() {
-    return `<footer class="site-footer"><div class="container"><div class="footer-grid"><div><div class="footer-brand"><img src="${esc(site.logo)}" alt="${esc(site.site_name)}"><div><div class="brand-name">${esc(site.brand_name || site.site_name)}</div><p>${esc(site.tagline || '')}</p></div></div><div class="footer-meta"><p>${esc(['street', 'ward', 'district', 'city'].map(k => site.address[k]).filter(Boolean).join(', '))}</p><p>Điện thoại/Zalo: ${esc(site.phone_display)}</p>${['facebook_main', 'facebook_phuclinh'].filter(k => site[k]).map(k => `<p><a href="${esc(site[k])}" target="_blank" rel="noopener">${k === 'facebook_main' ? 'Facebook Shop Uyên Ương' : 'Facebook Bánh phục linh'}</a></p>`).join('')}</div></div><div><div class="footer-title">Chuyên mục</div><div class="footer-links">${topCats.map(c => `<a href="${c._url}">${esc(c.title)}</a>`).join('')}</div></div><div><div class="footer-title">Hỗ trợ</div><div class="footer-links"><a href="/dat-hang.html">Đặt hàng</a><a href="/gio-hang.html">Giỏ hàng</a></div></div></div><div class="footer-bottom">© ${esc(site.site_name)}</div></div></footer><div class="mobile-actions"><a href="tel:${esc(site.phone)}">Gọi</a><a class="primary" href="${esc(site.zalo_url)}">Zalo</a><a href="/dat-hang.html">Đặt hàng</a></div><script src="/assets/js/cms-catalog.js"></script><script src="/assets/js/app.js"></script>`;
+    return `<footer class="site-footer"><div class="container"><div class="footer-grid"><div><div class="footer-brand"><img src="${esc(site.logo)}" alt="${esc(site.site_name)}"><div><div class="brand-name">${esc(site.brand_name || site.site_name)}</div><p>${esc(site.tagline || '')}</p></div></div><div class="footer-meta"><p>${esc(['street', 'ward', 'district', 'city'].map(k => site.address[k]).filter(Boolean).join(', '))}</p><p>Điện thoại/Zalo: ${esc(site.phone_display)}</p>${['facebook_main', 'facebook_phuclinh'].filter(k => site[k]).map(k => `<p><a href="${esc(site[k])}" target="_blank" rel="noopener">${k === 'facebook_main' ? 'Facebook Shop Uyên Ương' : 'Facebook Bánh phục linh'}</a></p>`).join('')}</div></div><div><div class="footer-title">Chuyên mục</div><div class="footer-links">${topCats.map(c => `<a href="${c._url}">${esc(c.title)}</a>`).join('')}</div></div><div><div class="footer-title">Hỗ trợ</div><div class="footer-links"><a href="/dat-hang.html">Đặt hàng</a><a href="/gio-hang.html">Giỏ hàng</a></div></div></div><div class="footer-bottom">© ${esc(site.site_name)}</div></div></footer><div class="mobile-actions"><a href="tel:${esc(site.phone)}">Gọi</a><a class="primary" href="${esc(site.zalo_url)}">Zalo</a><a href="/dat-hang.html">Đặt hàng</a></div><script src="/assets/js/cms-catalog.js"></script><script src="/assets/js/app.js"></script><script src="/assets/js/storefront-ux.js" defer></script>`;
   }
 
   function productCard(p) {
-    return `<article class="product-card"><a href="${p._url}"><img src="${esc(p.image)}" alt="${esc(p.image_alt || p.name)}" loading="lazy" decoding="async"></a><div class="product-body"><h3>${esc(p.name)}</h3><div class="spec">${esc(p.card_highlights.join(' • '))}</div><div class="meta-line">${esc(p.price_text)}${p.quantity.min > 1 ? ` • Nhận từ ${p.quantity.min} ${esc(p.quantity.unit)}` : ''}</div><div class="product-actions"><a class="btn btn-primary btn-block" href="${p._url}">Xem chi tiết</a></div></div></article>`;
+    return `<article class="product-card"><a href="${p._url}"><img src="${esc(p.image)}" alt="${esc(p.image_alt || p.name)}" loading="lazy" decoding="async"></a><div class="product-body"><h3>${esc(p.name)}</h3><div class="spec">${esc(p.card_highlights.join(' • '))}</div><div class="meta-line">${esc(p.price_text)}${p.quantity.min > 1 ? ` • Nhận từ ${p.quantity.min} ${esc(p.quantity.unit)}` : ''}</div><div class="product-actions"><button class="btn btn-primary btn-block" type="button" data-quick-add="${esc(p.id)}">Chọn sản phẩm</button><a class="product-detail-link" href="${p._url}">Xem chi tiết</a></div></div></article>`;
   }
 
   const articleCard = a =>
@@ -669,7 +663,7 @@ export function build(root = process.cwd(), { check = false } = {}) {
   }
 
   function page(x, body) {
-    return `<!doctype html>\n${OWNER}\n<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${metadata(x)}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css"></head><body>${header()}<main><div class="container">${breadcrumb(x)}${body}</div></main>${footer()}</body></html>\n`;
+    return `<!doctype html>\n${OWNER}\n<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${metadata(x)}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/storefront-ux.css"></head><body>${header()}<main><div class="container">${breadcrumb(x)}${body}</div></main>${footer()}</body></html>\n`;
   }
 
   function productPage(p) {
@@ -743,21 +737,6 @@ export function build(root = process.cwd(), { check = false } = {}) {
     `// ${OWNER}\nwindow.UUCMS = { products: ${json(catalog)}, quote: ${quoteProduct.toString()} };\n`
   );
 
-  // Private catalog for the order API. Never trust browser-supplied names/prices.
-  // Keep it inside the builder manifest and generate it from the same CMS snapshot.
-  const trustedCatalog = Object.fromEntries(
-    published.products.map(p => [p.id, Object.fromEntries(
-      ['id', 'name', 'status', 'quantity', 'option_groups', 'price_mode', 'base_price', 'price_rules']
-        .filter(key => p[key] !== undefined)
-        .map(key => [key, p[key]])
-    )])
-  );
-
-  outputs.set(
-    'scripts/generated/product-catalog.mjs',
-    `// ${OWNER}\nexport const products = ${json(trustedCatalog)};\n`
-  );
-
   const indexFile = disk('index.html');
 
   if (!fs.existsSync(indexFile)) {
@@ -818,6 +797,16 @@ export function build(root = process.cwd(), { check = false } = {}) {
     );
   } else {
     warn('index.html: chưa có CMS_HOME_SEO markers; giữ nguyên SEO và phần nội dung thủ công của trang chủ');
+  }
+
+  // Keep hand-maintained cart/checkout headers identical to CMS pages.
+  for (const filename of ['gio-hang.html', 'dat-hang.html']) {
+    const file = path.join(root, filename);
+    if (!fs.existsSync(file)) continue;
+    const original = fs.readFileSync(file, 'utf8');
+    const synchronized = original.replace(/<header class="site-header">[\s\S]*?<\/header>/, header());
+    if (synchronized === original && !original.includes(header())) warn(`${filename}: header không thể đồng bộ`);
+    if (!check && synchronized !== original) fs.writeFileSync(file, synchronized);
   }
 
   for (const [name, render] of [
@@ -989,7 +978,6 @@ export function build(root = process.cwd(), { check = false } = {}) {
 
   const isPagePath = p =>
     p === 'assets/js/cms-catalog.js' ||
-    p === 'scripts/generated/product-catalog.mjs' ||
     /^(san-pham|cam-nang|chuyen-muc)\/[a-z0-9]+(?:-[a-z0-9]+)*\.html$/.test(p);
 
   for (const [relative, digest] of Object.entries(previous.pages)) {
