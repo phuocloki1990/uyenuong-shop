@@ -332,13 +332,11 @@
     window.toggleMenu =
       function () {
 
-        document
-          .getElementById(
-            'mobileMenu'
-          )
-          ?.classList.toggle(
-            'open'
-          );
+        const menu = document.getElementById('mobileMenu');
+        const button = document.querySelector('.menu-btn');
+        const expanded = menu?.classList.toggle('open') || false;
+        button?.setAttribute('aria-expanded', String(expanded));
+        button?.setAttribute('aria-label', expanded ? 'Đóng menu' : 'Mở menu');
       };
 
 
@@ -357,7 +355,7 @@
           );
 
         if (
-          innerWidth <= 740 &&
+          innerWidth <= 1020 &&
           menu?.classList.contains(
             'open'
           ) &&
@@ -372,10 +370,23 @@
           menu.classList.remove(
             'open'
           );
+          btn?.setAttribute('aria-expanded', 'false');
+          btn?.setAttribute('aria-label', 'Mở menu');
         }
       }
     );
 
+
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.querySelector('.menu-btn');
+      if (!menu?.classList.contains('open')) return;
+      menu.classList.remove('open');
+      btn?.setAttribute('aria-expanded', 'false');
+      btn?.setAttribute('aria-label', 'Mở menu');
+      btn?.focus();
+    });
 
     /* ======================================
        GALLERY SẢN PHẨM

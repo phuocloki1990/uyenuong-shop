@@ -1,0 +1,47 @@
+{
+  "id": "banhcom",
+  "name": "Bánh cốm",
+  "slug": "banh-com-cuoi-tphcm",
+  "category": "banh-cuoi-hoi",
+  "status": "published",
+  "featured": true,
+  "featured_order": 5,
+  "card_highlights": [
+    "53g/bánh"
+  ],
+  "image": "/assets/images/uploads/shop-20260919-bc053ce8-83cd-4b55-a0aa-ffc2a41a719d.jpg",
+  "image_alt": "Bánh cốm cưới hỏi TP HCM",
+  "short_description": "Bánh cốm cưới hỏi TP HCM",
+  "lead": "Bánh cốm cưới hỏi TP HCM",
+  "price_mode": "contact",
+  "price_text": "Giá liên hệ",
+  "quantity": {
+    "label": "Số lượng",
+    "unit": "cái",
+    "min": 20,
+    "default": 20,
+    "step": 1,
+    "hint": "Nhận từ 20 bánh trở lên"
+  },
+  "option_groups": [],
+  "price_rules": [],
+  "details": [],
+  "features": [],
+  "faq": [],
+  "related_products": [
+    "mam-qua-cuoi-tphcm"
+  ],
+  "related_articles": [
+    "mam-qua-cuoi-gom-nhung-gi"
+  ],
+  "redirect_from": [],
+  "seo": {
+    "title": "Bánh cốm cưới TPHCM | Shop Uyên Ương",
+    "description": "Bánh cốm cưới TPHCM | Shop Uyên Ương",
+    "focus_keyword": "Bánh cốm cưới",
+    "secondary_keywords": [
+      "Bánh cốm",
+      "bánh cưới"
+    ]
+  }
+}

@@ -1,19 +1,19 @@
 {
   "version": 1,
   "pages": {
-    "san-pham/banh-phu-the-hue-tphcm.html": "46c513437b9de20c36cf864faf45471be01f6abf403ded411667b80e4b2af336",
-    "san-pham/banh-phu-the-mien-bac-tphcm.html": "9f7abd06a879a66abfc9380701e8f2bd46a7a467ed4e37e28cd87734cdd37daa",
-    "san-pham/banh-phuc-linh-tphcm.html": "32740a4bf2385695ce7d80b37fc2fe126da1406e4374271beb13c309717b9ef8",
-    "san-pham/mam-qua-cuoi-tphcm.html": "287d9d2a20db4c7ff4d06f314384a39229eb060018432a232c07fa9dbd6c1948",
-    "cam-nang/goi-y-chon-mam-qua-4-mam-va-6-mam.html": "78ca0279eea2118c0e49c3727c0a7351e2993696eba775afb9fc15fb0fa49911",
-    "cam-nang/mam-qua-cuoi-gom-nhung-gi.html": "621280447096bc08673b3935d435e785efbf08b68886fd594a76ef724737ad12",
-    "cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html": "023c6eea15931dced307c0e87e89a4440d0201054b82b00a99f00c78aa528c60",
-    "chuyen-muc/banh-cuoi-bai-viet.html": "8acc1d3d281377a539658022b81982c8c93e9f798084b339b8b3046accd68c7d",
-    "chuyen-muc/banh-cuoi-hoi.html": "d8bdfd33173a8b5980a59488cf48891b78b6f7c5b8d6774f82241368f0302ac7",
-    "chuyen-muc/banh-phuc-linh.html": "be3cef3ce7abb628438cb07c40176f5c8b09f717446daa1a4c8638a4c7de76f0",
-    "chuyen-muc/cam-nang-cuoi.html": "ea2fb79a62385c35da03fd88598174cf8dd32f0ad47a77b70f3de1edfd367ea2",
-    "chuyen-muc/mam-qua-cuoi-bai-viet.html": "1701a4aa337f3512b175dad1a8c733eee85bbe5f51ca37ac699674c9f03979c2",
-    "chuyen-muc/mam-qua-cuoi.html": "65b399ce31773e26901532b6aa5d15f4b190101e5882fef5f72c452e4c742b63",
-    "assets/js/cms-catalog.js": "b23366a24d5dee17bcb1c2ca1808a5c2b99122e037511ec6fb785ed770a43719"
+    "san-pham/banh-phu-the-hue-tphcm.html": "2cb75692450597cc12ded03e61804fe7b6db5eaf411ec04f8bc910a8f0aa244c",
+    "san-pham/banh-phu-the-mien-bac-tphcm.html": "15141682ba6c1166a52801b4f93d6307f510794d4ca57ae53099dc59c52d8cd6",
+    "san-pham/banh-phuc-linh-tphcm.html": "a20b12b5e406fb6daf48a53c6e973f994906a37e100dd9b5c7b645cb15b9c7a6",
+    "san-pham/mam-qua-cuoi-tphcm.html": "727edb9f6d1daae906ff324ff587697b15709367ff866a7831b4908872cbaeef",
+    "cam-nang/goi-y-chon-mam-qua-4-mam-va-6-mam.html": "16455840406203c2b8f9826b2d1f5774dcf0acb158a88e8314492df2bb0a0b6b",
+    "cam-nang/mam-qua-cuoi-gom-nhung-gi.html": "f61683f4a1da4991e6573667ca6c7fbefdc9b777ac1763fe6389a7ebc6e7ad67",
+    "cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html": "5002729ac97dc85c2b686e315e1a65354f5b218bf3722c1c074cbed26d36d079",
+    "chuyen-muc/banh-cuoi-bai-viet.html": "e6058a59b66c7974be73ab98f558089c96bf134dde5aaaeb9a750274beb2ad4a",
+    "chuyen-muc/banh-cuoi-hoi.html": "b8198948cd87b1a64eac4baa5acdd4817737c825f16ad02994a1c3d649048daf",
+    "chuyen-muc/banh-phuc-linh.html": "889b7da561480f21ab14a84f8908d3bef8761ac644cfbec5bea28ff81787da31",
+    "chuyen-muc/cam-nang-cuoi.html": "9fc2d383697136f8c5e20918bff650937b60c43e2de0b81dacfda5e1980f2a18",
+    "chuyen-muc/mam-qua-cuoi-bai-viet.html": "43bb93528aeaa792fc885948330b3c07ca93b7e406d8c33b5ffbe540e78fe9a7",
+    "chuyen-muc/mam-qua-cuoi.html": "2a8f3b7d6752a22fcbf3b89b6f4d62c6890cb4d7f2aa2c14ace8872cde7320ed",
+    "assets/js/cms-catalog.js": "14fa4d7bbdf2c8ed8e7a5e747bd64b45a25c8300012615fd381636e1a0cd2cb9"
   }
 }
