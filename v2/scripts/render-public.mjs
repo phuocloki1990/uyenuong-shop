@@ -9,20 +9,33 @@ const nav = [
   ['lien-he','Liên hệ','/lien-he/']
 ];
 
+const icon = name => {
+  const paths = {
+    bag:'<path d="M6.5 8.5h11l1 11h-13l1-11Z"/><path d="M9 9V6.8a3 3 0 0 1 6 0V9"/>',
+    chat:'<path d="M5 5.5h14v10H9l-4 3v-13Z"/><path d="M8.5 9.5h7M8.5 12h5"/>',
+    phone:'<path d="M7.2 4.8 9 8.4 7.5 10c1 2 2.5 3.5 4.5 4.5L13.6 13l3.6 1.8-.6 3c-.2 1-1.2 1.7-2.2 1.5C8.5 18.2 3.8 13.5 2.7 7.6c-.2-1 .5-2 1.5-2.2l3-.6Z"/>',
+    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
+    close:'<path d="m6 6 12 12M18 6 6 18"/>',
+    arrow:'<path d="M5 12h14M14 7l5 5-5 5"/>',
+    home:'<path d="m4 11 8-7 8 7v9h-6v-6h-4v6H4v-9Z"/>'
+  };
+  return `<svg class="icon icon-${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name]||''}</svg>`;
+};
+
 function header(site, active = '') {
   const links = nav.map(([key,label,href]) => `<a${key===active?' aria-current="page" class="active"':''} href="${href}">${label}</a>`).join('');
   return `<header class="site-header">
     <div class="shell header-row">
       <a class="brand" href="/" aria-label="${html(site.name)} – Trang chủ">
-        <img src="/assets/images/logo.jpg" alt="" width="42" height="42">
+        <img src="/assets/images/logo-header.jpg" alt="${html(site.name)}" width="48" height="38">
         <span><strong>${html(site.name)}</strong><small>${html(site.brand_line)}</small></span>
       </a>
       <nav class="desktop-nav" aria-label="Điều hướng chính">${links}</nav>
       <div class="header-actions">
         <a class="hotline" href="tel:${html(site.hotline)}"><small>Hotline tư vấn</small><strong>${html(site.hotline_display)}</strong></a>
-        <a class="cart-link" href="/gio-hang/" aria-label="Giỏ hàng">Giỏ <span data-cart-count>0</span></a>
-        <a class="btn btn-primary btn-small desktop-zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">Chat Zalo</a>
-        <button class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+        <a class="cart-link" href="/gio-hang/" aria-label="Xem giỏ hàng">${icon('bag')}<span data-cart-count>0</span></a>
+        <a class="btn btn-primary btn-small desktop-zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Chat Zalo</a>
+        <button class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-menu">${icon('menu')}</button>
       </div>
     </div>
     <nav class="mobile-nav" id="mobile-menu" aria-label="Điều hướng điện thoại" hidden>${links}<div class="mobile-nav-contact"><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a><a href="${html(site.zalo)}" target="_blank" rel="noopener">Chat Zalo</a></div></nav>
@@ -30,20 +43,19 @@ function header(site, active = '') {
 }
 
 function footer(site) {
-  const fanpages = site.fanpages.map(p => `<li><a href="${html(p.url)}" target="_blank" rel="noopener">${html(p.label)}</a></li>`).join('');
-  return `<footer class="site-footer">
+  const fanpages = site.fanpages.map(p => `<li><a href="${html(p.url)}" target="_blank" rel="noopener">• ${html(p.label)}</a></li>`).join('');
+  return `<footer class="site-footer" id="thong-tin-shop">
     <div class="shell footer-grid">
-      <div><strong class="footer-brand">${html(site.name)}</strong><p>Bánh phu thê, mâm quả cưới và bánh phục linh tại TP.HCM.</p></div>
-      <div><h2>Liên hệ Shop</h2><p>${html(site.address)}</p><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a><a href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo cho Shop</a></div>
-      <div><h2>Kênh chính thức</h2><ul>${fanpages}</ul></div>
-      <div><h2>Điều hướng</h2><ul><li><a href="/cam-nang/">Cẩm nang</a></li><li><a href="/gio-hang/">Giỏ hàng</a></li><li><a href="/dat-hang/">Đặt hàng</a></li><li><a href="/lien-he/">Liên hệ</a></li></ul></div>
+      <div class="footer-about"><a class="footer-brand" href="/">${html(site.name)}</a><p>Bánh phu thê, mâm quả cưới và bánh phục linh tại TP.HCM.</p></div>
+      <div><h2>Liên hệ đặt hàng</h2><ul><li class="footer-address">${html(site.address)}</li><li>Hotline/Zalo: <a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a></li></ul></div>
+      <div><h2>Kênh chính thức</h2><ul><li><a href="tel:${html(site.hotline)}">• Hotline: ${html(site.hotline_display)}</a></li><li><a href="${html(site.zalo)}" target="_blank" rel="noopener">• Zalo: ${html(site.hotline_display)}</a></li>${fanpages}</ul></div>
+      <div><h2>Chính sách cửa hàng</h2><ul class="footer-policies"><li>• Chính sách đặt cọc &amp; thanh toán</li><li>• Chính sách giao nhận &amp; bảo quản</li><li>• Chính sách bảo mật thông tin</li></ul></div>
     </div>
-    <div class="shell footer-bottom">© 2026 ${html(site.name)}.</div>
+    <div class="shell footer-bottom"><span>© 2026 ${html(site.name)}.</span></div>
   </footer>`;
 }
-
 function floating(site) {
-  return `<div class="floating-contact" aria-label="Liên hệ nhanh"><a href="tel:${html(site.hotline)}">Gọi Shop</a><a class="zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">Zalo</a></div>`;
+  return `<div class="floating-contact" aria-label="Liên hệ nhanh"><a href="tel:${html(site.hotline)}">${icon('phone')}<span>Gọi Shop</span></a><a class="zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}<span>Zalo</span></a></div>`;
 }
 
 export function renderShell({ site, title, description, canonicalPath, active='', body, robots='index,follow', bodyClass='' }) {
@@ -53,9 +65,8 @@ export function renderShell({ site, title, description, canonicalPath, active=''
 
 function productImage(product, eager=false) {
   const images = [product.main_image, ...product.gallery.filter(src => src !== product.main_image)];
-  return `<div class="product-gallery"><div class="main-image"><img src="${html(product.main_image)}" alt="${html(product.name)}"${eager?' fetchpriority="high"':''}></div>${images.length>1?`<div class="thumb-row">${images.map((src,i)=>`<button type="button" class="thumb${i===0?' active':''}" data-gallery-src="${html(src)}" aria-label="Xem ảnh ${i+1} của ${html(product.name)}" aria-pressed="${i===0?'true':'false'}"><img src="${html(src)}" alt=""></button>`).join('')}</div>`:''}</div>`;
+  return `<div class="product-gallery"><div class="main-image"><img src="${html(product.main_image)}" alt="${html(product.name)}"${eager?' fetchpriority="high"':''}></div><div class="thumb-row" aria-label="Ảnh ${html(product.name)}">${images.map((src,i)=>`<button type="button" class="thumb${i===0?' active':''}" data-gallery-src="${html(src)}" aria-label="Xem ảnh ${i+1} của ${html(product.name)}" aria-pressed="${i===0?'true':'false'}"><img src="${html(src)}" alt=""></button>`).join('')}</div></div>`;
 }
-
 function optionGroup(group) {
   const hasDefault = group.options.some(option => option.default);
   return `<fieldset class="option-group" data-option-group data-group-label="${html(group.name)}"><legend>${html(group.name)}</legend><div class="choice-grid">${group.options.map((option,index)=>`<label class="choice"><input type="radio" name="${html(group.id)}" value="${html(option.id)}"${option.default||(!hasDefault&&index===0)?' checked':''} data-option-label="${html(option.label)}" data-custom="${option.allow_custom_text?'true':'false'}"><span>${html(option.label)}</span></label>`).join('')}</div>${group.options.some(o=>o.allow_custom_text)?`<input class="custom-option-input" type="text" name="${html(group.id)}_custom" placeholder="${html(group.options.find(o=>o.allow_custom_text)?.custom_placeholder||'Ghi rõ lựa chọn…')}" aria-label="Ghi rõ ${html(group.name)}" hidden>`:''}</fieldset>`;
@@ -67,18 +78,13 @@ function quantityControl(product) {
   return `<div class="field-row quantity-field" data-quantity-field data-unit="${html(q.unit||'')}"><label for="quantity">${html(q.label||'Số lượng')}</label><div class="quantity-input"><button type="button" data-qty-change="-1" aria-label="Giảm số lượng">−</button><input id="quantity" name="quantity" type="number" min="${q.min_value}" step="${q.step}" value="${q.default_value}" inputmode="numeric"><button type="button" data-qty-change="1" aria-label="Tăng số lượng">+</button><span>${html(q.unit||'')}</span></div></div>`;
 }
 
-function simpleConfigurator(product) {
-  return quantityControl(product);
-}
-
-function variantConfigurator(product) {
-  return `${product.option_groups.map(optionGroup).join('')}${quantityControl(product)}`;
-}
+function simpleConfigurator(product) { return quantityControl(product); }
+function variantConfigurator(product) { return `${product.option_groups.map(optionGroup).join('')}${quantityControl(product)}`; }
 
 function componentSubOption(item) {
   if (!item.sub_option) return '';
   const hasDefault = item.sub_option.options.some(option => option.default);
-  return `<div class="sub-option" data-component-sub-option>${item.sub_option.options.map((option,index)=>`<label><input type="radio" name="${html(item.id)}_${html(item.sub_option.id)}" value="${html(option.id)}" data-option-label="${html(option.label)}"${option.default||(!hasDefault&&index===0)?' checked':''} disabled> ${html(option.label)}</label>`).join('')}</div>`;
+  return `<div class="sub-option" data-component-sub-option><span>${html(item.sub_option.name)}</span>${item.sub_option.options.map((option,index)=>`<label><input type="radio" name="${html(item.id)}_${html(item.sub_option.id)}" value="${html(option.id)}" data-option-label="${html(option.label)}"${option.default||(!hasDefault&&index===0)?' checked':''} disabled> ${html(option.label)}</label>`).join('')}</div>`;
 }
 
 function compositeConfigurator(product) {
@@ -88,14 +94,12 @@ function compositeConfigurator(product) {
 
 function receiveDateField(product) {
   if (!product.receive_date?.enabled) return '';
-  return `<div class="field-row"><label for="receive-date">${html(product.receive_date.label)}</label><input id="receive-date" name="receive_date" type="date"><small>Ngày này sẽ được mang sang bước Đặt hàng; khách có thể sửa lại ở bước cuối.</small></div>`;
+  return `<div class="field-row"><label for="receive-date">${html(product.receive_date.label)}</label><input id="receive-date" name="receive_date" type="date"><small>Ngày này sẽ được mang sang bước Đặt hàng; có thể sửa lại ở bước cuối.</small></div>`;
 }
-
 function noteField(product) {
   if (!product.note.enabled) return '';
   return `<div class="field-row"><label for="note">${html(product.note.label)}</label><textarea id="note" name="note" placeholder="${html(product.note.placeholder||'')}"></textarea></div>`;
 }
-
 function initialSummary(product) {
   if (product.type === 'composite') return 'Chưa chọn lễ vật';
   const details = [];
@@ -106,37 +110,34 @@ function initialSummary(product) {
   if (product.quantity?.enabled) details.push(`Số lượng: ${product.quantity.default_value}${product.quantity.unit ? ` ${product.quantity.unit}` : ''}`);
   return details.join(' · ') || 'Sẵn sàng để chọn';
 }
-
 function productSummary(product) {
-  return `<div class="product-summary" data-product-summary><div><strong>${html(product.name)}</strong><p data-summary-detail aria-live="polite">${html(initialSummary(product))}</p></div><div class="summary-price"><small>Báo giá</small><strong>${html(product.price.display_text)}</strong></div></div>`;
+  return `<div class="product-summary" data-product-summary><strong>${html(product.name)}</strong><span aria-hidden="true">·</span><p data-summary-detail aria-live="polite">${html(initialSummary(product))}</p><span aria-hidden="true">·</span><span class="summary-price">Giá: <strong>${html(product.price.display_text)}</strong></span></div>`;
 }
-
 function infoBlocks(product) {
   if (!product.info_blocks.length) return '';
-  return `<section class="section info-section"><div class="shell"><div class="section-head compact"><h2>Thông tin về ${html(product.name.toLowerCase())}</h2></div><div class="info-grid">${product.info_blocks.map((block,index)=>`<article><span>${String(index+1).padStart(2,'0')}</span><div><h3>${html(block.title)}</h3><p>${html(block.description)}</p></div></article>`).join('')}</div></div></section>`;
+  const blocks = [...product.info_blocks];
+  if (!blocks.some(block => /thời gian/i.test(block.title))) {
+    blocks.push({ title:'Thời gian chuẩn bị', description:'Shop khuyến nghị đặt trước 3–5 ngày.' });
+  }
+  return `<section class="section product-info-section"><div class="shell"><div class="product-info-card"><h2>Thông tin về ${html(product.name.toLowerCase())}</h2><div class="info-grid">${blocks.map((block,index)=>`<article><div class="info-title"><span>${String(index+1).padStart(2,'0')}</span><h3>${html(block.title)}</h3></div><p>${html(block.description)}</p></article>`).join('')}</div></div></div></section>`;
 }
-
 function relatedProducts(product, products = []) {
   const byId = new Map(products.filter(item => item.status === 'published').map(item => [item.id,item]));
   const related = product.related_products.map(id => byId.get(id)).filter(Boolean).filter(item => item.id !== product.id);
   if (!related.length) return '';
-  return `<section class="section related-section"><div class="shell"><div class="section-head compact"><h2>Sản phẩm liên quan</h2></div><div class="related-grid">${related.map(item=>`<article class="related-product"><a class="related-image" href="/${html(item.slug)}/"><img src="${html(item.main_image)}" alt="${html(item.name)}"></a><div class="related-body"><h3><a href="/${html(item.slug)}/">${html(item.name)}</a></h3><p>${html(item.short_description)}</p><div><strong>${html(item.price.display_text)}</strong><a href="/${html(item.slug)}/">Xem sản phẩm →</a></div></div></article>`).join('')}</div></div></section>`;
+  return `<section class="section related-section"><div class="shell"><div class="section-head compact split-head"><div><span class="eyebrow">Xem thêm</span><h2>Sản phẩm liên quan</h2></div></div><div class="related-grid">${related.map(item=>`<article class="related-product"><a class="related-image" href="/${html(item.slug)}/"><img src="${html(item.main_image)}" alt="${html(item.name)}"></a><div class="related-body"><h3><a href="/${html(item.slug)}/">${html(item.name)}</a></h3><p>${html(item.short_description)}</p><div><strong>${html(item.price.display_text)}</strong><a href="/${html(item.slug)}/">Xem sản phẩm ${icon('arrow')}</a></div></div></article>`).join('')}</div></div></section>`;
 }
 
-function publishedArticles(articles = []) {
-  return articles.filter(article => article.status === 'published').sort((a,b) => (a.featured_order - b.featured_order) || a.title.localeCompare(b.title, 'vi'));
-}
-
+function publishedArticles(articles = []) { return articles.filter(article => article.status === 'published').sort((a,b) => (a.featured_order - b.featured_order) || a.title.localeCompare(b.title, 'vi')); }
 function articleCard(article, variant = '') {
-  return `<article class="guide-card ${html(variant)}"><a class="guide-image" href="/cam-nang/${html(article.slug)}/"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}"></a><div class="guide-body"><h3><a href="/cam-nang/${html(article.slug)}/">${html(article.title)}</a></h3><p>${html(article.excerpt)}</p><a class="guide-link" href="/cam-nang/${html(article.slug)}/">Đọc tiếp →</a></div></article>`;
+  return `<article class="guide-card ${html(variant)}"><a class="guide-image" href="/cam-nang/${html(article.slug)}/"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}"></a><div class="guide-body"><span class="guide-kicker">Cẩm nang cưới hỏi</span><h3><a href="/cam-nang/${html(article.slug)}/">${html(article.title)}</a></h3><p>${html(article.excerpt)}</p><a class="guide-link" href="/cam-nang/${html(article.slug)}/">Đọc bài viết ${icon('arrow')}</a></div></article>`;
 }
-
 function productRelatedArticles(product, articles = []) {
   const related = publishedArticles(articles).filter(article => article.related_products.includes(product.id)).slice(0,3);
   if (!related.length) return '';
-  return `<section class="section guide-related-section"><div class="shell"><div class="section-head compact split-head"><h2>Cẩm nang cưới hỏi</h2><a href="/cam-nang/">Xem tất cả →</a></div><div class="guide-related-grid">${related.map(article => articleCard(article,'compact')).join('')}</div></div></section>`;
+  const [featured,...rest] = related;
+  return `<section class="section guide-related-section"><div class="shell"><div class="section-head compact split-head"><div><span class="eyebrow">Tham khảo</span><h2>Cẩm nang cưới hỏi</h2></div><a href="/cam-nang/">Xem tất cả ${icon('arrow')}</a></div><div class="guide-related-layout">${articleCard(featured,'featured')}${rest.length?`<div class="guide-related-side">${rest.map(article => articleCard(article,'side')).join('')}</div>`:''}</div></div></section>`;
 }
-
 function renderArticleBlock(block) {
   if (block.type === 'paragraph') return `<p>${html(block.text)}</p>`;
   if (block.type === 'h2') return `<h2>${html(block.text)}</h2>`;
@@ -146,25 +147,23 @@ function renderArticleBlock(block) {
   if (block.type === 'image') return `<figure><img src="${html(block.src)}" alt="${html(block.alt)}">${block.caption?`<figcaption>${html(block.caption)}</figcaption>`:''}</figure>`;
   return '';
 }
-
 function articleRelatedProducts(article, products = []) {
   const byId = new Map(products.filter(product => product.status === 'published').map(product => [product.id,product]));
   const related = article.related_products.map(id => byId.get(id)).filter(Boolean).slice(0,3);
   if (!related.length) return '';
-  return `<section class="article-related"><h2>Sản phẩm liên quan</h2><div class="article-product-links">${related.map(product=>`<a href="/${html(product.slug)}/"><img src="${html(product.main_image)}" alt=""><span><strong>${html(product.name)}</strong><small>${html(product.price.display_text)}</small></span></a>`).join('')}</div></section>`;
+  return `<section class="article-product-promo" aria-label="Sản phẩm liên quan">${related.map(product=>`<a href="/${html(product.slug)}/"><span class="article-product-icon">${icon('bag')}</span><span><strong>${html(product.name)}</strong><small>${html(product.short_description)} · ${html(product.price.display_text)}</small></span><b>Xem sản phẩm ${icon('arrow')}</b></a>`).join('')}</section>`;
 }
-
 function articleRelatedArticles(article, articles = []) {
   const byId = new Map(publishedArticles(articles).map(item => [item.id,item]));
-  const related = article.related_articles.map(id => byId.get(id)).filter(Boolean).slice(0,3);
+  const related = article.related_articles.map(id => byId.get(id)).filter(Boolean).slice(0,2);
   if (!related.length) return '';
-  return `<section class="article-related"><h2>Bài viết liên quan</h2><div class="article-related-list">${related.map(item=>`<a href="/cam-nang/${html(item.slug)}/"><strong>${html(item.title)}</strong><span>Đọc tiếp →</span></a>`).join('')}</div></section>`;
+  return `<section class="article-related-guides"><div class="article-related-head"><h2>Bài viết liên quan</h2><a href="/cam-nang/">Xem tất cả cẩm nang</a></div><div class="article-related-grid">${related.map(item=>`<article><a class="article-related-image" href="/cam-nang/${html(item.slug)}/"><img src="${html(item.cover.src)}" alt="${html(item.cover.alt)}"></a><h3><a href="/cam-nang/${html(item.slug)}/">${html(item.title)}</a></h3><p>${html(item.excerpt)}</p><a class="guide-link" href="/cam-nang/${html(item.slug)}/">Đọc bài viết ${icon('arrow')}</a></article>`).join('')}</div></section>`;
 }
 
 export function renderProductPage(site, product, products = [], articles = []) {
   const configurator = product.type==='composite' ? compositeConfigurator(product) : product.type==='variant' ? variantConfigurator(product) : simpleConfigurator(product);
   const secondaryFields = product.type === 'composite' ? `<div class="config-meta-grid">${receiveDateField(product)}${noteField(product)}</div>` : noteField(product);
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>${html(product.name)}</span></div><section class="section product-top"><div class="shell product-grid">${productImage(product,true)}<div class="product-config"><h1>${html(product.name)}</h1><div class="price">${html(product.price.display_text)}</div><p class="lead">${html(product.short_description)}</p><form data-product-form data-product-id="${html(product.id)}" data-product-name="${html(product.name)}" data-product-type="${html(product.type)}">${configurator}${secondaryFields}${productSummary(product)}<div class="cta-row"><button type="button" class="btn btn-primary product-cart-cta" data-add-to-cart>Thêm vào giỏ hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">Liên hệ Shop</a></div><p class="cart-action-note" role="status" aria-live="polite" data-cart-action-note hidden></p><p class="microcopy">Shop khuyến nghị đặt trước 3–5 ngày. Đơn sẽ được xác nhận trước khi chuẩn bị.</p></form></div></div></section>${infoBlocks(product)}${productRelatedArticles(product,articles)}${relatedProducts(product,products)}`;
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>${html(product.name)}</span></div><section class="section product-top"><div class="shell product-grid">${productImage(product,true)}<div class="product-config"><span class="eyebrow">Sản phẩm Shop Uyên Ương</span><div class="product-title-row"><h1>${html(product.name)}</h1><div class="price">${html(product.price.display_text)}</div></div><p class="lead">${html(product.short_description)}</p><form data-product-form data-product-id="${html(product.id)}" data-product-name="${html(product.name)}" data-product-type="${html(product.type)}">${configurator}${secondaryFields}${productSummary(product)}<div class="cta-row product-actions"><button type="button" class="btn btn-primary product-cart-cta" data-add-to-cart>${icon('bag')}Thêm vào giỏ hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Liên hệ Shop</a></div><p class="cart-action-note" role="status" aria-live="polite" data-cart-action-note hidden></p><p class="microcopy">Shop khuyến nghị đặt trước 3–5 ngày. Đơn sẽ được xác nhận trước khi chuẩn bị.</p></form></div></div></section>${infoBlocks(product)}${productRelatedArticles(product,articles)}${relatedProducts(product,products)}`;
   return renderShell({site,title:product.seo.title,description:product.seo.description,canonicalPath:`/${product.slug}/`,active:product.slug,body,bodyClass:`product-page product-${html(product.type)}`});
 }
 
@@ -172,56 +171,54 @@ function homeGuideSection(articles = []) {
   const list = publishedArticles(articles).slice(0,3);
   if (!list.length) return '';
   const [featured,...rest] = list;
-  return `<section class="section home-guides" id="cam-nang"><div class="shell"><div class="section-head split-head"><div><h2>Cẩm nang cưới hỏi</h2><p>Các bài hướng dẫn chuẩn bị bánh và mâm quả.</p></div><a href="/cam-nang/">Xem tất cả →</a></div><div class="home-guide-layout">${articleCard(featured,'featured')}${rest.length?`<div class="home-guide-side">${rest.map(article=>articleCard(article,'side')).join('')}</div>`:''}</div></div></section>`;
+  return `<section class="section home-guides" id="cam-nang"><div class="shell"><div class="section-head split-head"><h2>Cẩm nang cưới hỏi</h2><a href="/cam-nang/">Xem tất cả ${icon('arrow')}</a></div><div class="home-guide-layout">${articleCard(featured,'featured')}${rest.length?`<div class="home-guide-side">${rest.map(article=>articleCard(article,'side')).join('')}</div>`:''}</div></div></section>`;
 }
-
 function homeFaq() {
   const items = [
     ['Có cần đặt cọc không?','Shop sẽ thông báo thông tin đặt cọc khi xác nhận đơn, tùy theo sản phẩm và số lượng.'],
-    ['Shop giao hàng ở đâu?','Shop nhận giao hàng tại TP.HCM. Khu vực và chi tiết giao hàng sẽ được xác nhận khi chốt đơn.'],
+    ['Shop giao hàng ở đâu?','Shop nhận giao hàng tại TP.HCM. Khu vực và phí giao sẽ được xác nhận khi chốt đơn.'],
     ['Nên đặt trước bao lâu?','Shop khuyến nghị đặt trước 3–5 ngày để có thời gian chuẩn bị đơn.'],
     ['Có thể đổi hoặc hủy đơn không?','Nếu cần thay đổi hoặc hủy đơn, vui lòng liên hệ Shop sớm để kiểm tra tình trạng chuẩn bị và được hỗ trợ.']
   ];
-  return `<section class="section soft home-faq"><div class="shell faq-grid"><div><h2>Câu hỏi thường gặp</h2><p>Thông tin cần biết trước khi gửi yêu cầu đặt bánh và mâm quả tại Shop Uyên Ương.</p></div><div class="faq-list">${items.map(([q,a],i)=>`<details${i===0?' open':''}><summary>${html(q)}<span aria-hidden="true">⌄</span></summary><p>${html(a)}</p></details>`).join('')}</div></div></section>`;
+  return `<section class="section soft home-faq"><div class="shell faq-grid"><div class="faq-intro"><span class="eyebrow">Trước khi đặt</span><h2>Câu hỏi thường gặp</h2><p>Thông tin cần biết trước khi gửi yêu cầu đặt bánh và mâm quả tại Shop Uyên Ương.</p></div><div class="faq-list">${items.map(([q,a],i)=>`<details${i===0?' open':''}><summary><span>${html(q)}</span><b aria-hidden="true">+</b></summary><p>${html(a)}</p></details>`).join('')}</div></div></section>`;
+}
+function homeQuickModal() {
+  return `<div class="quick-modal" data-quick-modal hidden><div class="quick-modal-backdrop" data-quick-close></div><section class="quick-modal-card" role="dialog" aria-modal="true" aria-labelledby="quick-modal-title"><button class="quick-modal-close" type="button" data-quick-close aria-label="Đóng">${icon('close')}</button><span class="eyebrow">Thêm nhanh vào giỏ</span><h2 id="quick-modal-title" data-quick-title>Sản phẩm</h2><p class="quick-modal-desc" data-quick-desc></p><form data-quick-form><div data-quick-options></div><div class="field-row quantity-field"><label for="quick-quantity">Số lượng</label><div class="quantity-input"><button type="button" data-quick-qty="-1" aria-label="Giảm số lượng">−</button><input id="quick-quantity" type="number" min="1" step="1" value="1" inputmode="numeric" data-quick-quantity><button type="button" data-quick-qty="1" aria-label="Tăng số lượng">+</button><span data-quick-unit>bánh</span></div></div><button class="btn btn-primary btn-block" type="submit">${icon('bag')}Thêm vào giỏ hàng</button><a class="quick-detail-link" href="/banh-phu-the/" data-quick-detail>Xem trang chi tiết ${icon('arrow')}</a><p class="cart-action-note" data-quick-note role="status" aria-live="polite" hidden></p></form></section></div>`;
 }
 
 export function renderHome(site, products, articles = []) {
-  const featuredIds = ['banh-phu-the','mam-qua-cuoi','banh-phuc-linh'];
-  const cards = featuredIds.map(id=>products.find(p=>p.id===id)).filter(Boolean).map((p,i)=>`<article class="product-card ${i===0?'featured':''}"><a class="card-image" href="/${html(p.slug)}/"><img src="${html(p.main_image)}" alt="${html(p.name)}"></a><div class="card-body"><div class="card-title-row"><h2><a href="/${html(p.slug)}/">${html(p.name)}</a></h2><span>${html(p.price.display_text)}</span></div><p>${html(p.short_description)}</p><div class="card-actions"><a href="/${html(p.slug)}/">${i===1?'Chọn mâm quả':'Xem sản phẩm'} →</a></div></div></article>`).join('');
-  const body = `<section class="hero"><div class="shell hero-grid"><div class="hero-copy"><h1>Bánh phu thê &amp; mâm quả cưới tại TP.HCM</h1><p>Shop nhận bánh phu thê, mâm quả cưới và bánh phục linh. Chọn sản phẩm trên website, Shop sẽ liên hệ xác nhận chi tiết trước khi chuẩn bị.</p><div class="cta-row"><a class="btn btn-primary" href="#san-pham">Xem sản phẩm</a><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo</a></div></div><div class="hero-media"><img src="/assets/images/products/mam-qua-cuoi.jpg" alt="Mâm quả cưới tại Shop Uyên Ương" fetchpriority="high"></div></div></section><div class="home-assurance"><div class="shell"><span>Đặt trước 3–5 ngày</span><i aria-hidden="true">•</i><span>Giao tại TP.HCM</span><i aria-hidden="true">•</i><span>Shop xác nhận trước khi chuẩn bị</span></div></div><section class="section" id="san-pham"><div class="shell"><div class="section-head"><h2>Sản phẩm của Shop</h2><p>Chọn nhóm sản phẩm cần xem.</p></div><div class="home-products">${cards}</div></div></section><section class="section soft"><div class="shell"><div class="section-head centered"><h2>Cách đặt hàng</h2></div><div class="steps"><article><span>01</span><h3>Chọn sản phẩm</h3><p>Xem sản phẩm và chọn các tùy chọn cần thiết.</p></article><article><span>02</span><h3>Gửi yêu cầu</h3><p>Thêm vào giỏ và điền thông tin nhận hàng.</p></article><article><span>03</span><h3>Shop xác nhận</h3><p>Shop liên hệ lại trước khi chuẩn bị.</p></article></div></div></section>${homeGuideSection(articles)}${homeFaq()}<section class="home-final-cta"><div class="shell"><div><h2>Cần Shop hỗ trợ thêm?</h2><p>Liên hệ trực tiếp qua Zalo hoặc điện thoại.</p></div><div class="cta-row"><a class="btn btn-primary" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo</a><a class="btn btn-outline" href="tel:${html(site.hotline)}">Gọi ${html(site.hotline_display)}</a></div></div></section>`;
+  const byId = new Map(products.filter(p=>p.status==='published').map(p=>[p.id,p]));
+  const phuThe = byId.get('banh-phu-the');
+  const mamQua = byId.get('mam-qua-cuoi');
+  const phucLinh = byId.get('banh-phuc-linh');
+  const body = `<section class="hero home-hero"><div class="shell hero-grid"><div class="hero-copy"><h1>Bánh phu thê &amp; mâm quả cưới tại TP.HCM</h1><p>Chọn bánh hoặc mâm quả theo nhu cầu. Shop sẽ liên hệ xác nhận chi tiết trước khi chuẩn bị.</p><div class="cta-row"><a class="btn btn-primary" href="#san-pham">Xem sản phẩm</a><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Nhắn Zalo</a></div><div class="hero-assurance"><span>Đặt trước 3–5 ngày</span><i aria-hidden="true">|</i><span>Giao tại TP.HCM</span><i aria-hidden="true">|</i><span>Xác nhận trước khi chuẩn bị</span></div></div><figure class="hero-media"><img src="${html(mamQua?.main_image||'/assets/images/products/mam-qua-cuoi.jpg')}" alt="Bánh phu thê và mâm quả cưới tại Shop Uyên Ương" fetchpriority="high"></figure></div></section><section class="section home-product-section" id="san-pham"><div class="shell editorial-products">${phuThe?`<article class="editorial-product feature-primary"><a class="editorial-product-image" href="/${html(phuThe.slug)}/"><img src="${html(phuThe.main_image)}" alt="${html(phuThe.name)}"></a><div class="editorial-product-copy"><div class="product-card-heading"><h2>${html(phuThe.name)}</h2><span>${html(phuThe.price.display_text)}</span></div><p>Có hộp giấy và lá dừa. Có thể đặt riêng hoặc dùng trong mâm quả cưới.</p><div class="editorial-meta"><span>Quy cách:</span><strong>Hộp giấy · Lá dừa</strong></div><div class="editorial-actions"><a class="btn btn-outline" href="/${html(phuThe.slug)}/">Xem bánh phu thê</a><button class="btn btn-primary" type="button" data-home-quick-add="${html(phuThe.id)}">Thêm vào giỏ</button></div></div></article>`:''}${mamQua?`<article class="editorial-product feature-reverse"><div class="editorial-product-copy"><div class="product-card-heading"><h2>${html(mamQua.name)}</h2><span>${html(mamQua.price.display_text)}</span></div><p>Chọn các lễ vật gia đình cần. Số mâm được tính theo số lễ vật đã chọn.</p><div class="editorial-actions"><a class="btn btn-outline" href="/${html(mamQua.slug)}/">Chọn mâm quả</a></div></div><a class="editorial-product-image" href="/${html(mamQua.slug)}/"><img src="${html(mamQua.main_image)}" alt="${html(mamQua.name)}"></a></article>`:''}${phucLinh?`<article class="editorial-product feature-strip"><a class="editorial-product-image" href="/${html(phucLinh.slug)}/"><img src="${html(phucLinh.main_image)}" alt="${html(phucLinh.name)}"></a><div class="editorial-product-copy"><div class="product-card-heading"><h2>${html(phucLinh.name)}</h2><span>${html(phucLinh.price.display_text)}</span></div><p>${html(phucLinh.short_description)}</p><div class="editorial-actions"><a class="btn btn-outline" href="/${html(phucLinh.slug)}/">Xem bánh phục linh</a><button class="btn btn-primary" type="button" data-home-quick-add="${html(phucLinh.id)}">Thêm vào giỏ</button></div></div></article>`:''}</div></section><section class="section soft home-order-steps"><div class="shell"><div class="section-head centered"><h2>Cách đặt hàng</h2></div><div class="steps"><article><span>01</span><h3>Chọn sản phẩm</h3><p>Xem bánh hoặc mâm quả phù hợp.</p></article><article><span>02</span><h3>Gửi yêu cầu</h3><p>Thêm vào giỏ và điền thông tin nhận hàng.</p></article><article class="step-final"><span>03</span><h3>Shop xác nhận</h3><p>Shop liên hệ lại trước khi chuẩn bị.</p></article></div></div></section>${homeGuideSection(articles)}${homeFaq()}<section class="home-final-cta"><div class="shell"><h2>Cần Shop tư vấn trước khi đặt?</h2><p>Nhắn Zalo hoặc gọi Shop để trao đổi trước.</p><div class="cta-row"><a class="btn btn-light" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Nhắn Zalo</a><a class="btn btn-ghost-light" href="tel:${html(site.hotline)}">${icon('phone')}Gọi ${html(site.hotline_display)}</a></div></div></section>${homeQuickModal()}`;
   return renderShell({site,title:site.seo.title,description:site.seo.description,canonicalPath:'/',active:'home',body,bodyClass:'home-page'});
 }
 
 export function renderGuideHub(site, articles = []) {
-  const list = publishedArticles(articles);
-  const [featured,...rest] = list;
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Cẩm nang</span></div><section class="section guide-hub"><div class="shell"><div class="page-intro"><h1>Cẩm nang</h1><p>Các bài hướng dẫn về bánh phu thê, mâm quả cưới và cách chuẩn bị theo nhu cầu của từng gia đình.</p></div>${featured?`<div class="guide-hub-layout">${articleCard(featured,'featured')}${rest.length?`<div class="guide-hub-side">${rest.slice(0,2).map(article=>articleCard(article,'side')).join('')}</div>`:''}</div>${rest.length>2?`<div class="guide-list-more">${rest.slice(2).map(article=>articleCard(article,'compact')).join('')}</div>`:''}`:`<div class="empty-content"><h2>Nội dung đang được chuẩn bị</h2><p>Khi bài viết được xuất bản từ Admin, trang này sẽ hiển thị tự động.</p></div>`}</div></section>`;
+  const list = publishedArticles(articles); const [featured,...rest] = list;
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>Cẩm nang</span></div><section class="section guide-hub"><div class="shell"><div class="page-intro guide-hub-intro"><h1>Cẩm nang cưới hỏi</h1><p>Các bài hướng dẫn chuẩn bị bánh, mâm quả và những việc cần lưu ý khi đặt hàng.</p></div>${featured?`<div class="guide-hub-layout">${articleCard(featured,'featured')}${rest.length?`<div class="guide-hub-side">${rest.slice(0,2).map(article=>articleCard(article,'side')).join('')}</div>`:''}</div>${rest.length>2?`<div class="guide-list-more">${rest.slice(2).map(article=>articleCard(article,'compact')).join('')}</div>`:''}`:`<div class="empty-content"><h2>Nội dung đang được chuẩn bị</h2><p>Khi bài viết được xuất bản từ Admin, trang này sẽ hiển thị tự động.</p></div>`}</div></section>`;
   return renderShell({site,title:`Cẩm nang | ${site.name}`,description:'Cẩm nang của Shop Uyên Ương về bánh phu thê, mâm quả cưới và bánh phục linh.',canonicalPath:'/cam-nang/',active:'cam-nang',body,bodyClass:'guide-hub-page'});
 }
-
 export function renderCategoryHub(site, category, articles = []) {
   const list = publishedArticles(articles).filter(article => article.category === category.id);
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(category.name)}</span></div><section class="section guide-hub category-hub"><div class="shell"><div class="page-intro"><h1>${html(category.name)}</h1>${category.description?`<p>${html(category.description)}</p>`:''}</div>${list.length?`<div class="guide-list-more category-list">${list.map(article=>articleCard(article,'compact')).join('')}</div>`:`<div class="empty-content"><h2>Chưa có bài viết</h2><p>Các bài thuộc chuyên mục này sẽ hiển thị khi được xuất bản.</p></div>`}</div></section>`;
+  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(category.name)}</span></div><section class="section guide-hub category-hub"><div class="shell"><div class="page-intro"><span class="eyebrow">Chuyên mục</span><h1>${html(category.name)}</h1>${category.description?`<p>${html(category.description)}</p>`:''}</div>${list.length?`<div class="guide-list-more category-list">${list.map(article=>articleCard(article,'compact')).join('')}</div>`:`<div class="empty-content"><h2>Chưa có bài viết</h2><p>Các bài thuộc chuyên mục này sẽ hiển thị khi được xuất bản.</p></div>`}</div></section>`;
   return renderShell({site,title:`${category.name} | ${site.name}`,description:category.description||`Bài viết ${category.name} tại ${site.name}.`,canonicalPath:`/cam-nang/${category.slug}/`,active:'cam-nang',body,bodyClass:'guide-hub-page category-hub-page'});
 }
-
 export function renderArticlePage(site, article, articles = [], products = []) {
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(article.title)}</span></div><article class="article-page"><header class="shell article-header"><div class="article-heading"><h1>${html(article.title)}</h1><p>${html(article.excerpt)}</p></div><figure class="article-cover"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}" fetchpriority="high"></figure></header><div class="shell article-layout"><div class="article-content">${article.blocks.map(renderArticleBlock).join('')}</div><aside class="article-side">${articleRelatedProducts(article,products)}</aside></div><div class="shell article-footer-related">${articleRelatedArticles(article,articles)}</div></article>`;
+  const body = `<div class="shell article-shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(article.title)}</span></div><article class="article-page"><header class="shell article-shell article-header"><div class="article-heading"><h1>${html(article.title)}</h1><p>${html(article.excerpt)}</p></div><figure class="article-cover"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}" fetchpriority="high"></figure></header><div class="shell article-shell article-layout"><div class="article-content">${article.blocks.map(renderArticleBlock).join('')}${articleRelatedProducts(article,products)}</div></div><div class="shell article-shell article-footer-related">${articleRelatedArticles(article,articles)}</div></article>`;
   return renderShell({site,title:article.seo.title,description:article.seo.description,canonicalPath:`/cam-nang/${article.slug}/`,active:'cam-nang',body,bodyClass:'article-detail-page'});
 }
-
 export function renderContact(site) {
-  const fanpages = site.fanpages.map(page=>`<li><a href="${html(page.url)}" target="_blank" rel="noopener">${html(page.label)} →</a></li>`).join('');
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Liên hệ</span></div><section class="section contact-page-section"><div class="shell"><div class="page-intro"><h1>Liên hệ Shop Uyên Ương</h1><p>Liên hệ Shop để được hỗ trợ về bánh phu thê, mâm quả cưới và bánh phục linh.</p></div><div class="contact-grid"><div class="contact-info"><dl class="contact-list"><div><dt>Địa chỉ</dt><dd>${html(site.address)}</dd></div><div><dt>Hotline / Zalo</dt><dd><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a></dd></div></dl><div class="cta-row"><a class="btn btn-primary" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo</a><a class="btn btn-outline" href="tel:${html(site.hotline)}">Gọi ${html(site.hotline_display)}</a></div><div class="official-channels"><h2>Kênh chính thức</h2><ul>${fanpages}<li><a href="${html(site.zalo)}" target="_blank" rel="noopener">Zalo tư vấn trực tiếp →</a></li></ul></div></div><form class="contact-form" data-preview-form><h2>Gửi tin nhắn cho Shop</h2><label>Họ và tên<input name="name" autocomplete="name" required placeholder="Nhập họ và tên"></label><label>Số điện thoại<input name="phone" inputmode="tel" autocomplete="tel" required placeholder="Nhập số điện thoại"></label><label>Nội dung cần hỗ trợ<textarea name="message" required placeholder="Shop cần hỗ trợ nội dung gì?"></textarea></label><button type="submit" class="btn btn-primary">Gửi yêu cầu</button><p class="form-note" hidden data-preview-note>Form liên hệ sẽ được kết nối ở giai đoạn API.</p></form></div></div></section>`;
+  const fanpages = site.fanpages.map(page=>`<li><a href="${html(page.url)}" target="_blank" rel="noopener">${html(page.label)} ${icon('arrow')}</a></li>`).join('');
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>Liên hệ</span></div><section class="section contact-page-section"><div class="shell"><div class="page-intro contact-page-intro"><h1>Liên hệ Shop Uyên Ương</h1><p>Liên hệ Shop để được hỗ trợ về bánh phu thê, mâm quả cưới và bánh phục linh.</p></div><div class="contact-grid"><div class="contact-info"><h2>Shop Uyên Ương</h2><dl class="contact-list"><div><dt>Địa chỉ</dt><dd>${html(site.address)}</dd></div><div><dt>Hotline / Zalo</dt><dd><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a></dd></div></dl><div class="official-channels"><h2>Kênh chính thức</h2><ul>${fanpages}<li><a href="${html(site.zalo)}" target="_blank" rel="noopener">Zalo tư vấn trực tiếp ${icon('arrow')}</a></li></ul></div><div class="cta-row contact-actions"><a class="btn btn-primary" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Nhắn Zalo</a><a class="btn btn-outline" href="tel:${html(site.hotline)}">${icon('phone')}Gọi ${html(site.hotline_display)}</a></div></div><form class="contact-form" data-preview-form><h2>Gửi tin nhắn cho Shop</h2><p class="contact-form-intro">Để lại số điện thoại và nội dung cần hỏi, Shop sẽ liên hệ lại sớm nhất.</p><label>Họ và tên<input name="name" autocomplete="name" required placeholder="Nhập họ và tên"></label><label>Số điện thoại <span aria-hidden="true">*</span><input name="phone" inputmode="tel" autocomplete="tel" required placeholder="Nhập số điện thoại"></label><label>Nội dung cần hỗ trợ<textarea name="message" required placeholder="Shop cần hỗ trợ nội dung gì?"></textarea></label><button type="submit" class="btn btn-primary btn-block">Gửi yêu cầu</button><p class="contact-privacy">Thông tin chỉ dùng để liên hệ hỗ trợ theo yêu cầu của khách.</p><p class="form-note" hidden data-preview-note>Yêu cầu đã ghi nhận. Shop sẽ liên hệ lại để hỗ trợ.</p></form></div></div></section>`;
   return renderShell({site,title:`Liên hệ | ${site.name}`,description:`Liên hệ ${site.name} tại TP.HCM.`,canonicalPath:'/lien-he/',active:'lien-he',body,bodyClass:'contact-page'});
 }
-
 export function renderCart(site) {
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Giỏ hàng</span></div><section class="section commerce-page"><div class="shell"><div class="page-intro"><h1>Giỏ hàng</h1><p>Kiểm tra sản phẩm trước khi gửi yêu cầu đặt hàng.</p></div><div class="cart-layout" data-cart-page><div class="cart-main"><div class="cart-items" data-cart-list aria-live="polite"></div><div class="empty-content cart-empty" data-cart-empty hidden><h2>Giỏ hàng đang trống</h2><p>Chọn sản phẩm để bắt đầu đặt hàng.</p><a class="btn btn-primary" href="/">Xem sản phẩm</a></div></div><aside class="commerce-summary cart-summary" data-cart-summary hidden><h2>Tóm tắt</h2><dl><div><dt>Số lượng sản phẩm</dt><dd><span data-cart-line-count>0</span> sản phẩm</dd></div><div><dt>Giá</dt><dd>Shop sẽ xác nhận</dd></div></dl><p>Shop sẽ liên hệ xác nhận giá và thông tin đơn hàng.</p><a class="btn btn-primary btn-block" href="/dat-hang/">Tiếp tục đặt hàng</a><a class="btn btn-outline btn-block" href="/">Chọn thêm sản phẩm</a></aside></div></div></section>`;
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>Giỏ hàng</span></div><section class="section commerce-page"><div class="shell"><div class="page-intro commerce-page-intro"><h1>Giỏ hàng</h1><p>Kiểm tra sản phẩm và lựa chọn trước khi gửi yêu cầu đặt hàng.</p></div><div class="cart-layout" data-cart-page><div class="cart-main"><div class="cart-items" data-cart-list aria-live="polite"></div><div class="empty-content cart-empty" data-cart-empty hidden><span class="empty-icon">${icon('bag')}</span><h2>Giỏ hàng đang trống</h2><p>Chọn bánh hoặc mâm quả để bắt đầu đặt hàng.</p><a class="btn btn-primary" href="/#san-pham">Xem sản phẩm ${icon('arrow')}</a></div></div><aside class="commerce-summary cart-summary" data-cart-summary hidden><div class="summary-title-row"><h2>Tóm tắt</h2><small><span data-cart-summary-count>0</span> hạng mục</small></div><dl><div><dt>Số sản phẩm</dt><dd><span data-cart-line-count>0</span></dd></div><div><dt>Giá</dt><dd>Shop sẽ xác nhận</dd></div></dl><p>Shop sẽ liên hệ xác nhận giá và thông tin đơn hàng trước khi chuẩn bị.</p><a class="btn btn-primary btn-block" href="/dat-hang/">Tiếp tục đặt hàng ${icon('arrow')}</a><a class="btn btn-outline btn-block" href="/#san-pham">Chọn thêm sản phẩm</a></aside></div></div></section>`;
   return renderShell({site,title:`Giỏ hàng | ${site.name}`,description:'Giỏ hàng Shop Uyên Ương.',canonicalPath:'/gio-hang/',robots:'noindex,follow',body,bodyClass:'cart-page'});
 }
-
 export function renderCheckout(site) {
-  const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><span>Đặt hàng</span></div><section class="section commerce-page checkout-page"><div class="shell"><div data-checkout-default><div class="page-intro"><h1>Đặt hàng</h1><p>Điền thông tin nhận hàng. Shop sẽ liên hệ xác nhận trước khi chuẩn bị.</p></div><div class="order-grid"><div><section class="order-section"><h2>Sản phẩm đã chọn</h2><div class="checkout-items" data-checkout-items></div><div class="empty-inline" data-checkout-empty hidden>Giỏ hàng đang trống. <a href="/">Chọn sản phẩm</a> để tiếp tục.</div></section><section class="order-section add-more"><h2>Chọn thêm</h2><div class="add-more-list"><a href="/banh-phu-the/"><span><strong>Bánh phu thê</strong><small>Có hộp giấy và lá dừa.</small></span><b>+ Thêm</b></a><a href="/mam-qua-cuoi/"><span><strong>Mâm quả cưới</strong><small>Chọn các lễ vật gia đình cần.</small></span><b>Chọn lễ vật →</b></a><a href="/banh-phuc-linh/"><span><strong>Bánh phục linh</strong><small>Chọn vị và số lượng khi đặt.</small></span><b>+ Thêm</b></a></div></section><form class="order-section form-grid" data-order-form novalidate><h2>Thông tin nhận hàng</h2><p class="form-intro full">Vui lòng cung cấp thông tin nhận hàng để Shop liên hệ xác nhận đơn.</p><label>Họ và tên<input name="customer_name" autocomplete="name" required maxlength="150"></label><label>Số điện thoại<input name="phone" inputmode="tel" autocomplete="tel" required maxlength="35"></label><label class="full">Địa chỉ nhận hàng<input name="address" autocomplete="street-address" required maxlength="600"></label><label>Ngày nhận<input name="receive_date" type="date" required><small>Shop khuyến nghị đặt trước 3–5 ngày.</small></label><label class="full">Ghi chú<textarea name="note" maxlength="1000" placeholder="Yêu cầu thêm cho Shop…"></textarea></label><div class="form-error full" data-order-error role="alert" hidden></div><button class="btn btn-primary" type="submit" data-order-submit>Gửi yêu cầu đặt hàng</button><a class="btn btn-outline" href="/gio-hang/">Quay lại giỏ hàng</a></form></div><aside class="commerce-summary order-summary"><h2>Tóm tắt đơn hàng</h2><div class="order-summary-items" data-order-summary-items></div><dl><div><dt>Số sản phẩm</dt><dd><span data-order-line-count>0</span></dd></div><div><dt>Giá đơn hàng</dt><dd>Shop sẽ xác nhận</dd></div></dl><p>Shop sẽ liên hệ xác nhận giá và thông tin đơn hàng trước khi chuẩn bị.</p></aside></div></div><div class="checkout-state success-state" data-order-success hidden><div class="state-icon" aria-hidden="true">✓</div><h1>Yêu cầu đã ghi nhận</h1><p>Shop sẽ liên hệ để xác nhận thông tin đơn hàng.</p><div class="cta-row"><a class="btn btn-primary" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo với Shop</a><a class="btn btn-outline" href="/">Về trang chủ</a></div></div><div class="checkout-state rate-limit-state" data-order-rate-limit hidden><div class="state-icon warning" aria-hidden="true">!</div><h1>Chưa thể gửi yêu cầu</h1><p>Đã nhận quá nhiều đơn hàng. Vui lòng thử lại sau.</p><div class="cta-row"><button class="btn btn-primary" type="button" data-return-order>Quay lại đặt hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo với Shop</a></div></div></div></section>`;
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>Đặt hàng</span></div><section class="section commerce-page checkout-page"><div class="shell"><div data-checkout-default><div class="page-intro commerce-page-intro"><h1>Đặt hàng</h1><p>Điền thông tin nhận hàng. Shop sẽ liên hệ xác nhận trước khi chuẩn bị.</p></div><div class="order-grid"><div><section class="order-section"><div class="section-title-row"><h2>Sản phẩm đã chọn</h2><a href="/gio-hang/">Sửa trong giỏ hàng</a></div><div class="checkout-items" data-checkout-items></div><div class="empty-inline" data-checkout-empty hidden>Giỏ hàng đang trống. <a href="/#san-pham">Chọn sản phẩm</a> để tiếp tục.</div></section><section class="order-section add-more"><h2>Chọn thêm</h2><div class="add-more-list"><a href="/banh-phu-the/"><span><strong>Bánh phu thê</strong><small>Có hộp giấy và lá dừa.</small></span><b>+ Thêm</b></a><a href="/mam-qua-cuoi/"><span><strong>Mâm quả cưới</strong><small>Chọn các lễ vật gia đình cần.</small></span><b>Chọn lễ vật →</b></a><a href="/banh-phuc-linh/"><span><strong>Bánh phục linh</strong><small>Chọn vị và số lượng khi đặt.</small></span><b>+ Thêm</b></a></div></section><form class="order-section form-grid" data-order-form novalidate><span class="eyebrow full">Thông tin người nhận</span><h2>Thông tin nhận hàng</h2><p class="form-intro full">Vui lòng cung cấp thông tin để Shop liên hệ xác nhận đơn.</p><label>Họ và tên<input name="customer_name" autocomplete="name" required maxlength="150"></label><label>Số điện thoại<input name="phone" inputmode="tel" autocomplete="tel" required maxlength="35"></label><label class="full">Địa chỉ nhận hàng<input name="address" autocomplete="street-address" required maxlength="600"></label><label>Ngày nhận<input name="receive_date" type="date" required><small>Ngày tại bước này là ngày nhận cuối cùng để Shop xác nhận. Shop khuyến nghị đặt trước 3–5 ngày.</small></label><label class="full">Ghi chú<textarea name="note" maxlength="1000" placeholder="Yêu cầu thêm cho Shop…"></textarea></label><div class="form-error full" data-order-error role="alert" hidden></div><button class="btn btn-primary" type="submit" data-order-submit>Gửi yêu cầu đặt hàng ${icon('arrow')}</button><a class="btn btn-outline" href="/gio-hang/">Quay lại giỏ hàng</a></form></div><aside class="commerce-summary order-summary"><h2>Tóm tắt đơn hàng</h2><div class="order-summary-items" data-order-summary-items></div><dl><div><dt>Số sản phẩm</dt><dd><span data-order-line-count>0</span></dd></div><div><dt>Giá đơn hàng</dt><dd>Shop sẽ xác nhận</dd></div></dl><p>Shop sẽ liên hệ xác nhận giá và thông tin đơn hàng trước khi chuẩn bị.</p></aside></div></div><div class="checkout-state success-state" data-order-success hidden><div class="state-icon" aria-hidden="true">✓</div><span class="eyebrow">Đã gửi thành công</span><h1>Yêu cầu đã ghi nhận</h1><p>Shop sẽ liên hệ lại để xác nhận thông tin đơn hàng.</p><div class="cta-row"><a class="btn btn-primary" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Nhắn Zalo với Shop</a><a class="btn btn-outline" href="/">Về trang chủ</a></div></div><div class="checkout-state rate-limit-state" data-order-rate-limit hidden><div class="state-icon warning" aria-hidden="true">!</div><span class="eyebrow">Tạm thời chưa gửi được</span><h1>Chưa thể gửi yêu cầu</h1><p>Đã nhận quá nhiều đơn hàng. Vui lòng thử lại sau.</p><div class="cta-row"><button class="btn btn-primary" type="button" data-return-order>Quay lại đặt hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">Nhắn Zalo với Shop</a></div></div></div></section>`;
   return renderShell({site,title:`Đặt hàng | ${site.name}`,description:'Gửi yêu cầu đặt hàng tại Shop Uyên Ương.',canonicalPath:'/dat-hang/',robots:'noindex,follow',body,bodyClass:'checkout-page'});
 }

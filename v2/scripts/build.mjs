@@ -38,7 +38,7 @@ function collectOutputs(root = repoRoot) {
   outputs.set('assets/js/admin.js', fs.readFileSync(path.join(root, 'v2/assets/js/admin.js'), 'utf8'));
   outputs.set('assets/js/product-catalog.js', browserCatalogSource(products));
   outputs.set('assets/js/site.js', fs.readFileSync(path.join(root, 'v2/assets/js/site.js'), 'utf8'));
-  const imagePaths = new Set(['/assets/images/logo.jpg']);
+  const imagePaths = new Set(['/assets/images/logo.jpg','/assets/images/logo-header.jpg']);
   for (const product of products) {
     imagePaths.add(product.main_image);
     for (const imagePath of product.gallery) imagePaths.add(imagePath);

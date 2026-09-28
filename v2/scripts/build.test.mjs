@@ -160,7 +160,8 @@ test('Phase II.3 loads one general category and three published articles with bl
 test('Home V2 includes locked content sections without fake customer proof', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const home = renderHome(site, products, articles);
-  for (const text of ['Bánh phu thê &amp; mâm quả cưới tại TP.HCM','Sản phẩm của Shop','Cách đặt hàng','Cẩm nang cưới hỏi','Câu hỏi thường gặp','Cần Shop hỗ trợ thêm?']) assert.match(home, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  for (const text of ['Bánh phu thê &amp; mâm quả cưới tại TP.HCM','Cách đặt hàng','Cẩm nang cưới hỏi','Câu hỏi thường gặp','Cần Shop tư vấn trước khi đặt?']) assert.match(home, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  for (const cls of ['editorial-product feature-primary','editorial-product feature-reverse','editorial-product feature-strip']) assert.match(home, new RegExp(cls));
   assert.doesNotMatch(home, /Khách đã nhận hàng|đánh giá khách hàng|testimonial/i);
   assert.match(home, /\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\//);
 });
@@ -252,7 +253,8 @@ test('cart and checkout render the locked filled-empty-success-rate-limit hooks'
   for (const text of ['Giỏ hàng đang trống','Tiếp tục đặt hàng','Chọn thêm sản phẩm','Shop sẽ xác nhận']) assert.match(cart, new RegExp(text));
   for (const hook of ['data-checkout-default','data-checkout-items','data-order-form','data-order-success','data-order-rate-limit','data-return-order']) assert.match(checkout, new RegExp(hook));
   for (const text of ['Yêu cầu đã ghi nhận','Chưa thể gửi yêu cầu','Đã nhận quá nhiều đơn hàng. Vui lòng thử lại sau.','Shop khuyến nghị đặt trước 3–5 ngày.']) assert.match(checkout, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-  assert.doesNotMatch(checkout, /Thanh toán|cước vận chuyển|giờ hoàng đạo|x 1 bộ/i);
+  const checkoutMain = checkout.match(/<main>([\s\S]*?)<\/main>/)?.[1] || checkout;
+  assert.doesNotMatch(checkoutMain, /Thanh toán|cước vận chuyển|giờ hoàng đạo|x 1 bộ/i);
 });
 
 test('commerce client sends only product id, quantity and configuration to V2 trusted order API', () => {
@@ -262,4 +264,21 @@ test('commerce client sends only product id, quantity and configuration to V2 tr
   assert.match(source, /configuration\?\.receive_date/);
   assert.match(source, /uyen_uong_order_request_v2/);
   assert.doesNotMatch(source, /price_text:\s*item|name:\s*item/);
+});
+
+
+test('FINAL fidelity keeps locked header, footer, product information and tablet breakpoint', () => {
+  const { site, products, articles } = loadV2Content(repoRoot);
+  const home = renderHome(site, products, articles);
+  const product = renderProductPage(site, products.find(item => item.id === 'banh-phu-the'), products, articles);
+  const css = read('v2/assets/css/site.css');
+  assert.match(home, /logo-header\.jpg/);
+  assert.match(home, /Chính sách cửa hàng/);
+  assert.match(home, /Liên hệ đặt hàng/);
+  assert.doesNotMatch(home, /<h2>Sản phẩm<\/h2>/);
+  assert.match(product, /product-info-card/);
+  assert.match(product, /Thời gian chuẩn bị/);
+  assert.match(product, /class="thumb active"/);
+  assert.match(css, /@media\(max-width:1023px\)/);
+  assert.match(css, /\.product-info-card \.info-grid\{display:grid;grid-template-columns:repeat\(2/);
 });
