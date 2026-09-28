@@ -1,0 +1,70 @@
+{
+  "id": "banh-phu-the",
+  "name": "Bánh phu thê",
+  "slug": "banh-phu-the",
+  "status": "published",
+  "type": "variant",
+  "main_image": "/assets/images/products/banh-phu-the.jpg",
+  "gallery": [],
+  "short_description": "Có hộp giấy và lá dừa. Có thể đặt riêng hoặc dùng trong mâm quả cưới.",
+  "price": {
+    "mode": "contact",
+    "display_text": "Giá liên hệ"
+  },
+  "quantity": {
+    "enabled": true,
+    "label": "Số lượng bánh",
+    "default_value": 1,
+    "min_value": 1,
+    "step": 1,
+    "unit": "bánh"
+  },
+  "option_groups": [
+    {
+      "id": "packaging",
+      "name": "Quy cách đóng gói",
+      "type": "single_select",
+      "required": true,
+      "options": [
+        {
+          "id": "hop-giay",
+          "label": "Hộp giấy",
+          "default": true
+        },
+        {
+          "id": "la-dua",
+          "label": "Lá dừa"
+        }
+      ]
+    }
+  ],
+  "note": {
+    "enabled": true,
+    "label": "Ghi chú cho Shop",
+    "placeholder": "Yêu cầu thêm cho Shop…"
+  },
+  "info_blocks": [
+    {
+      "title": "Quy cách",
+      "description": "Chọn hộp giấy hoặc lá dừa khi đặt."
+    },
+    {
+      "title": "Đặt riêng",
+      "description": "Có thể đặt bánh phu thê riêng."
+    },
+    {
+      "title": "Dùng trong mâm quả",
+      "description": "Có thể chọn bánh phu thê làm một lễ vật trong mâm quả cưới."
+    }
+  ],
+  "related_products": [
+    "mam-qua-cuoi",
+    "banh-phuc-linh"
+  ],
+  "related_articles": [],
+  "seo": {
+    "title": "Bánh phu thê | Shop Uyên Ương TP.HCM",
+    "description": "Bánh phu thê tại TP.HCM. Chọn quy cách hộp giấy hoặc lá dừa và số lượng khi đặt."
+  },
+  "previous_slugs": []
+}

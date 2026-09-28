@@ -1,0 +1,19 @@
+[
+  { "from": "/index.html", "to": "/" },
+  { "from": "/gio-hang.html", "to": "/gio-hang/" },
+  { "from": "/dat-hang.html", "to": "/dat-hang/" },
+  { "from": "/san-pham/banh-phu-the-hue-tphcm.html", "target_kind": "product", "target_id": "banh-phu-the" },
+  { "from": "/san-pham/banh-phu-the-mien-bac-tphcm.html", "target_kind": "product", "target_id": "banh-phu-the" },
+  { "from": "/san-pham/banh-phu-the-tphcm.html", "target_kind": "product", "target_id": "banh-phu-the" },
+  { "from": "/san-pham/banh-phuc-linh-tphcm.html", "target_kind": "product", "target_id": "banh-phuc-linh" },
+  { "from": "/san-pham/mam-qua-cuoi-tphcm.html", "target_kind": "product", "target_id": "mam-qua-cuoi" },
+  { "from": "/cam-nang/mam-qua-cuoi-gom-nhung-gi.html", "target_kind": "article", "target_id": "mam-qua-cuoi-thuong-co-nhung-gi" },
+  { "from": "/cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html", "target_kind": "article", "target_id": "nen-chuan-bi-so-luong-banh-phu-the-bao-nhieu" },
+  { "from": "/cam-nang/goi-y-chon-mam-qua-4-mam-va-6-mam.html", "target_kind": "article", "target_id": "kinh-nghiem-chon-mam-qua-cuoi-cho-gia-dinh" },
+  { "from": "/chuyen-muc/banh-cuoi-hoi.html", "target_kind": "product", "target_id": "banh-phu-the" },
+  { "from": "/chuyen-muc/banh-phuc-linh.html", "target_kind": "product", "target_id": "banh-phuc-linh" },
+  { "from": "/chuyen-muc/mam-qua-cuoi.html", "target_kind": "product", "target_id": "mam-qua-cuoi" },
+  { "from": "/chuyen-muc/banh-cuoi-bai-viet.html", "to": "/cam-nang/" },
+  { "from": "/chuyen-muc/mam-qua-cuoi-bai-viet.html", "to": "/cam-nang/" },
+  { "from": "/chuyen-muc/cam-nang-cuoi.html", "to": "/cam-nang/" }
+]

@@ -1,0 +1,11 @@
+/*
+  X-Robots-Tag: noindex, nofollow
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow
+
+/gio-hang/*
+  X-Robots-Tag: noindex, follow
+
+/dat-hang/*
+  X-Robots-Tag: noindex, follow
