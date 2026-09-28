@@ -1,0 +1,109 @@
+{
+  "source": "https://github.com/phuocloki1990/uyenuong-shop/tree/main",
+  "files": [
+    {
+      "path": ".cms-build-manifest.json",
+      "sha256": "146bbf2747c96e95e95c938deadb2502a10e0a1cbc111affc8228c83ed962cfe"
+    },
+    {
+      "path": ".github/workflows/rebuild-content.yml",
+      "sha256": "0c32ce1fd952b09436d4cfe9603c7447f9f53a570b48ba99f094cd5cc6522e37"
+    },
+    {
+      "path": "assets/js/app.js",
+      "sha256": "7f7267e144ed20106963a7b46c17e4c79a6d3b21a231cad144f74f129b35100c"
+    },
+    {
+      "path": "assets/js/cms-catalog.js",
+      "sha256": "5add8c4d2ef64af300c423e6dd56bff55808634d955e686e0667238f76ad20a3"
+    },
+    {
+      "path": "B3-HUONG-DAN.md",
+      "sha256": "a9f97beb47d7025a847a2ef571d4865c2e97e206e1169c3d30935ae0dc78d88c"
+    },
+    {
+      "path": "cam-nang/goi-y-chon-mam-qua-4-mam-va-6-mam.html",
+      "sha256": "78ca0279eea2118c0e49c3727c0a7351e2993696eba775afb9fc15fb0fa49911"
+    },
+    {
+      "path": "cam-nang/mam-qua-cuoi-gom-nhung-gi.html",
+      "sha256": "621280447096bc08673b3935d435e785efbf08b68886fd594a76ef724737ad12"
+    },
+    {
+      "path": "cam-nang/nen-dat-banh-phu-the-bao-nhieu-cai.html",
+      "sha256": "023c6eea15931dced307c0e87e89a4440d0201054b82b00a99f00c78aa528c60"
+    },
+    {
+      "path": "chuyen-muc/banh-cuoi-bai-viet.html",
+      "sha256": "8acc1d3d281377a539658022b81982c8c93e9f798084b339b8b3046accd68c7d"
+    },
+    {
+      "path": "chuyen-muc/banh-cuoi-hoi.html",
+      "sha256": "d8bdfd33173a8b5980a59488cf48891b78b6f7c5b8d6774f82241368f0302ac7"
+    },
+    {
+      "path": "chuyen-muc/banh-phuc-linh.html",
+      "sha256": "be3cef3ce7abb628438cb07c40176f5c8b09f717446daa1a4c8638a4c7de76f0"
+    },
+    {
+      "path": "chuyen-muc/cam-nang-cuoi.html",
+      "sha256": "ea2fb79a62385c35da03fd88598174cf8dd32f0ad47a77b70f3de1edfd367ea2"
+    },
+    {
+      "path": "chuyen-muc/mam-qua-cuoi-bai-viet.html",
+      "sha256": "1701a4aa337f3512b175dad1a8c733eee85bbe5f51ca37ac699674c9f03979c2"
+    },
+    {
+      "path": "chuyen-muc/mam-qua-cuoi.html",
+      "sha256": "65b399ce31773e26901532b6aa5d15f4b190101e5882fef5f72c452e4c742b63"
+    },
+    {
+      "path": "dat-hang.html",
+      "sha256": "fedf63c23d4279a912445261410389caee1a978af9e4670550a34c4889842dca"
+    },
+    {
+      "path": "gio-hang.html",
+      "sha256": "ff1e827d4a7f918338bebee3d4bde9708f0dcadcfa58442458add37750d81899"
+    },
+    {
+      "path": "index.html",
+      "sha256": "d564d75eedbef92d89193549193ea24feefa1e73a6c923ad8f8c09f4c72a3629"
+    },
+    {
+      "path": "san-pham/banh-phu-the-hue-tphcm.html",
+      "sha256": "b6801b6cb1e4c14f0cafe3799aa2820addc76e46a75258b117bb111057a52e1f"
+    },
+    {
+      "path": "san-pham/banh-phu-the-mien-bac-tphcm.html",
+      "sha256": "9f7abd06a879a66abfc9380701e8f2bd46a7a467ed4e37e28cd87734cdd37daa"
+    },
+    {
+      "path": "san-pham/banh-phuc-linh-tphcm.html",
+      "sha256": "32740a4bf2385695ce7d80b37fc2fe126da1406e4374271beb13c309717b9ef8"
+    },
+    {
+      "path": "san-pham/mam-qua-cuoi-tphcm.html",
+      "sha256": "287d9d2a20db4c7ff4d06f314384a39229eb060018432a232c07fa9dbd6c1948"
+    },
+    {
+      "path": "scripts/build.mjs",
+      "sha256": "a147d9fe82d7645e5e32860c13704588f5709d4404dd0a2b8ae481fe7e0eb152"
+    },
+    {
+      "path": "scripts/build.test.mjs",
+      "sha256": "81c52cf1f59892b12afef4414b4c35f8695b80ef380bc02220faa44faff46cee"
+    },
+    {
+      "path": "scripts/cms-legacy-pages.json",
+      "sha256": "fdb1e3ae50e4ca749be52630a43c2b087d1396cfd00edcef5b85177d77e7add7"
+    },
+    {
+      "path": "sitemap.xml",
+      "sha256": "82c07579e2fa3e742eb4a4a5dfdd7874c4fb54dfcb1aa9d3184da36b4bdf5987"
+    },
+    {
+      "path": "_redirects",
+      "sha256": "1af67ea94eaa4791e8a2ef677b4b344859c0eaaccdc6f6ffaa778ab8e09e8bef"
+    }
+  ]
+}
