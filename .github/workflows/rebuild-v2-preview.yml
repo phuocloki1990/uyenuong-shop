@@ -1,0 +1,81 @@
+name: Rebuild V2 preview
+
+on:
+  push:
+    branches:
+      - v2-preview
+    paths:
+      - 'v2/content/**'
+      - 'v2/config/**'
+      - 'v2/assets/**'
+      - 'v2/scripts/**'
+      - 'assets/images/products/**'
+      - 'assets/images/articles/**'
+      - 'assets/images/categories/**'
+      - 'assets/images/site/**'
+      - 'functions/admin/api/v2/**'
+      - 'functions/api/v2/**'
+      - 'functions/_shared/v2-admin-github.js'
+      - 'functions/_shared/v2-order-policy.mjs'
+      - '.github/workflows/rebuild-v2-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate V2 content before generating files
+        run: node v2/scripts/build.mjs --check
+
+      - name: Build V2 preview and trusted catalog
+        run: node v2/scripts/build.mjs
+
+      - name: Prepare cutover manifest
+        run: node v2/scripts/prepare-cutover.mjs
+
+      - name: Run V1 and V2 tests against generated output
+        run: >-
+          node --test
+          scripts/build.test.mjs
+          v2/scripts/build.test.mjs
+          v2/scripts/order-policy.test.mjs
+          v2/scripts/order-endpoint.test.mjs
+          v2/scripts/admin.test.mjs
+          v2/scripts/publish-hardening.test.mjs
+          v2/scripts/seo-cutover.test.mjs
+          v2/scripts/preview-qa.test.mjs
+          v2/scripts/live-preview-qa.test.mjs
+
+      - name: Run generated Preview static QA
+        run: node v2/scripts/preview-qa.mjs
+
+      - name: Verify V2 remains valid after tests
+        run: node v2/scripts/build.mjs --check
+
+      - name: Commit generated V2 preview
+        run: |
+          git add -A -- v2-preview functions/_generated/v2-product-catalog.mjs v2/release/cutover-plan.json
+          if git diff --cached --quiet; then
+            echo "No generated V2 changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "4189822+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Auto build: update V2 preview [skip ci]"
+          git push
