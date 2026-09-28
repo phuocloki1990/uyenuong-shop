@@ -1,0 +1,51 @@
+{
+  "id": "phuthebac",
+  "name": "Bánh phu thê miền Bắc",
+  "slug": "banh-phu-the-mien-bac-tphcm",
+  "category": "banh-cuoi-hoi",
+  "status": "published",
+  "featured": true,
+  "featured_order": 3,
+  "image": "/assets/images/Banner.jpg",
+  "short_description": "Bánh phu thê miền Bắc có nhân đậu xanh, vỏ bánh không có sợi dừa, đóng gói hộp giấy.",
+  "lead": "Bánh phu thê miền Bắc có nhân đậu xanh, vỏ bánh không có sợi dừa và hiện đóng gói bằng hộp giấy.",
+  "price_mode": "contact",
+  "price_text": "Giá liên hệ",
+  "quantity": {
+    "label": "Số lượng bánh",
+    "unit": "bánh",
+    "min": 20,
+    "default": 20,
+    "step": 1,
+    "hint": "Nhận đặt tối thiểu 20 bánh. Các số lượng khác vẫn có thể nhận sau khi Shop xác nhận."
+  },
+  "option_groups": [
+    {
+      "key": "wrap",
+      "label": "Kiểu đóng gói",
+      "values": ["Hộp giấy"]
+    }
+  ],
+  "price_rules": [],
+  "details": [
+    {"label": "Trọng lượng", "value": "53g/bánh"},
+    {"label": "Đóng gói", "value": "Hộp giấy"},
+    {"label": "Số lượng tối thiểu", "value": "20 bánh"},
+    {"label": "Khu vực", "value": "TPHCM"}
+  ],
+  "features": [
+    "53g/bánh: trọng lượng cố định cho sản phẩm.",
+    "Hộp giấy: gọn gàng, dễ sắp xếp trong mâm quả.",
+    "Nhận từ 20 bánh: phù hợp cả đơn cưới hỏi và đơn lẻ.",
+    "Shop xác nhận trước: CSKH sẽ liên hệ lại sau khi tiếp nhận yêu cầu."
+  ],
+  "faq": [
+    {"question": "Loại này có lá dừa không?", "answer": "Không. Bánh phu thê miền Bắc hiện chỉ có đóng gói hộp giấy."},
+    {"question": "Có nhận đặt 70 hoặc 105 bánh không?", "answer": "Có thể. Shop sẽ tiếp nhận và xác nhận lại theo từng yêu cầu cụ thể."},
+    {"question": "Website có hiện giá chính xác chưa?", "answer": "Chưa. Sản phẩm này đang để giá liên hệ để Shop tư vấn theo nhu cầu."}
+  ],
+  "seo": {
+    "title": "Bánh phu thê miền Bắc tại TPHCM | Shop Uyên Ương",
+    "description": "Đặt bánh phu thê miền Bắc tại TPHCM. Vỏ bánh không có sợi dừa, nhân đậu xanh, đóng gói hộp giấy, nhận từ 20 bánh."
+  }
+}
