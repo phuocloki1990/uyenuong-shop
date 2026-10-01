@@ -54,3 +54,8 @@ button[disabled],.button[disabled]{cursor:not-allowed;opacity:.55}
 /* RELEASE QA FIX — viewport and keyboard focus safeguards */
 html,body{overflow-x:clip}
 :where(a,button,input,textarea,select):focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+
+/* R3 PRODUCTION FIX — real order list rendering */
+button.order-row{width:100%;border:0;border-bottom:1px solid var(--border);background:transparent;text-align:left;font:inherit;color:inherit}
+button.order-row:hover,button.order-row.active{background:#fcf7f6}
+button.order-row:focus-visible{position:relative;z-index:1}
