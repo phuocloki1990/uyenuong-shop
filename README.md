@@ -1,16 +1,17 @@
-# Shop Uyên Ương – V7 CMS-ready
+# Shop Uyên Ương V2
 
-Bản V7 giữ website tĩnh hiện tại nhưng bổ sung hệ thống quản trị nội dung miễn phí bằng Pages CMS + GitHub Actions.
+Production source for Shop Uyên Ương V2.
 
-## Quản trị
-- Sản phẩm: `content/products/*.json`
-- Bài viết SEO: `content/articles/*.json`
-- Chuyên mục/chuyên mục con: `content/categories/*.json`
-- Cấu hình Pages CMS: `.pages.yml`
-- Script sinh HTML: `scripts/build.mjs`
-- GitHub Action tự build: `.github/workflows/rebuild-content.yml`
+- `v2/`: DATA/UI source. UI implementation is locked by `DATA_UI_LOCK_SHA256.txt`; content under `v2/content/` remains Admin-managed.
+- `assets/images/`: source media used by the builder and Admin media library.
+- `functions/`: Cloudflare Pages Functions for orders and Admin APIs.
+- `infra/`: build/promotion safety scripts.
+- `.github/workflows/rebuild-v2-production.yml`: build → test → QA → promote workflow for `main`.
 
-Xem `ADMIN_SETUP.md` để cài lần đầu.
+Do not edit generated public pages directly. Update content through Admin or the V2 source, then let the workflow rebuild the public root.
 
-## Đơn hàng
-Giai đoạn này chưa có backend đơn hàng. Phần này sẽ được nối Cloudflare D1 sau khi CMS nội dung chạy ổn.
+
+## Infra preflight
+
+- D1 read-only schema check: `infra/d1-preflight-readonly.sql`.
+- One-push cutover instructions are packaged outside source in `CUTOVER_ONE_PUSH.md`.

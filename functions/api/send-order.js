@@ -1,28 +1,8 @@
-// functions/api/send-order.js
-
-/*
-  Telegram đã chuyển sang
-  POST /api/orders.
-
-  Không còn chấp nhận nội dung
-  Telegram tùy ý từ trình duyệt.
-*/
+// Legacy V1 send-order endpoint intentionally disabled after V2 cutover.
 
 export function onRequest() {
-
   return Response.json(
-    {
-      ok: false,
-      message:
-        'Endpoint này đã ngừng hoạt động. Vui lòng đặt hàng qua /api/orders.'
-    },
-    {
-      status: 410,
-
-      headers: {
-        'Cache-Control':
-          'no-store'
-      }
-    }
+    { ok: false, message: 'Phiên gửi đơn cũ đã ngừng sử dụng. Vui lòng tải lại trang và thử đặt hàng lại.' },
+    { status: 410, headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } }
   );
 }
