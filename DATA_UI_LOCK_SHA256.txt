@@ -2,7 +2,7 @@ c43d4c1ab35b2ed5b30871f58fb9cfe324b6eda9490abd8aa0eece0a3392ac75  v2/CUTOVER_CHE
 2096e47685beac74394d0f10a1fadc630661b019c425a1fae6f34f6cc04c177b  v2/assets/css/admin.css
 e5cbeb7a73dd4b4dc4583f9c4ab55ce228ca97def45d3ed3e787c647a924e418  v2/assets/css/site.css
 060920ebeb504b57bc883115330c326d67e733c738fa7b821429e509f30a5c93  v2/assets/js/admin.js
-8165b1725c3a4c8e71716bc557ae3dee7e59809406fde2e0307e05b79c52c39b  v2/assets/js/site.js
+d0320c8f1cd425381eaafba12361cb13c92fbb981796af9576c9b9fbc4f16d89  v2/assets/js/site.js
 b04092f1c0a24b82dc0a52860279a1c421ecc0101e98b4d3c835ed69137744ae  v2/config/legacy-redirects.json
 6bd2305a6d09081d52b6a8f770d0be5f17520b1caeb1c186dc26b5355a90449a  v2/content/articles/kinh-nghiem-chon-mam-qua-cuoi-cho-gia-dinh.json
 cec201b71a1f42131e6303fe1b91aea5b31afb48fc7a94a1e45bc0c621ed717f  v2/content/articles/mam-qua-cuoi-thuong-co-nhung-gi.json
@@ -20,7 +20,7 @@ e3579e7e5fff9abd98810fa677ec6f0a994ae8f53c9a9001883d0cf34858f814  v2/release/PHA
 8b4fa1dce1b583d59d55ab8379955fa6ba1776529e9a37381d200221f409b9e4  v2/release/cutover-plan.json
 978c07dab9840638ccde0e7c1aa86505804e4b0e32f3249392c036ef33c1a1e0  v2/scripts/admin.test.mjs
 d0e0320cc8946425d4b7df8b25c8b3c39d30f55d39df683ace347987e35fbe26  v2/scripts/build.mjs
-b5692106502ddaa46985e18b02ab2c3730921e48f26b69400876c9637b5920e3  v2/scripts/build.test.mjs
+c03aff287ca0e5f59a200950c324dda7374cbd565eac9d4aede9484e1e7c7484  v2/scripts/build.test.mjs
 58cbd229ce0de66ee8e8f70240e8aae08696fb759986a4d42ca6a01d5a2bb97a  v2/scripts/catalog.mjs
 85968d05514faa33ba2a6b3536daa236d00ec41ea44e9d817ffa2d1a55c60b6a  v2/scripts/live-preview-qa.mjs
 64d8f4dde6c27dd2514dca978e686ff74abcd03f1ceda55e9dd396d3ba204574  v2/scripts/live-preview-qa.test.mjs

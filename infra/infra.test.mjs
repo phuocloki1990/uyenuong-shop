@@ -81,6 +81,80 @@ test('Facebook latest endpoint keeps the Page token server-side and returns only
   } finally { globalThis.fetch = original; }
 });
 
+test('Facebook latest endpoint resolves repost text from original post or attachment without inventing copy', async () => {
+  const original = globalThis.fetch;
+  const seen = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const href = String(url);
+    seen.push({ href, authorization:options.headers?.Authorization });
+    if (href.includes('/737754799598805/posts')) {
+      return Response.json({ data:[
+        {
+          id:'new-1',
+          message:'',
+          story:'Shop Uyên Ương shared a post.',
+          parent_id:'737754799598805_old-1',
+          created_time:'2026-09-27T08:00:00+0000',
+          permalink_url:'https://www.facebook.com/example/posts/new-1',
+          full_picture:'https://scontent.example/new-1.jpg',
+          attachments:{ data:[{ description:'Nội dung attachment không được ưu tiên khi đọc được bài gốc.' }] }
+        },
+        {
+          id:'new-2',
+          message:'',
+          story:'Shop Uyên Ương shared a post.',
+          created_time:'2026-09-27T07:00:00+0000',
+          permalink_url:'https://www.facebook.com/example/posts/new-2',
+          full_picture:'https://scontent.example/new-2.jpg',
+          attachments:{ data:[{ description:'#banhphuthehcm Nhận đặt bánh phu thê lá dừa truyền thống.' }] }
+        }
+      ] });
+    }
+    if (href.includes('/737754799598805_old-1')) {
+      return Response.json({ message:'#banhphuthehcm Mời mọi người đặt bánh phu thê sợi dừa gốc Huế ạ.' });
+    }
+    return new Response('Not found', { status:404 });
+  };
+  try {
+    const response = await facebookLatest({ env:{ FACEBOOK_PAGE_ID:'737754799598805', FACEBOOK_PAGE_ACCESS_TOKEN:'server-secret-token' } });
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.posts[0].message, '#banhphuthehcm Mời mọi người đặt bánh phu thê sợi dừa gốc Huế ạ.');
+    assert.equal(body.posts[1].message, '#banhphuthehcm Nhận đặt bánh phu thê lá dừa truyền thống.');
+    assert.equal(seen.length, 2);
+    assert.ok(seen.every(call => call.authorization === 'Bearer server-secret-token'));
+    assert.ok(seen[0].href.includes('story%2Cparent_id') || seen[0].href.includes('story%2Cparent_id'.replace('%2C', ',')));
+    assert.ok(seen[0].href.includes('attachments%7Bdescription%7D') || seen[0].href.includes('attachments{description}'));
+    assert.doesNotMatch(JSON.stringify(body), /shared a post|không được ưu tiên/);
+  } finally { globalThis.fetch = original; }
+});
+
+test('Facebook latest endpoint leaves message empty when repost text is unavailable', async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async url => {
+    const href = String(url);
+    if (href.includes('/737754799598805/posts')) {
+      return Response.json({ data:[{
+        id:'new-3',
+        message:'',
+        story:'Shop Uyên Ương shared a post.',
+        parent_id:'737754799598805_missing',
+        created_time:'2026-09-27T06:00:00+0000',
+        permalink_url:'https://www.facebook.com/example/posts/new-3',
+        full_picture:'https://scontent.example/new-3.jpg'
+      }] });
+    }
+    return new Response(JSON.stringify({ error:{ message:'Not readable' } }), { status:403, headers:{'Content-Type':'application/json'} });
+  };
+  try {
+    const response = await facebookLatest({ env:{ FACEBOOK_PAGE_ID:'737754799598805', FACEBOOK_PAGE_ACCESS_TOKEN:'server-secret-token' } });
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.posts.length, 1);
+    assert.equal(body.posts[0].message, '');
+  } finally { globalThis.fetch = original; }
+});
+
 test('Facebook latest endpoint fails closed without exposing infrastructure or upstream errors', async () => {
   const missing = await facebookLatest({ env:{} });
   assert.equal(missing.status, 503);

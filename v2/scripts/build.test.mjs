@@ -217,6 +217,8 @@ test('Home reserves a silent Fanpage section between products and Cẩm nang', (
   assert.match(client, /posts\.slice\(0, 2\)/);
   assert.match(client, /facebookSection\.hidden = false/);
   assert.match(client, /if \(!rendered\.length\) return/);
+  assert.match(client, /copy \? `<p>/);
+  assert.doesNotMatch(client, /Xem bài viết mới của Shop trên Facebook/);
   assert.doesNotMatch(home + client, /FACEBOOK_PAGE_ACCESS_TOKEN|FACEBOOK_PAGE_ID/);
 });
 
