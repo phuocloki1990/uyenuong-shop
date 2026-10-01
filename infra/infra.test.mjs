@@ -10,6 +10,7 @@ import { getPublishStatus } from '../functions/_shared/v2-admin-github.js';
 import { processOrder } from '../functions/api/v2/orders/index.js';
 import { onRequest as legacyOrders } from '../functions/api/orders/index.js';
 import { onRequest as legacySendOrder } from '../functions/api/send-order.js';
+import { onRequestGet as facebookLatest } from '../functions/api/facebook-latest.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
@@ -55,6 +56,47 @@ test('V2 order endpoint hides infrastructure details when D1 is unavailable', as
   assert.match(body.message,/Zalo|gọi|tạm thời/i);
 });
 
+test('Facebook latest endpoint keeps the Page token server-side and returns only two public posts', async () => {
+  const original = globalThis.fetch;
+  const seen = {};
+  globalThis.fetch = async (url, options = {}) => {
+    seen.url = String(url);
+    seen.authorization = options.headers?.Authorization;
+    return Response.json({ data:[
+      { id:'1', message:'Bài một', created_time:'2026-10-01T08:00:00+0000', permalink_url:'https://www.facebook.com/example/posts/1', full_picture:'https://scontent.example/1.jpg' },
+      { id:'2', message:'Bài hai', created_time:'2026-09-30T08:00:00+0000', permalink_url:'https://www.facebook.com/example/posts/2', full_picture:'https://scontent.example/2.jpg' },
+      { id:'3', message:'Bài ba', created_time:'2026-09-29T08:00:00+0000', permalink_url:'https://www.facebook.com/example/posts/3' }
+    ] });
+  };
+  try {
+    const response = await facebookLatest({ env:{ FACEBOOK_PAGE_ID:'737754799598805', FACEBOOK_PAGE_ACCESS_TOKEN:'server-secret-token' } });
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.success, true);
+    assert.equal(body.posts.length, 2);
+    assert.equal(body.page_url, 'https://www.facebook.com/737754799598805');
+    assert.equal(seen.authorization, 'Bearer server-secret-token');
+    assert.doesNotMatch(seen.url, /server-secret-token/);
+    assert.doesNotMatch(JSON.stringify(body), /server-secret-token/);
+  } finally { globalThis.fetch = original; }
+});
+
+test('Facebook latest endpoint fails closed without exposing infrastructure or upstream errors', async () => {
+  const missing = await facebookLatest({ env:{} });
+  assert.equal(missing.status, 503);
+  assert.deepEqual(await missing.json(), { success:false, posts:[] });
+
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ error:{ message:'OAuth secret failure' } }), { status:500, headers:{'Content-Type':'application/json'} });
+  try {
+    const response = await facebookLatest({ env:{ FACEBOOK_PAGE_ID:'737754799598805', FACEBOOK_PAGE_ACCESS_TOKEN:'server-secret-token' } });
+    assert.equal(response.status, 502);
+    const body = await response.json();
+    assert.deepEqual(body, { success:false, posts:[] });
+    assert.doesNotMatch(JSON.stringify(body), /oauth|secret|token|facebook/i);
+  } finally { globalThis.fetch = original; }
+});
+
 test('Admin publish status watches production workflow on production and preview workflow elsewhere', async () => {
   const original = globalThis.fetch;
   const seen = [];
@@ -76,6 +118,7 @@ test('production workflow is Node 24, lock-gated, fully tested and promotes with
   assert.match(workflow,/node infra\/run-v2-tests\.mjs/);
   assert.match(workflow,/node v2\/scripts\/preview-qa\.mjs/);
   assert.match(workflow,/node infra\/promote-v2\.mjs/);
+  assert.match(workflow,/functions\/api\/facebook-latest\.js/);
   assert.match(workflow,/git add -A/);
   assert.doesNotMatch(workflow,/rm\s+-rf\s+\.\s*(?:$|\n)/m);
 });

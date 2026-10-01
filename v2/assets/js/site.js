@@ -721,6 +721,61 @@
     document.querySelector('[data-checkout-default]').hidden = false;
   });
 
+  const facebookSection = document.querySelector('[data-facebook-section]');
+  const facebookPosts = facebookSection?.querySelector('[data-facebook-posts]');
+  const facebookPageLink = facebookSection?.querySelector('[data-facebook-page-link]');
+
+  function safeExternalUrl(value, { facebookOnly = false } = {}) {
+    try {
+      const url = new URL(String(value || ''));
+      if (url.protocol !== 'https:') return '';
+      if (facebookOnly && !/(^|\.)facebook\.com$/i.test(url.hostname)) return '';
+      return url.href;
+    } catch {
+      return '';
+    }
+  }
+
+  function facebookExcerpt(value) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) return 'Xem bài viết mới của Shop trên Facebook.';
+    return text.length > 140 ? `${text.slice(0, 137).trimEnd()}…` : text;
+  }
+
+  function facebookDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' }).format(date);
+  }
+
+  async function loadFacebookLatest() {
+    if (!facebookSection || !facebookPosts || !facebookPageLink) return;
+    try {
+      const response = await fetch('/api/facebook-latest', { headers:{ Accept:'application/json' } });
+      if (!response.ok) return;
+      const payload = await response.json();
+      const posts = Array.isArray(payload?.posts) ? payload.posts.slice(0, 2) : [];
+      const rendered = posts.map(post => {
+        const permalink = safeExternalUrl(post?.permalink_url, { facebookOnly:true });
+        if (!permalink) return '';
+        const image = safeExternalUrl(post?.image);
+        const date = facebookDate(post?.created_time);
+        const copy = facebookExcerpt(post?.message);
+        return `<article class="home-facebook-post${image ? '' : ' no-image'}">${image ? `<a class="home-facebook-image" href="${esc(permalink)}" target="_blank" rel="noopener" aria-label="Xem bài viết trên Facebook"><img src="${esc(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a>` : ''}<div class="home-facebook-body">${date ? `<time datetime="${esc(post.created_time)}">${esc(date)}</time>` : ''}<p>${esc(copy)}</p><a class="home-facebook-link" href="${esc(permalink)}" target="_blank" rel="noopener">Xem bài trên Facebook →</a></div></article>`;
+      }).filter(Boolean);
+      if (!rendered.length) return;
+      const pageUrl = safeExternalUrl(payload?.page_url, { facebookOnly:true });
+      if (!pageUrl) return;
+      facebookPosts.innerHTML = rendered.join('');
+      facebookPageLink.href = pageUrl;
+      facebookSection.hidden = false;
+    } catch {
+      // Fanpage là nội dung bổ sung: nếu API lỗi, giữ Home nguyên vẹn và không hiện thông báo kỹ thuật.
+    }
+  }
+
+  loadFacebookLatest();
+
   const quickModal = document.querySelector('[data-quick-modal]');
   const quickTitle = quickModal?.querySelector('[data-quick-title]');
   const quickDesc = quickModal?.querySelector('[data-quick-desc]');

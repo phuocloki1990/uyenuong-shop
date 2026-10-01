@@ -200,6 +200,26 @@ test('Home V2 is product-led and avoids landing-page template sections', () => {
   assert.match(home, /\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\//);
 });
 
+test('Home reserves a silent Fanpage section between products and Cẩm nang', () => {
+  const { site, products, articles } = loadV2Content(repoRoot);
+  const home = renderHome(site, products, articles);
+  const productAt = home.indexOf('home-product-section');
+  const fanpageAt = home.indexOf('data-facebook-section');
+  const guideAt = home.indexOf('home-guides');
+  assert.ok(productAt >= 0 && fanpageAt > productAt && guideAt > fanpageAt);
+  assert.match(home, /<h2>Bài viết mới trên Fanpage<\/h2>/);
+  assert.match(home, /data-facebook-section hidden/);
+  assert.match(home, /data-facebook-posts/);
+  assert.match(home, /data-facebook-page-link/);
+
+  const client = read('v2/assets/js/site.js');
+  assert.match(client, /fetch\('\/api\/facebook-latest'/);
+  assert.match(client, /posts\.slice\(0, 2\)/);
+  assert.match(client, /facebookSection\.hidden = false/);
+  assert.match(client, /if \(!rendered\.length\) return/);
+  assert.doesNotMatch(home + client, /FACEBOOK_PAGE_ACCESS_TOKEN|FACEBOOK_PAGE_ID/);
+});
+
 test('Article renderer uses flat clean article URLs and structured blocks', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const article = articles.find(item => item.slug === 'mam-qua-cuoi-thuong-co-nhung-gi');
@@ -401,6 +421,7 @@ test('UX FINAL renders lighter editorial Cẩm nang and the exact approved Googl
   assert.match(contact, /1790837962407/);
   assert.match(contact, /referrerpolicy="strict-origin-when-cross-origin"/);
   assert.match(contact, /Mở trên Google Maps/);
+  assert.match(contact, /href="https:\/\/maps\.app\.goo\.gl\/gTCeVF4iQeLyUUMr8"/);
   assert.match(contact, new RegExp(siteAddressPattern(result.outputs.get('lien-he/index.html'))));
 });
 
