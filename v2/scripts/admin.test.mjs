@@ -145,3 +145,18 @@ test('media filename normalization and magic detection are deterministic', () =>
   assert.equal(detectImageType(Uint8Array.from([0x89,0x50,0x4e,0x47])).ext,'.png');
   assert.equal(detectImageType(Uint8Array.from([0x00,0x00,0x00,0x00])),null);
 });
+
+test('R3 Admin order UI renders D1 orders with shared order labels on dashboard and order page', () => {
+  const result = buildV2(repoRoot,{check:true});
+  const dashboard = result.outputs.get('admin/index.html');
+  const ordersPage = result.outputs.get('admin/orders/index.html');
+  const source = read('v2/assets/js/admin.js');
+
+  assert.match(dashboard, /"orderLabels":\{"new":"Mới"/);
+  assert.match(ordersPage, /"orderLabels":\{"new":"Mới"/);
+  assert.match(source, /const orderLabels = pageData\.orderLabels \|\|/);
+  assert.match(source, /function orderRow\(order\)/);
+  assert.match(source, /orders\.map\(orderRow\)/);
+  assert.match(source, /Object\.entries\(orderLabels\)/);
+  assert.doesNotMatch(source, /statusLabels\[o\.status\]/);
+});

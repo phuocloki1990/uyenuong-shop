@@ -338,3 +338,33 @@ test('DATA/UI FINAL keeps locked header, real footer, product information and re
   assert.match(client, /isValidVietnamPhone/);
   assert.match(client, /dateInput\.min = today/);
 });
+
+test('R3 renders compact Cẩm nang layouts and a real Google Maps contact block', () => {
+  const result = buildV2(repoRoot, { check:true });
+  const home = result.outputs.get('index.html');
+  const phuthe = result.outputs.get('banh-phu-the/index.html');
+  const mamqua = result.outputs.get('mam-qua-cuoi/index.html');
+  const contact = result.outputs.get('lien-he/index.html');
+  const css = read('v2/assets/css/site.css');
+
+  assert.match(home, /home-guide-layout home-guide-count-3/);
+  assert.match(phuthe, /product-guide-grid product-guide-grid-2/);
+  assert.match(mamqua, /product-guide-grid product-guide-grid-3/);
+  assert.doesNotMatch(phuthe, /guide-related-layout/);
+  assert.doesNotMatch(mamqua, /guide-related-layout/);
+  assert.match(css, /\.product-guide-grid-3\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
+  assert.match(css, /\.home-guides \.home-guide-side\{display:flex;flex-direction:column/);
+
+  assert.match(contact, /class="contact-map-section"/);
+  assert.match(contact, /title="Bản đồ đến Shop Uyên Ương"/);
+  assert.match(contact, /https:\/\/www\.google\.com\/maps\?q=/);
+  assert.match(contact, /output=embed/);
+  assert.match(contact, /Mở trên Google Maps/);
+  assert.match(contact, new RegExp(siteAddressPattern(result.outputs.get('lien-he/index.html'))));
+});
+
+function siteAddressPattern(contactHtml) {
+  const match = contactHtml.match(/<div class="contact-map-head">[\s\S]*?<p>([^<]+)<\/p>/);
+  assert.ok(match?.[1], 'Trang liên hệ phải hiển thị địa chỉ trong phần bản đồ');
+  return match[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
