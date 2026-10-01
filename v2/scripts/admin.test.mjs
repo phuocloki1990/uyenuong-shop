@@ -41,6 +41,7 @@ test('Admin navigation is consistent and contains only the seven approved areas'
   const html = buildV2(repoRoot,{check:true}).outputs.get('admin/index.html');
   for (const label of ['Tổng quan','Sản phẩm','Hình ảnh &amp; Media','Cẩm nang','Chuyên mục','Yêu cầu đặt hàng','Cài đặt cửa hàng']) assert.match(html,new RegExp(label));
   assert.doesNotMatch(html,/Analytics|Customers|Revenue|Messages|Billing|Security/i);
+  assert.doesNotMatch(html,/class="nav-badge"|>Mới<\/b>/);
 });
 
 test('Admin Product Editor supports simple, variant and composite without legacy rules', () => {

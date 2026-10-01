@@ -191,7 +191,7 @@ test('Home V2 is product-led and avoids landing-page template sections', () => {
   const home = renderHome(site, products, articles);
   assert.match(home, /Bánh phu thê &amp; mâm quả cưới tại TP.HCM/);
   assert.match(home, /class="home-catalog"/);
-  assert.match(home, /class="home-order-line"/);
+  assert.doesNotMatch(home, /class="home-order-line"|Chọn sản phẩm<\/span><b[^>]*>→<\/b><span>Gửi yêu cầu/);
   assert.match(home, /class="home-guide-editorial"/);
   assert.match(home, /<h2>Trước khi đặt<\/h2>/);
   assert.match(home, />Chọn quy cách<\/button>/);
