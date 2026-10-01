@@ -738,7 +738,7 @@
 
   function facebookExcerpt(value) {
     const text = String(value || '').replace(/\s+/g, ' ').trim();
-    if (!text) return 'Xem bài viết mới của Shop trên Facebook.';
+    if (!text) return '';
     return text.length > 140 ? `${text.slice(0, 137).trimEnd()}…` : text;
   }
 
@@ -761,7 +761,7 @@
         const image = safeExternalUrl(post?.image);
         const date = facebookDate(post?.created_time);
         const copy = facebookExcerpt(post?.message);
-        return `<article class="home-facebook-post${image ? '' : ' no-image'}">${image ? `<a class="home-facebook-image" href="${esc(permalink)}" target="_blank" rel="noopener" aria-label="Xem bài viết trên Facebook"><img src="${esc(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a>` : ''}<div class="home-facebook-body">${date ? `<time datetime="${esc(post.created_time)}">${esc(date)}</time>` : ''}<p>${esc(copy)}</p><a class="home-facebook-link" href="${esc(permalink)}" target="_blank" rel="noopener">Xem bài trên Facebook →</a></div></article>`;
+        return `<article class="home-facebook-post${image ? '' : ' no-image'}">${image ? `<a class="home-facebook-image" href="${esc(permalink)}" target="_blank" rel="noopener" aria-label="Xem bài viết trên Facebook"><img src="${esc(image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a>` : ''}<div class="home-facebook-body">${date ? `<time datetime="${esc(post.created_time)}">${esc(date)}</time>` : ''}${copy ? `<p>${esc(copy)}</p>` : ''}<a class="home-facebook-link" href="${esc(permalink)}" target="_blank" rel="noopener">Xem bài trên Facebook →</a></div></article>`;
       }).filter(Boolean);
       if (!rendered.length) return;
       const pageUrl = safeExternalUrl(payload?.page_url, { facebookOnly:true });
