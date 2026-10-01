@@ -132,7 +132,8 @@ test('Product Detail Engine renders dynamic summary hooks and related products f
   const mamqua = renderProductPage(site, byId['mam-qua-cuoi'], products);
   assert.match(mamqua, /data-derived-count>0 mâm/);
   assert.match(mamqua, /Chưa chọn lễ vật/);
-  assert.match(mamqua, /Ngày này sẽ được mang sang bước Đặt hàng/);
+  assert.doesNotMatch(mamqua, /name="receive_date"/, 'Ngày nhận chỉ hỏi ở bước Đặt hàng');
+  assert.match(mamqua, /data-component-sub-option[^>]*hidden/);
   assert.doesNotMatch(mamqua, /name="quantity"/);
 
   const phuclinh = renderProductPage(site, byId['banh-phuc-linh'], products);
@@ -185,11 +186,16 @@ test('Phase II.3 loads one general category and three published articles with bl
   }
 });
 
-test('Home V2 includes locked content sections without fake customer proof', () => {
+test('Home V2 is product-led and avoids landing-page template sections', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const home = renderHome(site, products, articles);
-  for (const text of ['Bánh phu thê &amp; mâm quả cưới tại TP.HCM','Cách đặt hàng','Cẩm nang cưới hỏi','Câu hỏi thường gặp','Cần Shop tư vấn trước khi đặt?']) assert.match(home, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
-  for (const cls of ['editorial-product feature-primary','editorial-product feature-reverse','editorial-product feature-strip']) assert.match(home, new RegExp(cls));
+  assert.match(home, /Bánh phu thê &amp; mâm quả cưới tại TP.HCM/);
+  assert.match(home, /class="home-catalog"/);
+  assert.match(home, /class="home-order-line"/);
+  assert.match(home, /class="home-guide-editorial"/);
+  assert.match(home, /<h2>Trước khi đặt<\/h2>/);
+  assert.match(home, />Chọn quy cách<\/button>/);
+  assert.doesNotMatch(home, /Cách đặt hàng|Cần Shop tư vấn trước khi đặt\?|class="steps|home-final-cta/);
   assert.doesNotMatch(home, /Khách đã nhận hàng|đánh giá khách hàng|testimonial/i);
   assert.match(home, /\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\//);
 });
@@ -285,7 +291,7 @@ test('cart and checkout render the locked filled-empty-success-rate-limit hooks'
   for (const hook of ['data-checkout-default','data-checkout-items','data-order-form','data-order-success','data-order-rate-limit','data-return-order']) assert.match(checkout, new RegExp(hook));
   for (const text of ['Yêu cầu đã ghi nhận','Chưa thể gửi yêu cầu','Đã nhận quá nhiều đơn hàng. Vui lòng thử lại sau.','Shop khuyến nghị đặt trước 3–5 ngày.']) assert.match(checkout, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   const checkoutMain = checkout.match(/<main>([\s\S]*?)<\/main>/)?.[1] || checkout;
-  assert.doesNotMatch(checkoutMain, /Thanh toán|cước vận chuyển|giờ hoàng đạo|x 1 bộ/i);
+  assert.doesNotMatch(checkoutMain, /<h[1-6][^>]*>Thanh toán|cước vận chuyển|giờ hoàng đạo|x 1 bộ/i);
 });
 
 test('checkout and quick-add expose the approved user-facing validation and pricing hooks', () => {
@@ -294,7 +300,11 @@ test('checkout and quick-add expose the approved user-facing validation and pric
   const home = result.outputs.get('index.html');
   assert.match(checkout, /data-order-phone/);
   assert.match(checkout, /data-order-date/);
-  assert.match(checkout, /Nhập số điện thoại Việt Nam/);
+  assert.match(checkout, /data-order-date-hint/);
+  assert.match(checkout, /data-field-error="phone"/);
+  assert.match(checkout, /Ví dụ: 0901234567\./);
+  assert.match(checkout, /Chưa thanh toán ở bước này/);
+  assert.match(checkout, /<details class="order-section add-more">/);
   assert.match(home, /data-quick-price/);
   assert.doesNotMatch(checkout, /Bản Preview|chưa cài đặt|chưa cấu hình/i);
 });
@@ -309,7 +319,7 @@ test('commerce client sends only product id, quantity and configuration to V2 tr
 });
 
 
-test('DATA/UI FINAL keeps locked header, real footer, product information and responsive safeguards', () => {
+test('UX FINAL keeps locked header/footer, compact product facts and responsive purchase safeguards', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const home = renderHome(site, products, articles);
   const product = renderProductPage(site, products.find(item => item.id === 'banh-phu-the'), products, articles);
@@ -319,27 +329,57 @@ test('DATA/UI FINAL keeps locked header, real footer, product information and re
   assert.match(home, /Liên hệ đặt hàng/);
   assert.match(home, /Kênh chính thức/);
   assert.doesNotMatch(home, /Chính sách cửa hàng/);
-  assert.doesNotMatch(home, /<h2>Sản phẩm<\/h2>/);
-  assert.match(product, /product-info-card/);
+  assert.match(product, /class="product-facts"/);
   assert.match(product, /Trọng lượng/);
   assert.match(product, /53g\/bánh/);
   assert.match(product, /Thời gian chuẩn bị/);
+  assert.match(product, /data-qty-preset="20"/);
+  assert.match(product, /data-qty-preset="65"/);
+  assert.match(product, /data-qty-preset="105"/);
   assert.doesNotMatch(product, /class="thumb(?: active)?"/, 'Sản phẩm chỉ có một ảnh không được hiện thumbnail lặp');
   assert.match(css, /@media\(max-width:1023px\)/);
   assert.match(css, /@media\(max-width:360px\)/);
-  assert.match(css, /\.home-guide-layout,\.guide-hub-layout,\.guide-related-layout\{align-items:start\}/);
+  assert.match(css, /--field-border:#9b8780/);
+  assert.match(css, /\.product-facts\{/);
+  assert.match(css, /\.quantity-presets\{/);
+  assert.match(css, /\.sub-option\[hidden\]\{display:none!important\}/);
+  assert.match(css, /\.form-assurance\{/);
+  assert.match(css, /\.floating-contact\{/);
+  assert.match(css, /\.product-page \.floating-contact,\.cart-page \.floating-contact,\.checkout-page \.floating-contact,\.contact-page \.floating-contact\{display:none\}/);
   assert.match(css, /\.footer-grid\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
   assert.match(css, /\.cart-item-actions \.cart-edit:not\(\[open\]\)\{width:auto\}/);
-  assert.match(css, /\.product-info-card \.info-grid\{display:grid;grid-template-columns:repeat\(2/);
+  assert.equal((css.match(/:root\{/g) || []).length, 1, 'Token root chỉ nên khai báo một lần');
   assert.doesNotMatch(client, /data-preview-form|Bản Preview|chưa cài đặt|chưa cấu hình/i);
   assert.match(client, /quickReturnFocus/);
   assert.match(client, /event\.key !== 'Tab'/);
   assert.match(client, /data-quick-price/);
   assert.match(client, /isValidVietnamPhone/);
+  assert.match(client, /const invalidFields = fields\.filter\(field => !validateField\(field\)\)/);
   assert.match(client, /dateInput\.min = today/);
+  assert.match(client, /data-qty-preset/);
 });
 
-test('R3 renders compact Cẩm nang layouts and a real Google Maps contact block', () => {
+test('UX FINAL metadata and public copy are customer-facing and shareable', () => {
+  const result = buildV2(repoRoot, { check:true });
+  const home = result.outputs.get('index.html');
+  const phuthe = result.outputs.get('banh-phu-the/index.html');
+  const phuclinh = result.outputs.get('banh-phuc-linh/index.html');
+  const contact = result.outputs.get('lien-he/index.html');
+  for (const html of [home, phuthe, phuclinh, contact]) {
+    assert.match(html, /property="og:title"/);
+    assert.match(html, /property="og:image"/);
+    assert.match(html, /name="twitter:card" content="summary_large_image"/);
+    assert.match(html, /rel="icon"/);
+    assert.match(html, /"@type":"LocalBusiness"/);
+  }
+  assert.match(home, /"@type":"FAQPage"/);
+  assert.doesNotMatch(phuclinh, /Website chỉ hiện giá|Quy cách khác để Giá liên hệ/i);
+  assert.match(phuclinh, /Số lượng khác: Shop báo giá khi xác nhận\./);
+  assert.doesNotMatch(phuclinh, /đúng quy cách đã có giá/i);
+  assert.match(home, /<img[^>]+width="1183"[^>]+height="2560"/);
+});
+
+test('UX FINAL renders lighter editorial Cẩm nang and the exact approved Google Maps embed', () => {
   const result = buildV2(repoRoot, { check:true });
   const home = result.outputs.get('index.html');
   const phuthe = result.outputs.get('banh-phu-the/index.html');
@@ -347,18 +387,19 @@ test('R3 renders compact Cẩm nang layouts and a real Google Maps contact block
   const contact = result.outputs.get('lien-he/index.html');
   const css = read('v2/assets/css/site.css');
 
-  assert.match(home, /home-guide-layout home-guide-count-3/);
+  assert.match(home, /class="home-guide-editorial"/);
   assert.match(phuthe, /product-guide-grid product-guide-grid-2/);
   assert.match(mamqua, /product-guide-grid product-guide-grid-3/);
   assert.doesNotMatch(phuthe, /guide-related-layout/);
   assert.doesNotMatch(mamqua, /guide-related-layout/);
   assert.match(css, /\.product-guide-grid-3\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)\}/);
-  assert.match(css, /\.home-guides \.home-guide-side\{display:flex;flex-direction:column/);
+  assert.match(css, /\.home-guide-editorial\{/);
 
   assert.match(contact, /class="contact-map-section"/);
   assert.match(contact, /title="Bản đồ đến Shop Uyên Ương"/);
-  assert.match(contact, /https:\/\/www\.google\.com\/maps\?q=/);
-  assert.match(contact, /output=embed/);
+  assert.match(contact, /https:\/\/www\.google\.com\/maps\/embed\?pb=/);
+  assert.match(contact, /1790837962407/);
+  assert.match(contact, /referrerpolicy="strict-origin-when-cross-origin"/);
   assert.match(contact, /Mở trên Google Maps/);
   assert.match(contact, new RegExp(siteAddressPattern(result.outputs.get('lien-he/index.html'))));
 });

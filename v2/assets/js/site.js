@@ -163,7 +163,11 @@
       const item = check.closest('.component-item');
       if (!item) continue;
       item.classList.toggle('selected', check.checked);
-      item.querySelectorAll('[data-component-sub-option] input').forEach(input => { input.disabled = !check.checked; });
+      const subOption = item.querySelector('[data-component-sub-option]');
+      if (subOption) {
+        subOption.hidden = !check.checked;
+        subOption.querySelectorAll('input').forEach(input => { input.disabled = !check.checked; });
+      }
       const custom = item.querySelector('.custom-component-input');
       if (custom) {
         const show = check.checked && check.value === 'khac';
@@ -256,8 +260,25 @@
       if (!input) return;
       const step = Math.max(1, Number(input.step || 1));
       const min = Math.max(1, Number(input.min || 1));
-      input.value = String(Math.max(min, Number(input.value || min) + Number(button.dataset.qtyChange) * step));
+      const delta = Number(button.dataset.qtyChange) * step;
+      const current = Number(input.value || min);
+      if (delta < 0 && current <= min) {
+        const form = button.closest('form[data-product-form]');
+        if (form) showProductMessage(form, `Tối thiểu ${min} ${form.querySelector('[data-quantity-field]')?.dataset.unit || 'sản phẩm'}.`);
+      }
+      input.value = String(Math.max(min, current + delta));
       input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+
+  document.querySelectorAll('[data-qty-preset]').forEach(button => {
+    button.addEventListener('click', () => {
+      const field = button.closest('[data-quantity-field]');
+      const input = field?.querySelector('input[type=number]');
+      if (!input) return;
+      input.value = String(button.dataset.qtyPreset);
+      field.querySelectorAll('[data-qty-preset]').forEach(item => item.classList.toggle('active', item === button));
+      input.dispatchEvent(new Event('input', { bubbles:true }));
     });
   });
 
@@ -353,7 +374,7 @@
         const custom = component.allow_custom_text ? `<input data-edit-custom="${esc(component.id)}" value="${esc(selected.custom_text || '')}" placeholder="${esc(component.custom_placeholder || 'Ghi rõ…')}" ${selectedIds.has(component.id) ? '' : 'disabled'}>` : '';
         return `<div class="cart-edit-component"><label><input type="checkbox" data-edit-component value="${esc(component.id)}"${selectedIds.has(component.id) ? ' checked' : ''}> ${esc(component.label)}</label>${sub}${custom}</div>`;
       }).join('');
-      return `<div class="cart-edit-components">${components}</div><label>Ngày nhận mâm quả<input type="date" data-edit-receive-date value="${esc(config.receive_date || '')}"></label><label>Ghi chú<textarea data-edit-note maxlength="1000">${esc(config.note || '')}</textarea></label>`;
+      return `<div class="cart-edit-components">${components}</div><label>Ghi chú<textarea data-edit-note maxlength="1000">${esc(config.note || '')}</textarea></label>`;
     }
 
     const optionGroups = (product.option_groups || []).map(group => {
@@ -402,8 +423,6 @@
       if (!components.length) throw new Error('Vui lòng chọn ít nhất một lễ vật.');
       configuration.components = components;
       quantity = components.length;
-      const date = container.querySelector('[data-edit-receive-date]')?.value || '';
-      if (date) configuration.receive_date = date;
     } else {
       const options = {};
       for (const group of product.option_groups || []) {
@@ -580,26 +599,83 @@
   const orderForm = document.querySelector('[data-order-form]');
   if (orderForm) {
     const phoneInput = orderForm.elements.phone;
+    const dateInput = orderForm.elements.receive_date;
+    const dateHint = orderForm.querySelector('[data-order-date-hint]');
+    const submit = orderForm.querySelector('[data-order-submit]');
+    const submitDefaultHtml = submit?.innerHTML || 'Gửi yêu cầu đặt hàng';
+
+    const fieldError = field => orderForm.querySelector(`[data-field-error="${CSS.escape(field.name)}"]`);
+    const clearFieldError = field => {
+      field.removeAttribute('aria-invalid');
+      const error = fieldError(field);
+      if (error) { error.textContent = ''; error.hidden = true; }
+    };
+    const setFieldError = (field, message) => {
+      field.setAttribute('aria-invalid', 'true');
+      const error = fieldError(field);
+      if (error) { error.textContent = message; error.hidden = false; }
+    };
     const validatePhone = () => {
       if (!phoneInput) return true;
       const valid = isValidVietnamPhone(phoneInput.value);
       phoneInput.setCustomValidity(valid ? '' : 'Vui lòng nhập số điện thoại hợp lệ, ví dụ 0901234567.');
       return valid;
     };
-    phoneInput?.addEventListener('input', validatePhone);
-    phoneInput?.addEventListener('blur', validatePhone);
+    const updateUrgentDateHint = () => {
+      if (!dateInput || !dateHint) return;
+      dateHint.classList.remove('warning');
+      dateHint.textContent = 'Shop khuyến nghị đặt trước 3–5 ngày.';
+      if (!dateInput.value) return;
+      const today = new Date(`${todayLocalISO()}T00:00:00`);
+      const selected = new Date(`${dateInput.value}T00:00:00`);
+      const days = Math.round((selected - today) / 86400000);
+      if (days >= 0 && days < 3) {
+        dateHint.textContent = 'Ngày nhận khá gấp. Shop sẽ xác nhận khả năng chuẩn bị sau khi nhận yêu cầu.';
+        dateHint.classList.add('warning');
+      }
+    };
+    const validateField = field => {
+      clearFieldError(field);
+      if (field === phoneInput) validatePhone();
+      if (field.validity.valid) return true;
+      let message = field.validationMessage || 'Vui lòng kiểm tra thông tin này.';
+      if (field.validity.valueMissing) message = 'Vui lòng nhập thông tin này.';
+      if (field === phoneInput && !isValidVietnamPhone(field.value)) message = 'Vui lòng nhập số điện thoại hợp lệ, ví dụ 0901234567.';
+      setFieldError(field, message);
+      return false;
+    };
+
+    for (const field of orderForm.querySelectorAll('input,textarea,select')) {
+      field.addEventListener('input', () => {
+        clearFieldError(field);
+        if (field === phoneInput) field.setCustomValidity('');
+        if (field === dateInput) updateUrgentDateHint();
+      });
+      field.addEventListener('blur', () => {
+        if (field.required || field === phoneInput) validateField(field);
+      });
+    }
+    dateInput?.addEventListener('change', updateUrgentDateHint);
+    updateUrgentDateHint();
+
     orderForm.addEventListener('submit', async event => {
       event.preventDefault();
       const cart = readCart();
       const errorBox = orderForm.querySelector('[data-order-error]');
-      const submit = orderForm.querySelector('[data-order-submit]');
       if (!cart.length) {
         errorBox.textContent = 'Giỏ hàng đang trống.';
         errorBox.hidden = false;
         return;
       }
-      validatePhone();
-      if (!orderForm.reportValidity()) return;
+      const fields = [...orderForm.querySelectorAll('input,textarea,select')].filter(field => field.required || field === phoneInput);
+      const invalidFields = fields.filter(field => !validateField(field));
+      const firstInvalid = invalidFields[0];
+      if (firstInvalid) {
+        errorBox.textContent = 'Vui lòng kiểm tra lại các thông tin được đánh dấu.';
+        errorBox.hidden = false;
+        firstInvalid.focus();
+        return;
+      }
       errorBox.hidden = true;
       submit.disabled = true;
       submit.textContent = 'Đang gửi…';
@@ -635,7 +711,7 @@
         errorBox.hidden = false;
       } finally {
         submit.disabled = false;
-        submit.textContent = 'Gửi yêu cầu đặt hàng';
+        submit.innerHTML = submitDefaultHtml;
       }
     });
   }
