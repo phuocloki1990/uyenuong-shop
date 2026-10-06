@@ -12,7 +12,9 @@ on:
       - 'v2/CUTOVER_CHECKLIST.md'
       - 'assets/images/**'
       - 'infra/**'
-      - 'functions/api/facebook-latest.js'
+      - 'functions/_shared/**'
+      - 'functions/admin/**'
+      - 'functions/api/**'
       - 'DATA_UI_LOCK_SHA256.txt'
       - '.github/workflows/rebuild-v2-production.yml'
   workflow_dispatch:
