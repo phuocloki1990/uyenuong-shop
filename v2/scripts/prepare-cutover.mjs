@@ -23,9 +23,9 @@ export function createCutoverPlan(root = repoRoot) {
       'Chụp snapshot D1 trước khi đổi Production.',
       'Nếu QA Production fail, quay lại commit trước; Phase II.7 không xóa hoặc migration D1.'
     ],
-    required_preview_checks: [
+    required_production_checks: [
       'Cloudflare Access chặn /admin/* khi chưa đăng nhập.',
-      'D1 binding DB hoạt động ở Preview.',
+      'D1 binding DB hoạt động trên Production.',
       'Telegram test không làm mất đơn nếu gửi thông báo lỗi.',
       'Redirect V1 trả 301 tới đúng canonical V2.',
       'PC, tablet, mobile kiểm trực quan các luồng chính.'

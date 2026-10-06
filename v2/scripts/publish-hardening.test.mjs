@@ -78,26 +78,26 @@ test('publish status reports waiting, success and failed states without exposing
   const original = globalThis.fetch;
   try {
     globalThis.fetch = async () => Response.json({workflow_runs:[]});
-    assert.equal((await getPublishStatus({token:'t',branch:'preview-v2'},{commitSha:'v1'})).state,'pending');
+    assert.equal((await getPublishStatus({token:'t',branch:'main',production:true},{commitSha:'v1'})).state,'pending');
     globalThis.fetch = async () => Response.json({workflow_runs:[{head_sha:'v2',status:'completed',conclusion:'success',updated_at:'2026-09-28T00:00:00Z'}]});
-    assert.equal((await getPublishStatus({token:'t',branch:'preview-v2'},{commitSha:'v2'})).state,'success');
+    assert.equal((await getPublishStatus({token:'t',branch:'main',production:true},{commitSha:'v2'})).state,'success');
     globalThis.fetch = async () => Response.json({workflow_runs:[{head_sha:'v3',status:'completed',conclusion:'failure',updated_at:'2026-09-28T00:00:00Z'}]});
-    assert.equal((await getPublishStatus({token:'t',branch:'preview-v2'},{commitSha:'v3'})).state,'failed');
+    assert.equal((await getPublishStatus({token:'t',branch:'main',production:true},{commitSha:'v3'})).state,'failed');
   } finally { globalThis.fetch = original; }
 });
 
-test('V2 workflow validates, builds, tests on Node 24, then commits generated preview', () => {
-  const workflow = fs.readFileSync(path.join(repoRoot,'.github/workflows/rebuild-v2-preview.yml'),'utf8');
+test('Production is the only rebuild workflow and validates, tests, QA-checks, then promotes main', () => {
+  const previewWorkflow = path.join(repoRoot,'.github/workflows/rebuild-v2-preview.yml');
+  assert.equal(fs.existsSync(previewWorkflow),false);
+  const workflow = fs.readFileSync(path.join(repoRoot,'.github/workflows/rebuild-v2-production.yml'),'utf8');
   assert.match(workflow,/node-version:\s*'24'/);
-  assert.match(workflow,/branches:\s*\n\s*- v2-preview/);
-  assert.match(workflow,/v2\/scripts\/publish-hardening\.test\.mjs/);
+  assert.match(workflow,/branches:\s*\n\s*- main/);
   assert.match(workflow,/Validate V2 content before generating files/);
-  assert.match(workflow,/Build V2 preview and trusted catalog/);
-  assert.match(workflow,/Prepare cutover manifest/);
+  assert.match(workflow,/Build V2 production staging and trusted catalog/);
   assert.match(workflow,/node v2\/scripts\/prepare-cutover\.mjs/);
-  assert.match(workflow,/Run V1 and V2 tests against generated output/);
-  assert.match(workflow,/v2\/scripts\/seo-cutover\.test\.mjs/);
-  assert.match(workflow,/node v2\/scripts\/build\.mjs --check/);
+  assert.match(workflow,/node infra\/run-v2-tests\.mjs/);
+  assert.match(workflow,/node v2\/scripts\/preview-qa\.mjs/);
+  assert.match(workflow,/node infra\/promote-v2\.mjs/);
 });
 
 test('V2 content now references managed Media folders instead of legacy root image paths', () => {

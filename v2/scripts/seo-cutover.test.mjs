@@ -24,11 +24,11 @@ test('Phase II.7 emits final sitemap, robots, headers and explicit V1 redirects'
   const robots=result.outputs.get('robots.txt');
   const headers=result.outputs.get('_headers');
   const redirects=result.outputs.get('_redirects');
-  assert.match(sitemap,/https:\/\/shopuyenuong\.vn\/banh-phu-the\//);
+  assert.match(sitemap,/https:\/\/uyenuong-shop\.pages\.dev\/banh-phu-the\//);
   assert.doesNotMatch(sitemap,/\.html|\/gio-hang\/|\/dat-hang\/|\/admin\//);
   assert.match(robots,/Disallow: \/admin\//);
   assert.match(robots,/Disallow: \/api\//);
-  assert.match(robots,/Sitemap: https:\/\/shopuyenuong\.vn\/sitemap\.xml/);
+  assert.match(robots,/Sitemap: https:\/\/uyenuong-shop\.pages\.dev\/sitemap\.xml/);
   assert.match(headers,/\/admin\/\*/);
   assert.match(headers,/X-Robots-Tag: noindex, nofollow/);
   assert.match(headers,/\/gio-hang\/\*/);
@@ -66,7 +66,7 @@ test('slug change keeps stable content ID, generates direct 301, and removes old
     assert.match(redirects,/\/san-pham\/banh-phu-the-tphcm\.html \/banh-phu-the-moi\/ 301/);
     assert.match(sitemap,/\/banh-phu-the-moi\//);
     assert.doesNotMatch(sitemap,/\/banh-phu-the\//);
-    assert.match(html,/canonical" href="https:\/\/shopuyenuong\.vn\/banh-phu-the-moi\/"/);
+    assert.match(html,/canonical" href="https:\/\/uyenuong-shop\.pages\.dev\/banh-phu-the-moi\/"/);
   } finally { fs.rmSync(root,{recursive:true,force:true}); }
 });
 
@@ -101,7 +101,7 @@ test('cart/order/admin are noindex and V2 APIs declare X-Robots-Tag in response 
 test('cutover plan is prepare-only and never instructs Phase II.7 to delete V1 or migrate D1', () => {
   const plan=createCutoverPlan(repoRoot);
   assert.equal(plan.mode,'prepare-only');
-  assert.equal(plan.production_domain,'https://shopuyenuong.vn');
+  assert.equal(plan.production_domain,'https://uyenuong-shop.pages.dev');
   assert.ok(plan.generated_root_files.includes('_redirects'));
   assert.ok(plan.generated_root_files.includes('_headers'));
   assert.ok(plan.legacy_paths_to_replace_at_cutover.includes('san-pham/'));
@@ -139,7 +139,7 @@ test('every sitemap URL resolves to generated HTML with the same canonical URL',
   assert.ok(locs.length>0,'Sitemap should contain URLs');
   for (const loc of locs) {
     const url=new URL(loc);
-    assert.equal(url.origin,'https://shopuyenuong.vn');
+    assert.equal(url.origin,'https://uyenuong-shop.pages.dev');
     const rel=url.pathname==='/'?'index.html':`${url.pathname.replace(/^\//,'')}index.html`;
     const html=result.outputs.get(rel);
     assert.ok(html,`Missing generated page for ${url.pathname}`);

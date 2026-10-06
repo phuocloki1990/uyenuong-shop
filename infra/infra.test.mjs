@@ -39,7 +39,7 @@ test('all eight source images required by clean V2 build exist at managed root p
 
 test('legacy public order endpoints are disabled with customer-safe messages', async () => {
   for (const handler of [legacyOrders, legacySendOrder]) {
-    const response = await handler({ request:new Request('https://shopuyenuong.vn/api/orders') });
+    const response = await handler({ request:new Request('https://uyenuong-shop.pages.dev/api/orders') });
     assert.equal(response.status, 410);
     const body = await response.json();
     const text = JSON.stringify(body).toLowerCase();
@@ -48,7 +48,7 @@ test('legacy public order endpoints are disabled with customer-safe messages', a
 });
 
 test('V2 order endpoint hides infrastructure details when D1 is unavailable', async () => {
-  const response = await processOrder({ request:new Request('https://shopuyenuong.vn/api/v2/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}), env:{} });
+  const response = await processOrder({ request:new Request('https://uyenuong-shop.pages.dev/api/v2/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}), env:{} });
   assert.equal(response.status, 503);
   const body = await response.json();
   assert.equal(body.success, false);
@@ -171,16 +171,16 @@ test('Facebook latest endpoint fails closed without exposing infrastructure or u
   } finally { globalThis.fetch = original; }
 });
 
-test('Admin publish status watches production workflow on production and preview workflow elsewhere', async () => {
+test('Admin publish status watches only the production workflow on main', async () => {
   const original = globalThis.fetch;
   const seen = [];
   globalThis.fetch = async url => { seen.push(String(url)); return Response.json({workflow_runs:[]}); };
   try {
     await getPublishStatus({token:'t',branch:'main',production:true});
-    await getPublishStatus({token:'t',branch:'v2-preview',production:false});
   } finally { globalThis.fetch = original; }
+  assert.equal(seen.length,1);
   assert.match(seen[0],/rebuild-v2-production\.yml/);
-  assert.match(seen[1],/rebuild-v2-preview\.yml/);
+  assert.doesNotMatch(seen[0],/rebuild-v2-preview\.yml/);
 });
 
 test('production workflow is Node 24, lock-gated, fully tested and promotes with allowlisted script', () => {
@@ -192,7 +192,9 @@ test('production workflow is Node 24, lock-gated, fully tested and promotes with
   assert.match(workflow,/node infra\/run-v2-tests\.mjs/);
   assert.match(workflow,/node v2\/scripts\/preview-qa\.mjs/);
   assert.match(workflow,/node infra\/promote-v2\.mjs/);
-  assert.match(workflow,/functions\/api\/facebook-latest\.js/);
+  assert.match(workflow,/functions\/_shared\/\*\*/);
+  assert.match(workflow,/functions\/admin\/\*\*/);
+  assert.match(workflow,/functions\/api\/\*\*/);
   assert.match(workflow,/git add -A/);
   assert.doesNotMatch(workflow,/rm\s+-rf\s+\.\s*(?:$|\n)/m);
 });

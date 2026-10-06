@@ -88,11 +88,11 @@ test('Admin backend accepts the approved bánh phục linh hybrid price rules wi
   assert.throws(() => validateDocument('products', invalid, 'banh-phuc-linh'), /option_id|không tồn tại|không hợp lệ/i);
 });
 
-test('Preview branch safety never falls back silently to main', () => {
-  assert.throws(()=>getConfig(new Request('https://abc123.uyenuong-shop.pages.dev/admin/api/v2/content'),{GITHUB_CONTENT_TOKEN:'x'}),/nhánh Preview/);
-  const cfg=getConfig(new Request('https://abc123.uyenuong-shop.pages.dev/admin/api/v2/content'),{GITHUB_CONTENT_TOKEN:'x',GITHUB_CONTENT_BRANCH:'preview-v2'});
-  assert.equal(cfg.branch,'preview-v2');
-  assert.equal(getConfig(new Request('https://shopuyenuong.vn/admin/api/v2/content'),{GITHUB_CONTENT_TOKEN:'x'}).branch,'main');
+test('Admin content API is production-only and always writes main', () => {
+  assert.throws(()=>getConfig(new Request('https://abc123.uyenuong-shop.pages.dev/admin/api/v2/content'),{GITHUB_CONTENT_TOKEN:'x'}),/website chính/);
+  const cfg=getConfig(new Request('https://uyenuong-shop.pages.dev/admin/api/v2/content'),{GITHUB_CONTENT_TOKEN:'x'});
+  assert.equal(cfg.branch,'main');
+  assert.equal(cfg.production,true);
 });
 
 test('saveDocument creates Product D through GitHub Contents API without arbitrary paths', async () => {
@@ -135,7 +135,7 @@ test('saveDocument records the old public slug as redirect history without renam
   } finally { globalThis.fetch=original; }
 });
 test('Admin content POST rejects cross-origin writes before touching GitHub', async () => {
-  const request=new Request('https://shopuyenuong.vn/admin/api/v2/content',{method:'POST',headers:{Origin:'https://evil.example','Content-Type':'application/json'},body:'{}'});
+  const request=new Request('https://uyenuong-shop.pages.dev/admin/api/v2/content',{method:'POST',headers:{Origin:'https://evil.example','Content-Type':'application/json'},body:'{}'});
   const response=await contentPost({request,env:{GITHUB_CONTENT_TOKEN:'x'}});
   assert.equal(response.status,403);
 });

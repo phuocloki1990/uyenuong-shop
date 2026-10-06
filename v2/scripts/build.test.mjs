@@ -91,7 +91,7 @@ test('generated public links use clean URLs and cart/order are noindex', () => {
 
 test('sitemap contains only indexable canonical V2 URLs', () => {
   const xml = buildV2(repoRoot, { check:true }).outputs.get('sitemap.xml');
-  for (const url of ['https://shopuyenuong.vn/','https://shopuyenuong.vn/banh-phu-the/','https://shopuyenuong.vn/mam-qua-cuoi/','https://shopuyenuong.vn/banh-phuc-linh/','https://shopuyenuong.vn/cam-nang/','https://shopuyenuong.vn/cam-nang/mam-qua-cuoi-thuong-co-nhung-gi/','https://shopuyenuong.vn/cam-nang/nen-chuan-bi-so-luong-banh-phu-the-bao-nhieu/','https://shopuyenuong.vn/cam-nang/kinh-nghiem-chon-mam-qua-cuoi-cho-gia-dinh/','https://shopuyenuong.vn/lien-he/']) assert.match(xml, new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+  for (const url of ['https://uyenuong-shop.pages.dev/','https://uyenuong-shop.pages.dev/banh-phu-the/','https://uyenuong-shop.pages.dev/mam-qua-cuoi/','https://uyenuong-shop.pages.dev/banh-phuc-linh/','https://uyenuong-shop.pages.dev/cam-nang/','https://uyenuong-shop.pages.dev/cam-nang/mam-qua-cuoi-thuong-co-nhung-gi/','https://uyenuong-shop.pages.dev/cam-nang/nen-chuan-bi-so-luong-banh-phu-the-bao-nhieu/','https://uyenuong-shop.pages.dev/cam-nang/kinh-nghiem-chon-mam-qua-cuoi-cho-gia-dinh/','https://uyenuong-shop.pages.dev/lien-he/']) assert.match(xml, new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   assert.doesNotMatch(xml, /gio-hang|dat-hang|\.html/);
 });
 
@@ -234,7 +234,7 @@ test('Article renderer uses flat clean article URLs and structured blocks', () =
   assert.match(output, /article-callout/);
   assert.match(output, /Sản phẩm liên quan/);
   assert.match(output, /Bài viết liên quan/);
-  assert.match(output, /canonical" href="https:\/\/shopuyenuong\.vn\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\/"/);
+  assert.match(output, /canonical" href="https:\/\/uyenuong-shop\.pages\.dev\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\/"/);
   assert.doesNotMatch(output, /\.html/);
 });
 

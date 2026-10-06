@@ -21,7 +21,7 @@ test('live Preview QA checks noindex, public routes, Access and permanent redire
     const url = new URL(input);
     const common={'X-Robots-Tag':'noindex'};
     if(url.pathname==='/') return response(200,'home',common);
-    if(url.pathname==='/sitemap.xml') return response(200,'<urlset><url><loc>https://shopuyenuong.vn/banh-phu-the/</loc></url></urlset>');
+    if(url.pathname==='/sitemap.xml') return response(200,'<urlset><url><loc>https://uyenuong-shop.pages.dev/banh-phu-the/</loc></url></urlset>');
     if(url.pathname==='/banh-phu-the/') return response(200,'product',common);
     if(url.pathname==='/robots.txt') return response(200,'User-agent: *');
     if(url.pathname==='/gio-hang/'||url.pathname==='/dat-hang/') return response(200,'page',common);
@@ -37,5 +37,5 @@ test('live Preview QA checks noindex, public routes, Access and permanent redire
 });
 
 test('live Preview QA refuses Production hosts', async () => {
-  await assert.rejects(runLivePreviewQa({baseUrl:'https://shopuyenuong.vn'}),/Production/);
+  await assert.rejects(runLivePreviewQa({baseUrl:'https://uyenuong-shop.pages.dev'}),/Production/);
 });

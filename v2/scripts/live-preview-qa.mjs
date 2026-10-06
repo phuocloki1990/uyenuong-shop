@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const defaultRoot = path.resolve(here, '../..');
-const PROD_HOSTS = new Set(['shopuyenuong.vn','www.shopuyenuong.vn','uyenuong-shop.pages.dev']);
+const PROD_HOSTS = new Set(['uyenuong-shop.pages.dev']);
 
 const parseRedirects = text => text
   .split(/\r?\n/)

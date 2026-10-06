@@ -2,7 +2,6 @@ const OWNER = 'phuocloki1990';
 const REPO = 'uyenuong-shop';
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA = /^[a-f0-9]{40}$/i;
-const BRANCH = /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*$/;
 const RESERVED = new Set(['cam-nang','lien-he','gio-hang','dat-hang','admin','api','assets']);
 const STATUS = new Set(['draft','published','hidden']);
 const TYPES = new Set(['simple','variant','composite']);
@@ -18,8 +17,7 @@ export const MEDIA_DIRS = {
   categories: 'assets/images/categories',
   site: 'assets/images/site'
 };
-const PRODUCTION_HOSTS = new Set(['shopuyenuong.vn','www.shopuyenuong.vn','uyenuong-shop.pages.dev']);
-const V2_PREVIEW_WORKFLOW = 'rebuild-v2-preview.yml';
+const PRODUCTION_HOSTS = new Set(['uyenuong-shop.pages.dev']);
 const V2_PRODUCTION_WORKFLOW = 'rebuild-v2-production.yml';
 const IMAGE_FILE = /\.(?:jpe?g|png|webp)$/i;
 
@@ -36,16 +34,13 @@ export function sameOrigin(request) { const origin=request.headers.get('Origin')
 export function getConfig(request, env) {
   if (!env.GITHUB_CONTENT_TOKEN) throw Object.assign(new Error('Chưa cấu hình kết nối nội dung cho Admin.'),{status:503});
   const host = new URL(request.url).hostname.toLowerCase();
-  let branch = '';
-  if (PRODUCTION_HOSTS.has(host)) branch = 'main';
-  else branch = String(env.GITHUB_CONTENT_BRANCH || '').trim();
-  if (!BRANCH.test(branch) || (!PRODUCTION_HOSTS.has(host) && branch === 'main')) throw Object.assign(new Error('Chưa cấu hình nhánh Preview an toàn.'),{status:503});
-  return { token:env.GITHUB_CONTENT_TOKEN, branch, production:PRODUCTION_HOSTS.has(host) };
+  if (!PRODUCTION_HOSTS.has(host)) throw Object.assign(new Error('Admin chỉ hoạt động trên website chính.'),{status:503});
+  return { token:env.GITHUB_CONTENT_TOKEN, branch:'main', production:true };
 }
 
 function headers(token){return{Accept:'application/vnd.github+json',Authorization:`Bearer ${token}`,'User-Agent':'uyenuong-shop-v2-admin','X-GitHub-Api-Version':'2022-11-28'};}
 function contentUrl(path){return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;}
-function workflowRunsUrl(config){const workflow=config.production?V2_PRODUCTION_WORKFLOW:V2_PREVIEW_WORKFLOW;return `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow}/runs?branch=${encodeURIComponent(config.branch)}&per_page=10`;}
+function workflowRunsUrl(config){return `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${V2_PRODUCTION_WORKFLOW}/runs?branch=${encodeURIComponent(config.branch)}&per_page=10`;}
 export function decodeBase64Utf8(value){const binary=atob(String(value).replace(/\s/g,''));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder('utf-8',{fatal:true}).decode(bytes);}
 export function encodeBase64Utf8(value){const bytes=new TextEncoder().encode(value);let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(binary);}
 export function encodeBase64Bytes(bytes){let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(binary);}
