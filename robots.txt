@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /api/
-Sitemap: https://shopuyenuong.vn/sitemap.xml
+Sitemap: https://uyenuong-shop.pages.dev/sitemap.xml
