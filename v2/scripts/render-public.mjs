@@ -262,8 +262,9 @@ function homePrimaryProduct(product) {
 }
 function homeSecondaryProduct(product, actionLabel = 'Xem sản phẩm') {
   if (!product) return '';
-  const quick = product.type === 'composite' ? '' : `<button type="button" data-home-quick-add="${html(product.id)}">Chọn quy cách</button>`;
-  return `<article class="home-product-mini"><a class="home-product-mini-image" href="/${html(product.slug)}/"><img src="${html(product.main_image)}" alt="${html(product.name)}"${imageSizeAttrs(product.main_image)} loading="lazy" decoding="async"></a><div class="home-product-mini-copy"><div><h3>${html(product.name)}</h3><span>${html(homePrice(product))}</span></div><p>${html(product.short_description)}</p><div class="home-product-mini-actions"><a href="/${html(product.slug)}/">${html(actionLabel)} ${icon('arrow')}</a>${quick}</div></div></article>`;
+  const detailClass = product.type === 'composite' ? 'btn btn-primary' : 'btn btn-outline';
+  const quick = product.type === 'composite' ? '' : `<button class="btn btn-primary" type="button" data-home-quick-add="${html(product.id)}">Chọn quy cách</button>`;
+  return `<article class="home-product-mini"><a class="home-product-mini-image" href="/${html(product.slug)}/"><img src="${html(product.main_image)}" alt="${html(product.name)}"${imageSizeAttrs(product.main_image)} loading="lazy" decoding="async"></a><div class="home-product-mini-copy"><div><h3>${html(product.name)}</h3><span>${html(homePrice(product))}</span></div><p>${html(product.short_description)}</p><div class="home-product-mini-actions"><a class="${detailClass}" href="/${html(product.slug)}/">${html(actionLabel)}</a>${quick}</div></div></article>`;
 }
 export function renderHome(site, products, articles = []) {
   const byId = new Map(products.filter(p=>p.status==='published').map(p=>[p.id,p]));

@@ -195,6 +195,8 @@ test('Home V2 is product-led and avoids landing-page template sections', () => {
   assert.match(home, /class="home-guide-editorial"/);
   assert.match(home, /<h2>Trước khi đặt<\/h2>/);
   assert.match(home, />Chọn quy cách<\/button>/);
+  assert.match(home, /class="btn btn-primary" href="\/mam-qua-cuoi\/">Chọn lễ vật<\/a>/);
+  assert.match(home, /class="btn btn-outline" href="\/banh-phuc-linh\/">Xem sản phẩm<\/a><button class="btn btn-primary" type="button" data-home-quick-add="banh-phuc-linh">Chọn quy cách<\/button>/);
   assert.doesNotMatch(home, /Cách đặt hàng|Cần Shop tư vấn trước khi đặt\?|class="steps|home-final-cta/);
   assert.doesNotMatch(home, /Khách đã nhận hàng|đánh giá khách hàng|testimonial/i);
   assert.match(home, /\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\//);

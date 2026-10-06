@@ -159,5 +159,8 @@ test('R3 Admin order UI renders D1 orders with shared order labels on dashboard 
   assert.match(source, /function orderRow\(order\)/);
   assert.match(source, /orders\.map\(orderRow\)/);
   assert.match(source, /Object\.entries\(orderLabels\)/);
+  assert.match(source, /href=\"\/admin\/orders\/\?id=\$\{encodeURIComponent\(o\.id\)\}\"/);
+  assert.match(source, /new URLSearchParams\(location\.search\)\.get\('id'\)/);
+  assert.match(source, /if\(requestedId\)\{const id=requestedId;requestedId=null;await show\(id\);\}/);
   assert.doesNotMatch(source, /statusLabels\[o\.status\]/);
 });
