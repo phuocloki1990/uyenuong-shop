@@ -45,6 +45,22 @@
     document.querySelectorAll('[data-cart-count]').forEach(el => { el.textContent = String(count); });
   }
 
+  function pulseCartCount() {
+    document.querySelectorAll('[data-cart-count]').forEach(el => {
+      el.classList.remove('cart-count-pulse');
+      void el.offsetWidth;
+      el.classList.add('cart-count-pulse');
+      setTimeout(() => el.classList.remove('cart-count-pulse'), 520);
+    });
+  }
+
+  function setCommerceStatus(selector, message) {
+    const status = document.querySelector(selector);
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
+  }
+
   function newLineId() {
     return globalThis.crypto?.randomUUID?.() || `line-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
@@ -121,6 +137,21 @@
   }
 
   updateCartCount();
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const revealTargets = document.querySelectorAll('.home-page [data-reveal]');
+    if (revealTargets.length) {
+      document.documentElement.classList.add('motion-ready');
+      const observer = new IntersectionObserver(entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+      revealTargets.forEach(target => observer.observe(target));
+    }
+  }
 
   document.querySelectorAll('[data-gallery-src]').forEach(button => {
     button.addEventListener('click', () => {
@@ -285,9 +316,24 @@
   function showProductMessage(form, message, isError = false) {
     const note = form.querySelector('[data-cart-action-note]');
     if (!note) return;
-    note.textContent = message;
+    const text = note.querySelector('[data-cart-action-text]');
+    const link = note.querySelector('.cart-action-link');
+    if (text) text.textContent = message;
+    else note.textContent = message;
+    if (link) link.hidden = isError;
     note.hidden = false;
     note.classList.toggle('error', isError);
+  }
+
+  function resetProductFeedback(form, button, defaultHtml) {
+    const note = form.querySelector('[data-cart-action-note]');
+    if (note) {
+      note.hidden = true;
+      note.classList.remove('error');
+    }
+    button.disabled = false;
+    button.classList.remove('is-success');
+    button.innerHTML = defaultHtml;
   }
 
   function collectProductItem(form) {
@@ -349,16 +395,28 @@
   }
 
   document.querySelectorAll('[data-add-to-cart]').forEach(button => {
+    const form = button.closest('form[data-product-form]');
+    if (!form) return;
+    const defaultHtml = button.innerHTML;
+    const reset = () => {
+      if (!button.classList.contains('is-success')) return;
+      resetProductFeedback(form, button, defaultHtml);
+    };
+    form.addEventListener('change', reset);
+    form.addEventListener('input', reset);
     button.addEventListener('click', () => {
-      const form = button.closest('form[data-product-form]');
-      if (!form) return;
       try {
         const item = collectProductItem(form);
         const cart = readCart();
         cart.push(item);
         saveCart(cart);
-        showProductMessage(form, 'Đã thêm vào giỏ hàng.');
+        button.classList.add('is-success');
+        button.disabled = true;
+        button.textContent = '✓ Đã thêm vào giỏ';
+        showProductMessage(form, 'Đã thêm sản phẩm vào giỏ hàng.');
+        pulseCartCount();
       } catch (error) {
+        resetProductFeedback(form, button, defaultHtml);
         showProductMessage(form, error.message || 'Chưa thể thêm sản phẩm.', true);
       }
     });
@@ -512,10 +570,18 @@
     }
     const remove = event.target.closest('[data-remove-line]');
     if (remove) {
+      const fromCartPage = Boolean(remove.closest('[data-cart-page]'));
+      const fromCheckoutPage = Boolean(remove.closest('[data-checkout-default]'));
       const line = remove.closest('[data-cart-line]')?.dataset.cartLine;
-      saveCart(readCart().filter(item => item.line_id !== line));
+      const current = readCart();
+      const removed = current.find(item => item.line_id === line);
+      const removedName = removed ? (catalog[removed.product_id]?.name || 'Sản phẩm') : 'Sản phẩm';
+      saveCart(current.filter(item => item.line_id !== line));
       renderCartPage();
       renderCheckoutPage();
+      const message = `Đã xóa ${removedName} khỏi giỏ hàng.`;
+      if (fromCartPage) setCommerceStatus('[data-cart-status]', message);
+      if (fromCheckoutPage) setCommerceStatus('[data-checkout-status]', message);
       return;
     }
     const save = event.target.closest('[data-save-line]');
@@ -528,7 +594,15 @@
       try {
         cart[index] = collectEditedItem(container, cart[index]);
         saveCart(cart);
-        renderCartPage();
+        const savedProductName = catalog[cart[index].product_id]?.name || 'sản phẩm';
+        save.disabled = true;
+        save.classList.add('is-success');
+        save.textContent = '✓ Đã lưu';
+        setCommerceStatus('[data-cart-status]', `Đã lưu thay đổi cho ${savedProductName}.`);
+        setTimeout(() => {
+          renderCartPage();
+          renderCheckoutPage();
+        }, 1100);
       } catch (error) {
         const area = save.closest('.cart-edit-form');
         let message = area.querySelector('.edit-error');
@@ -786,6 +860,10 @@
   const quickDetail = quickModal?.querySelector('[data-quick-detail]');
   const quickPrice = quickModal?.querySelector('[data-quick-price]');
   const quickNote = quickModal?.querySelector('[data-quick-note]');
+  const quickNoteText = quickModal?.querySelector('[data-quick-note-text]');
+  const quickNoteLink = quickModal?.querySelector('.cart-action-link');
+  const quickSubmit = quickModal?.querySelector('[data-quick-submit]');
+  const quickSubmitDefaultHtml = quickSubmit?.innerHTML || 'Thêm vào giỏ hàng';
   let quickProductId = null;
   let quickReturnFocus = null;
 
@@ -869,6 +947,19 @@
     quickPrice.textContent = quotedPrice(product, quantity, quickConfiguration());
   }
 
+  function resetQuickFeedback() {
+    if (quickSubmit) {
+      quickSubmit.disabled = false;
+      quickSubmit.classList.remove('is-success');
+      quickSubmit.innerHTML = quickSubmitDefaultHtml;
+    }
+    if (quickNote) {
+      quickNote.hidden = true;
+      quickNote.classList.remove('error');
+    }
+    if (quickNoteLink) quickNoteLink.hidden = false;
+  }
+
   function closeQuickModal() {
     if (!quickModal || quickModal.hidden) return;
     quickModal.hidden = true;
@@ -909,8 +1000,7 @@
         custom.disabled = !show;
       }
     });
-    quickNote.hidden = true;
-    quickNote.classList.remove('error');
+    resetQuickFeedback();
     quickModal.hidden = false;
     document.body.classList.add('modal-open');
     updateQuickPrice();
@@ -938,6 +1028,7 @@
   });
 
   quickOptions?.addEventListener('change', event => {
+    resetQuickFeedback();
     if (event.target.matches('[data-quick-component]')) {
       syncQuickComposite();
       updateQuickPrice();
@@ -957,13 +1048,14 @@
   quickModal?.querySelectorAll('[data-quick-qty]').forEach(button => {
     button.addEventListener('click', () => {
       if (quickQuantityField?.hidden) return;
+      resetQuickFeedback();
       const min = Math.max(1, Number(quickQuantity.min || 1));
       const step = Math.max(1, Number(quickQuantity.step || 1));
       quickQuantity.value = String(Math.max(min, Number(quickQuantity.value || min) + Number(button.dataset.quickQty) * step));
       updateQuickPrice();
     });
   });
-  quickQuantity?.addEventListener('input', updateQuickPrice);
+  quickQuantity?.addEventListener('input', () => { resetQuickFeedback(); updateQuickPrice(); });
   quickModal?.querySelector('[data-quick-form]')?.addEventListener('submit', event => {
     event.preventDefault();
     const product = catalog[quickProductId];
@@ -1016,14 +1108,24 @@
       const cart = readCart();
       cart.push({ line_id:newLineId(), product_id:product.id, quantity, configuration });
       saveCart(cart);
-      quickNote.textContent = 'Đã thêm vào giỏ hàng.';
-      quickNote.classList.remove('error');
-      quickNote.hidden = false;
-      setTimeout(closeQuickModal, 700);
+      if (quickSubmit) {
+        quickSubmit.classList.add('is-success');
+        quickSubmit.disabled = true;
+        quickSubmit.textContent = '✓ Đã thêm vào giỏ';
+      }
+      if (quickNoteText) quickNoteText.textContent = 'Đã thêm sản phẩm vào giỏ hàng.';
+      else if (quickNote) quickNote.textContent = 'Đã thêm sản phẩm vào giỏ hàng.';
+      if (quickNoteLink) quickNoteLink.hidden = false;
+      quickNote?.classList.remove('error');
+      if (quickNote) quickNote.hidden = false;
+      pulseCartCount();
     } catch (error) {
-      quickNote.textContent = error.message || 'Không thể thêm vào giỏ hàng.';
-      quickNote.classList.add('error');
-      quickNote.hidden = false;
+      resetQuickFeedback();
+      if (quickNoteText) quickNoteText.textContent = error.message || 'Không thể thêm vào giỏ hàng.';
+      else if (quickNote) quickNote.textContent = error.message || 'Không thể thêm vào giỏ hàng.';
+      if (quickNoteLink) quickNoteLink.hidden = true;
+      quickNote?.classList.add('error');
+      if (quickNote) quickNote.hidden = false;
     }
   });
 

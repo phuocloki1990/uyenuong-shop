@@ -194,6 +194,11 @@ test('Home V2 is product-led and avoids landing-page template sections', () => {
   assert.doesNotMatch(home, /class="home-order-line"|Chọn sản phẩm<\/span><b[^>]*>→<\/b><span>Gửi yêu cầu/);
   assert.match(home, /class="home-guide-editorial"/);
   assert.match(home, /<h2>Trước khi đặt<\/h2>/);
+  assert.doesNotMatch(home, /href="#san-pham">Xem sản phẩm<\/a>/);
+  assert.match(home, /Phục vụ tại TP.HCM/);
+  assert.match(home, /Shop xác nhận đơn trước khi chuẩn bị/);
+  assert.match(home, /50% giá trị đơn hàng/);
+  assert.match(home, /Grab, be hoặc Xanh SM/);
   for (const id of ['banh-phu-the','mam-qua-cuoi','banh-phuc-linh']) {
     assert.match(home, new RegExp(`href="/${id}/">Xem sản phẩm<\/a><button class="btn btn-primary" type="button" data-home-quick-add="${id}">Chọn để đặt<\/button>`));
   }
@@ -212,7 +217,7 @@ test('Home reserves a silent Fanpage section between products and Cẩm nang', (
   const guideAt = home.indexOf('home-guides');
   assert.ok(productAt >= 0 && fanpageAt > productAt && guideAt > fanpageAt);
   assert.match(home, /<h2>Bài viết mới trên Fanpage<\/h2>/);
-  assert.match(home, /data-facebook-section hidden/);
+  assert.match(home, /data-facebook-section[^>]*hidden/);
   assert.match(home, /data-facebook-posts/);
   assert.match(home, /data-facebook-page-link/);
 
@@ -306,6 +311,8 @@ test('product pages now add to the real V2 cart instead of preview-only cart', (
     const output = renderProductPage(site, product, products, articles);
     assert.match(output, /data-add-to-cart/);
     assert.match(output, /data-cart-action-note/);
+    assert.match(output, /data-cart-action-text/);
+    assert.match(output, /Xem giỏ hàng →/);
     assert.doesNotMatch(output, /data-preview-cart|lựa chọn chưa được lưu vào giỏ hàng/);
   }
 });
@@ -314,9 +321,9 @@ test('cart and checkout render the locked filled-empty-success-rate-limit hooks'
   const result = buildV2(repoRoot, { check:true });
   const cart = result.outputs.get('gio-hang/index.html');
   const checkout = result.outputs.get('dat-hang/index.html');
-  for (const hook of ['data-cart-page','data-cart-list','data-cart-empty','data-cart-summary','data-cart-line-count']) assert.match(cart, new RegExp(hook));
+  for (const hook of ['data-cart-page','data-cart-list','data-cart-empty','data-cart-summary','data-cart-line-count','data-cart-status']) assert.match(cart, new RegExp(hook));
   for (const text of ['Giỏ hàng đang trống','Tiếp tục đặt hàng','Chọn thêm sản phẩm','Shop sẽ xác nhận']) assert.match(cart, new RegExp(text));
-  for (const hook of ['data-checkout-default','data-checkout-items','data-order-form','data-order-success','data-order-rate-limit','data-return-order']) assert.match(checkout, new RegExp(hook));
+  for (const hook of ['data-checkout-default','data-checkout-items','data-checkout-status','data-order-form','data-order-success','data-order-rate-limit','data-return-order']) assert.match(checkout, new RegExp(hook));
   for (const text of ['Yêu cầu đã ghi nhận','Chưa thể gửi yêu cầu','Đã nhận quá nhiều đơn hàng. Vui lòng thử lại sau.','Shop khuyến nghị đặt trước 3–5 ngày.']) assert.match(checkout, new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
   const checkoutMain = checkout.match(/<main>([\s\S]*?)<\/main>/)?.[1] || checkout;
   assert.doesNotMatch(checkoutMain, /<h[1-6][^>]*>Thanh toán|cước vận chuyển|giờ hoàng đạo|x 1 bộ/i);
@@ -336,6 +343,9 @@ test('checkout and quick-add expose the approved user-facing validation and pric
   assert.match(home, /data-quick-price/);
   assert.match(home, /data-quick-quantity-field/);
   assert.match(home, /Tùy chọn đặt hàng/);
+  assert.match(home, /data-quick-submit/);
+  assert.match(home, /data-quick-note-text/);
+  assert.match(home, /Xem giỏ hàng →/);
   const client = read('v2/assets/js/site.js');
   assert.match(client, /quickCompositeOptionsHtml/);
   assert.match(client, /data-quick-component/);
@@ -393,6 +403,27 @@ test('UX FINAL keeps locked header/footer, compact product facts and responsive 
   assert.match(client, /const invalidFields = fields\.filter\(field => !validateField\(field\)\)/);
   assert.match(client, /dateInput\.min = today/);
   assert.match(client, /data-qty-preset/);
+});
+
+
+
+test('Sprint 1 interaction polish keeps feedback persistent, motion restrained and reduced-motion safe', () => {
+  const { site, products, articles } = loadV2Content(repoRoot);
+  const home = renderHome(site, products, articles);
+  const css = read('v2/assets/css/site.css');
+  const client = read('v2/assets/js/site.js');
+  assert.match(home, /data-reveal/);
+  assert.match(home, /class="home-hero-trust"/);
+  assert.match(client, /pulseCartCount/);
+  assert.match(client, /✓ Đã thêm vào giỏ/);
+  assert.match(client, /Đã thêm sản phẩm vào giỏ hàng\./);
+  assert.match(client, /Đã xóa \$\{removedName\} khỏi giỏ hàng\./);
+  assert.match(client, /✓ Đã lưu/);
+  assert.doesNotMatch(client, /setTimeout\(closeQuickModal,\s*700\)/);
+  assert.match(css, /@keyframes cart-count-pulse/);
+  assert.match(css, /html\.motion-ready \.home-page \[data-reveal\]/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(css, /\.brand small\{margin-top:6px\}/);
 });
 
 test('UX FINAL metadata and public copy are customer-facing and shareable', () => {
