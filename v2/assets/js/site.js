@@ -780,6 +780,7 @@
   const quickTitle = quickModal?.querySelector('[data-quick-title]');
   const quickDesc = quickModal?.querySelector('[data-quick-desc]');
   const quickOptions = quickModal?.querySelector('[data-quick-options]');
+  const quickQuantityField = quickModal?.querySelector('[data-quick-quantity-field]');
   const quickQuantity = quickModal?.querySelector('[data-quick-quantity]');
   const quickUnit = quickModal?.querySelector('[data-quick-unit]');
   const quickDetail = quickModal?.querySelector('[data-quick-detail]');
@@ -788,7 +789,67 @@
   let quickProductId = null;
   let quickReturnFocus = null;
 
+  function quickVariantOptionsHtml(product) {
+    return (product.option_groups || []).map(group => {
+      const hasDefault = group.options.some(option => option.default);
+      const rows = group.options.map((option,index) => `<label><input type="radio" name="quick_${esc(group.id)}" value="${esc(option.id)}" data-quick-option-label="${esc(option.label)}" data-quick-custom="${option.allow_custom_text ? 'true' : 'false'}"${option.default || (!hasDefault && index === 0) ? ' checked' : ''}><span>${esc(option.label)}</span></label>`).join('');
+      const custom = group.options.some(option => option.allow_custom_text) ? `<input class="quick-modal-custom" type="text" data-quick-custom-input="${esc(group.id)}" placeholder="${esc(group.options.find(option => option.allow_custom_text)?.custom_placeholder || 'Ghi rõ lựa chọn…')}" hidden disabled>` : '';
+      return `<fieldset class="option-group" data-quick-group="${esc(group.id)}"><legend>${esc(group.name)}</legend><div class="quick-modal-options">${rows}</div>${custom}</fieldset>`;
+    }).join('');
+  }
+
+  function quickCompositeOptionsHtml(product) {
+    return `<fieldset class="option-group composite quick-composite"><legend>Chọn thành phần mâm <span class="count-pill" data-quick-derived-count>0 mâm</span></legend><p class="helper">Mỗi lễ vật được chọn tương ứng 1 mâm.</p><div class="component-grid quick-component-grid">${(product.components || []).map(component => {
+      const sub = component.sub_option ? `<div class="sub-option" data-quick-component-sub-option hidden><span>${esc(component.sub_option.name)}</span>${component.sub_option.options.map((option,index) => `<label><input type="radio" name="quick_component_${esc(component.id)}_${esc(component.sub_option.id)}" value="${esc(option.id)}" data-quick-component-sub-label="${esc(option.label)}"${option.default || (!component.sub_option.options.some(item => item.default) && index === 0) ? ' checked' : ''} disabled> ${esc(option.label)}</label>`).join('')}</div>` : '';
+      const custom = component.allow_custom_text ? `<input class="custom-component-input" type="text" data-quick-component-custom placeholder="${esc(component.custom_placeholder || 'Ghi rõ lễ vật khác…')}" aria-label="Ghi rõ ${esc(component.label)}" hidden disabled>` : '';
+      return `<div class="component-item${component.sub_option ? ' component-item-wide' : ''}" data-quick-component-row><label><input type="checkbox" data-quick-component value="${esc(component.id)}" data-quick-component-label="${esc(component.label)}"><span>${esc(component.label)}</span></label>${sub}${custom}</div>`;
+    }).join('')}</div></fieldset>`;
+  }
+
+  function syncQuickComposite() {
+    const product = catalog[quickProductId];
+    if (!product || product.type !== 'composite' || !quickOptions) return;
+    const checks = [...quickOptions.querySelectorAll('[data-quick-component]')];
+    const selected = checks.filter(check => check.checked);
+    const count = quickOptions.querySelector('[data-quick-derived-count]');
+    if (count) count.textContent = `${selected.length} mâm`;
+    for (const check of checks) {
+      const row = check.closest('[data-quick-component-row]');
+      if (!row) continue;
+      row.classList.toggle('selected', check.checked);
+      const sub = row.querySelector('[data-quick-component-sub-option]');
+      if (sub) {
+        sub.hidden = !check.checked;
+        sub.querySelectorAll('input').forEach(input => { input.disabled = !check.checked; });
+      }
+      const custom = row.querySelector('[data-quick-component-custom]');
+      if (custom) {
+        custom.hidden = !check.checked;
+        custom.disabled = !check.checked;
+      }
+    }
+  }
+
   function quickConfiguration() {
+    const product = catalog[quickProductId];
+    if (!product) return {};
+    if (product.type === 'composite') {
+      const components = [];
+      for (const check of quickOptions?.querySelectorAll('[data-quick-component]:checked') || []) {
+        const component = product.components.find(item => item.id === check.value);
+        if (!component) continue;
+        const selected = { id: component.id };
+        const row = check.closest('[data-quick-component-row]');
+        if (component.sub_option) {
+          const sub = row?.querySelector('[data-quick-component-sub-option] input:checked:not(:disabled)');
+          if (sub) selected.sub_options = { [component.sub_option.id]: { id: sub.value } };
+        }
+        const custom = row?.querySelector('[data-quick-component-custom]')?.value.trim();
+        if (custom) selected.custom_text = custom;
+        components.push(selected);
+      }
+      return { components };
+    }
     const options = {};
     quickOptions?.querySelectorAll('[data-quick-group]').forEach(group => {
       const selected = group.querySelector('input[type=radio]:checked');
@@ -800,6 +861,10 @@
   function updateQuickPrice() {
     const product = catalog[quickProductId];
     if (!product || !quickPrice) return;
+    if (product.type === 'composite') {
+      quickPrice.textContent = product.price?.display_text || 'Giá liên hệ';
+      return;
+    }
     const quantity = Number(quickQuantity?.value || product.quantity?.default_value || 1);
     quickPrice.textContent = quotedPrice(product, quantity, quickConfiguration());
   }
@@ -807,6 +872,7 @@
   function closeQuickModal() {
     if (!quickModal || quickModal.hidden) return;
     quickModal.hidden = true;
+    quickModal.classList.remove('is-composite');
     quickProductId = null;
     document.body.classList.remove('modal-open');
     const returnTarget = quickReturnFocus;
@@ -817,23 +883,34 @@
   function openQuickModal(productId) {
     if (!quickModal) return;
     const product = catalog[productId];
-    if (!product || product.type === 'composite') return;
+    if (!product) return;
     quickReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     quickProductId = productId;
     quickTitle.textContent = product.name;
     quickDesc.textContent = product.short_description || '';
     quickDetail.href = `/${product.slug}/`;
-    quickQuantity.min = String(product.quantity?.min_value || 1);
-    quickQuantity.step = String(product.quantity?.step || 1);
-    quickQuantity.value = String(product.quantity?.default_value || 1);
-    quickUnit.textContent = product.quantity?.unit || '';
-    quickOptions.innerHTML = (product.option_groups || []).map(group => {
-      const hasDefault = group.options.some(option => option.default);
-      const rows = group.options.map((option,index) => `<label><input type="radio" name="quick_${esc(group.id)}" value="${esc(option.id)}" data-quick-option-label="${esc(option.label)}" data-quick-custom="${option.allow_custom_text ? 'true' : 'false'}"${option.default || (!hasDefault && index === 0) ? ' checked' : ''}><span>${esc(option.label)}</span></label>`).join('');
-      const custom = group.options.some(option => option.allow_custom_text) ? `<input class="quick-modal-custom" type="text" data-quick-custom-input="${esc(group.id)}" placeholder="${esc(group.options.find(option => option.allow_custom_text)?.custom_placeholder || 'Ghi rõ lựa chọn…')}" hidden>` : '';
-      return `<fieldset class="option-group" data-quick-group="${esc(group.id)}"><legend>${esc(group.name)}</legend><div class="quick-modal-options">${rows}</div>${custom}</fieldset>`;
-    }).join('');
+    const isComposite = product.type === 'composite';
+    quickModal.classList.toggle('is-composite', isComposite);
+    quickQuantityField.hidden = isComposite || !product.quantity?.enabled;
+    if (!isComposite && product.quantity?.enabled) {
+      quickQuantity.min = String(product.quantity?.min_value || 1);
+      quickQuantity.step = String(product.quantity?.step || 1);
+      quickQuantity.value = String(product.quantity?.default_value || 1);
+      quickUnit.textContent = product.quantity?.unit || '';
+    }
+    quickOptions.innerHTML = isComposite ? quickCompositeOptionsHtml(product) : quickVariantOptionsHtml(product);
+    if (isComposite) syncQuickComposite();
+    quickOptions.querySelectorAll('[data-quick-group]').forEach(group => {
+      const selected = group.querySelector('input[type=radio]:checked');
+      const custom = group.querySelector('[data-quick-custom-input]');
+      if (custom) {
+        const show = selected?.dataset.quickCustom === 'true';
+        custom.hidden = !show;
+        custom.disabled = !show;
+      }
+    });
     quickNote.hidden = true;
+    quickNote.classList.remove('error');
     quickModal.hidden = false;
     document.body.classList.add('modal-open');
     updateQuickPrice();
@@ -861,15 +938,25 @@
   });
 
   quickOptions?.addEventListener('change', event => {
+    if (event.target.matches('[data-quick-component]')) {
+      syncQuickComposite();
+      updateQuickPrice();
+      return;
+    }
     const group = event.target.closest('[data-quick-group]');
     if (!group) return;
     const selected = group.querySelector('input[type=radio]:checked');
     const custom = group.querySelector('[data-quick-custom-input]');
-    if (custom) custom.hidden = selected?.dataset.quickCustom !== 'true';
+    if (custom) {
+      const show = selected?.dataset.quickCustom === 'true';
+      custom.hidden = !show;
+      custom.disabled = !show;
+    }
     updateQuickPrice();
   });
   quickModal?.querySelectorAll('[data-quick-qty]').forEach(button => {
     button.addEventListener('click', () => {
+      if (quickQuantityField?.hidden) return;
       const min = Math.max(1, Number(quickQuantity.min || 1));
       const step = Math.max(1, Number(quickQuantity.step || 1));
       quickQuantity.value = String(Math.max(min, Number(quickQuantity.value || min) + Number(button.dataset.quickQty) * step));
@@ -882,25 +969,52 @@
     const product = catalog[quickProductId];
     if (!product) return;
     try {
-      const options = {};
-      for (const group of product.option_groups || []) {
-        const fieldset = quickOptions.querySelector(`[data-quick-group="${CSS.escape(group.id)}"]`);
-        const selected = fieldset?.querySelector('input[type=radio]:checked');
-        if (!selected) throw new Error(`Vui lòng chọn ${group.name.toLowerCase()}.`);
-        const value = { id: selected.value };
-        if (selected.dataset.quickCustom === 'true') {
-          const custom = fieldset.querySelector('[data-quick-custom-input]')?.value.trim();
-          if (!custom) throw new Error(`Vui lòng ghi rõ ${group.name.toLowerCase()}.`);
-          value.custom_text = custom;
+      let quantity = 1;
+      let configuration = {};
+      if (product.type === 'composite') {
+        const components = [];
+        for (const check of quickOptions.querySelectorAll('[data-quick-component]:checked')) {
+          const component = product.components.find(item => item.id === check.value);
+          if (!component) continue;
+          const row = check.closest('[data-quick-component-row]');
+          const selected = { id: component.id };
+          if (component.sub_option) {
+            const sub = row?.querySelector('[data-quick-component-sub-option] input:checked:not(:disabled)');
+            if (!sub) throw new Error(`Vui lòng chọn ${component.sub_option.name.toLowerCase()} cho ${component.label}.`);
+            selected.sub_options = { [component.sub_option.id]: { id: sub.value } };
+          }
+          if (component.allow_custom_text) {
+            const custom = row?.querySelector('[data-quick-component-custom]')?.value.trim();
+            if (!custom) throw new Error(`Vui lòng ghi rõ ${component.label.toLowerCase()}.`);
+            selected.custom_text = custom;
+          }
+          components.push(selected);
         }
-        options[group.id] = value;
+        if (!components.length) throw new Error('Vui lòng chọn ít nhất một lễ vật.');
+        configuration = { components };
+        quantity = components.length;
+      } else {
+        const options = {};
+        for (const group of product.option_groups || []) {
+          const fieldset = quickOptions.querySelector(`[data-quick-group="${CSS.escape(group.id)}"]`);
+          const selected = fieldset?.querySelector('input[type=radio]:checked');
+          if (!selected) throw new Error(`Vui lòng chọn ${group.name.toLowerCase()}.`);
+          const value = { id: selected.value };
+          if (selected.dataset.quickCustom === 'true') {
+            const custom = fieldset.querySelector('[data-quick-custom-input]')?.value.trim();
+            if (!custom) throw new Error(`Vui lòng ghi rõ ${group.name.toLowerCase()}.`);
+            value.custom_text = custom;
+          }
+          options[group.id] = value;
+        }
+        const min = Number(product.quantity?.min_value || 1);
+        const step = Number(product.quantity?.step || 1);
+        quantity = Number(quickQuantity.value);
+        if (!Number.isInteger(quantity) || quantity < min || (quantity - min) % step !== 0) throw new Error('Số lượng không hợp lệ.');
+        configuration = { options };
       }
-      const min = Number(product.quantity?.min_value || 1);
-      const step = Number(product.quantity?.step || 1);
-      const quantity = Number(quickQuantity.value);
-      if (!Number.isInteger(quantity) || quantity < min || (quantity - min) % step !== 0) throw new Error('Số lượng không hợp lệ.');
       const cart = readCart();
-      cart.push({ line_id:newLineId(), product_id:product.id, quantity, configuration:{ options } });
+      cart.push({ line_id:newLineId(), product_id:product.id, quantity, configuration });
       saveCart(cart);
       quickNote.textContent = 'Đã thêm vào giỏ hàng.';
       quickNote.classList.remove('error');

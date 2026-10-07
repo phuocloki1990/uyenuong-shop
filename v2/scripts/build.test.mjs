@@ -194,9 +194,11 @@ test('Home V2 is product-led and avoids landing-page template sections', () => {
   assert.doesNotMatch(home, /class="home-order-line"|Chọn sản phẩm<\/span><b[^>]*>→<\/b><span>Gửi yêu cầu/);
   assert.match(home, /class="home-guide-editorial"/);
   assert.match(home, /<h2>Trước khi đặt<\/h2>/);
-  assert.match(home, />Chọn quy cách<\/button>/);
-  assert.match(home, /class="btn btn-primary" href="\/mam-qua-cuoi\/">Chọn lễ vật<\/a>/);
-  assert.match(home, /class="btn btn-outline" href="\/banh-phuc-linh\/">Xem sản phẩm<\/a><button class="btn btn-primary" type="button" data-home-quick-add="banh-phuc-linh">Chọn quy cách<\/button>/);
+  for (const id of ['banh-phu-the','mam-qua-cuoi','banh-phuc-linh']) {
+    assert.match(home, new RegExp(`href="/${id}/">Xem sản phẩm<\/a><button class="btn btn-primary" type="button" data-home-quick-add="${id}">Chọn để đặt<\/button>`));
+  }
+  assert.equal((home.match(/>Chọn để đặt<\/button>/g) || []).length, 3);
+  assert.doesNotMatch(home, />Chọn quy cách<\/button>|>Chọn lễ vật<\/a>/);
   assert.doesNotMatch(home, /Cách đặt hàng|Cần Shop tư vấn trước khi đặt\?|class="steps|home-final-cta/);
   assert.doesNotMatch(home, /Khách đã nhận hàng|đánh giá khách hàng|testimonial/i);
   assert.match(home, /\/cam-nang\/mam-qua-cuoi-thuong-co-nhung-gi\//);
@@ -217,6 +219,8 @@ test('Home reserves a silent Fanpage section between products and Cẩm nang', (
   const client = read('v2/assets/js/site.js');
   assert.match(client, /fetch\('\/api\/facebook-latest'/);
   assert.match(client, /posts\.slice\(0, 2\)/);
+  const css = read('v2/assets/css/site.css');
+  assert.match(css, /\.home-facebook-post\{display:grid;grid-template-columns:180px minmax\(0,1fr\)/);
   assert.match(client, /facebookSection\.hidden = false/);
   assert.match(client, /if \(!rendered\.length\) return/);
   assert.match(client, /copy \? `<p>/);
@@ -330,6 +334,13 @@ test('checkout and quick-add expose the approved user-facing validation and pric
   assert.match(checkout, /Chưa thanh toán ở bước này/);
   assert.match(checkout, /<details class="order-section add-more">/);
   assert.match(home, /data-quick-price/);
+  assert.match(home, /data-quick-quantity-field/);
+  assert.match(home, /Tùy chọn đặt hàng/);
+  const client = read('v2/assets/js/site.js');
+  assert.match(client, /quickCompositeOptionsHtml/);
+  assert.match(client, /data-quick-component/);
+  assert.match(client, /configuration = \{ components \}/);
+  assert.doesNotMatch(client, /product \|\| product\.type === 'composite'/);
   assert.doesNotMatch(checkout, /Bản Preview|chưa cài đặt|chưa cấu hình/i);
 });
 
@@ -352,6 +363,7 @@ test('UX FINAL keeps locked header/footer, compact product facts and responsive 
   assert.match(home, /logo-header\.jpg/);
   assert.match(home, /Liên hệ đặt hàng/);
   assert.match(home, /Kênh chính thức/);
+  assert.doesNotMatch(home, />• (?:Hotline|Zalo|Mâm quả cưới HCM|Bánh phục linh HCM)/);
   assert.doesNotMatch(home, /Chính sách cửa hàng/);
   assert.match(product, /class="product-facts"/);
   assert.match(product, /Trọng lượng/);
