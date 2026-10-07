@@ -1,0 +1,83 @@
+name: Rebuild V2 production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'v2/content/**'
+      - 'v2/assets/**'
+      - 'v2/config/**'
+      - 'v2/scripts/**'
+      - 'v2/CUTOVER_CHECKLIST.md'
+      - 'assets/images/**'
+      - 'infra/**'
+      - 'functions/_shared/**'
+      - 'functions/admin/**'
+      - 'functions/api/**'
+      - 'DATA_UI_LOCK_SHA256.txt'
+      - '.github/workflows/rebuild-v2-production.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v2-production-build
+  cancel-in-progress: false
+
+jobs:
+  build-test-promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Verify locked DATA/UI implementation
+        run: node infra/check-data-ui-lock.mjs --mode=immutable
+
+      - name: Validate V2 content before generating files
+        run: node v2/scripts/build.mjs --check
+
+      - name: Build V2 production staging and trusted catalog
+        run: node v2/scripts/build.mjs
+
+      - name: Prepare cutover manifest
+        run: node v2/scripts/prepare-cutover.mjs
+
+      - name: Run V1 and V2 tests against generated output
+        run: |
+          # Includes v2/scripts/publish-hardening.test.mjs and v2/scripts/seo-cutover.test.mjs
+          node infra/run-v2-tests.mjs
+
+      - name: Run static Production QA
+        run: node v2/scripts/preview-qa.mjs
+
+      - name: Promote tested V2 output to public root
+        run: node infra/promote-v2.mjs
+
+      - name: Verify immutable DATA/UI after promotion
+        run: node infra/check-data-ui-lock.mjs --mode=immutable
+
+      - name: Remove staging directory before commit
+        run: rm -rf v2-preview
+
+      - name: Commit tested Production output
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No production changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Build V2 production: ${GITHUB_SHA::7}"
+          git push
