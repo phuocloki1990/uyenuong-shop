@@ -1,6 +1,6 @@
 3ebae8657d3268e24853fef422b23eec6f01b5595a2c18f3a102dd5ce50afc8d  v2/CUTOVER_CHECKLIST.md
 2096e47685beac74394d0f10a1fadc630661b019c425a1fae6f34f6cc04c177b  v2/assets/css/admin.css
-dfbcb74223bded072d2e8f6658b256b48950a0099070283ccd5c4d5c85504a6a  v2/assets/css/site.css
+014be31ddb4023091a4e4eb399ac864d7f680b4377d815e16eecaf3b216f193a  v2/assets/css/site.css
 eed48b2c02712c7e95b0ac275240c4d4004767f5e545de8e54304614082fc758  v2/assets/js/admin.js
 9a098f4b15ae556e28bf8f2cac91faac9bf34ac5f5d8b2d0e4827ba8c57889ff  v2/assets/js/site.js
 b04092f1c0a24b82dc0a52860279a1c421ecc0101e98b4d3c835ed69137744ae  v2/config/legacy-redirects.json
