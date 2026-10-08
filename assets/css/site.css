@@ -236,10 +236,11 @@ html,body{overflow-x:clip}
 }
 @media(max-width:640px){
   .product-guide-grid{display:grid;grid-template-columns:1fr;gap:12px}
-  .product-guide-grid .guide-card.product-guide{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:124px;margin-bottom:0}
-  .product-guide-grid .guide-card.product-guide .guide-image{height:100%;aspect-ratio:auto}
-  .product-guide-grid .guide-card.product-guide .guide-body{padding:12px}
+  .product-guide-grid .guide-card.product-guide{display:grid;grid-template-columns:112px minmax(0,1fr);min-height:0;margin-bottom:0;align-items:start}
+  .product-guide-grid .guide-card.product-guide .guide-image{width:112px;height:132px;aspect-ratio:auto;align-self:start}
+  .product-guide-grid .guide-card.product-guide .guide-body{align-self:start;padding:12px}
   .product-guide-grid .guide-card.product-guide h3{font-size:15px}
+  .product-guide-grid .guide-card.product-guide .guide-link{margin-top:0}
   .contact-map-section{margin-top:28px;padding-top:24px}
   .contact-map-head .btn{width:100%}
   .contact-map-frame{height:320px}
