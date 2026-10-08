@@ -29,8 +29,7 @@ function header(site, active = '') {
   return `<header class="site-header">
     <div class="shell header-row">
       <a class="brand" href="/" aria-label="${html(site.name)} – Trang chủ">
-        <img src="/assets/images/logo-header.jpg" alt="${html(site.name)}" width="48" height="38">
-        <span><strong>${html(site.name)}</strong><small>${html(site.brand_line)}</small></span>
+        <img src="/assets/images/logo-header.jpg" alt="${html(site.name)}" width="900" height="250">
       </a>
       <nav class="desktop-nav" aria-label="Điều hướng chính">${links}</nav>
       <div class="header-actions">
@@ -60,8 +59,8 @@ function floating(site) {
 }
 
 const imageDimensions = {
-  '/assets/images/logo-header.jpg':[530,450],
-  '/assets/images/logo.jpg':[1122,1122],
+  '/assets/images/logo-header.jpg':[900,250],
+  '/assets/images/logo.jpg':[1200,630],
   '/assets/images/products/banh-phu-the.jpg':[1440,1920],
   '/assets/images/products/banh-phuc-linh.jpg':[752,1020],
   '/assets/images/products/mam-qua-cuoi.jpg':[1183,2560],

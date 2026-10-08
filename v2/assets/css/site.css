@@ -290,3 +290,10 @@ html.motion-ready .home-page [data-reveal].is-visible{opacity:1;transform:none}
   .home-product-card-image img,.home-guide-feature-image img,.home-facebook-image img{transform:none!important}
 }
 
+
+
+/* SPRINT 1 FINAL BRAND MARK — approved horizontal logo, no duplicate text */
+.brand{gap:0}
+.brand img{display:block;width:190px;height:auto;max-width:none;object-fit:contain;border-radius:0}
+@media(max-width:640px){.brand img{width:150px;height:auto;max-width:none}}
+@media(max-width:360px){.brand img{width:138px}}

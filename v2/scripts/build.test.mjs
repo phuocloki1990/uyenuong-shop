@@ -371,6 +371,8 @@ test('UX FINAL keeps locked header/footer, compact product facts and responsive 
   const css = read('v2/assets/css/site.css');
   const client = read('v2/assets/js/site.js');
   assert.match(home, /logo-header\.jpg/);
+  assert.match(home, /<a class="brand"[^>]*>[\s\S]*?<img[^>]+logo-header\.jpg[^>]*>[\s\S]*?<\/a>/);
+  assert.doesNotMatch(home, /<span><strong>Shop Uyên Ương<\/strong><small>/, 'Header không được lặp lại chữ đã nằm trong logo');
   assert.match(home, /Liên hệ đặt hàng/);
   assert.match(home, /Kênh chính thức/);
   assert.doesNotMatch(home, />• (?:Hotline|Zalo|Mâm quả cưới HCM|Bánh phục linh HCM)/);
