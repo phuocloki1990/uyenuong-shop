@@ -59,6 +59,63 @@ test('Admin CSS includes mobile drawer, one-column editors and two-column media 
   assert.match(css,/prefers-reduced-motion/);
 });
 
+test('Article and product editors share the accessible, bounded rich-editor surface', () => {
+  const outputs=buildV2(repoRoot,{check:true}).outputs;
+  const source=read('v2/assets/js/admin.js');
+  const css=read('v2/assets/css/admin.css');
+  for(const route of ['admin/articles/edit/index.html','admin/products/edit/index.html']){
+    const html=outputs.get(route);
+    assert.match(html,/data-rich-toolbar[^>]*role="toolbar"/);
+    assert.match(html,/data-rich-visual[^>]*contenteditable="true"/);
+    assert.match(html,/data-rich-link-tool[^>]*role="group"/);
+    assert.match(html,/data-rich-help|class="rich-help"/);
+    assert.match(html,/aria-label="In đậm"/);
+    assert.match(html,/aria-label="Căn giữa"/);
+  }
+  assert.match(css,/\.rich-page,\.rich-source textarea,\.rich-preview\{height:min\(600px,65vh\)/);
+  assert.match(css,/\.rich-page,\.rich-source textarea,\.rich-preview\{[^}]*overflow-y:auto/);
+  assert.match(css,/@media\(max-width:900px\)\{\.rich-page,\.rich-source textarea,\.rich-preview\{height:min\(540px,60dvh\)/);
+  assert.match(css,/@media\(max-width:480px\)\{\.rich-page,\.rich-source textarea,\.rich-preview\{height:min\(600px,55dvh\)/);
+  assert.doesNotMatch(css,/\.rich-toolbar\{[^}]*position:sticky/);
+  assert.match(source,/visual\.addEventListener\('keydown'/);
+  assert.match(source,/function setBlockStyle\(style\)/);
+  assert.match(source,/function cleanClipboardHtml\(markup\)/);
+  assert.match(source,/function openLinkTool\(\)/);
+  assert.match(source,/function undoEditor\(\)/);
+  assert.match(source,/function redoEditor\(\)/);
+  assert.match(source,/if\(plainPaste\)/);
+});
+
+test('Article and product editors expose one normalized multi-keyword SEO input', () => {
+  const outputs=buildV2(repoRoot,{check:true}).outputs;
+  const source=read('v2/assets/js/admin.js');
+  for(const route of ['admin/articles/edit/index.html','admin/products/edit/index.html']){
+    const html=outputs.get(route);
+    assert.equal((html.match(/name="focus_keyword"/g)||[]).length,1);
+    assert.match(html,/Từ khóa SEO/);
+    assert.match(html,/Từ khóa đầu tiên là từ khóa chính/);
+    assert.doesNotMatch(html,/Từ khóa chính<input/);
+  }
+  const start=source.indexOf('const normalizeSeoKeywords=');
+  const end=source.indexOf('\n  };',start);
+  assert.ok(start>=0&&end>start,'keyword normalizer is defined');
+  const normalize=new Function(`${source.slice(start,end+4)};return normalizeSeoKeywords;`)();
+  assert.deepEqual(normalize('  bánh phu thê, , BÁNH PHU THÊ, bánh cưới  '),['bánh phu thê','bánh cưới']);
+  assert.match(source,/normalizeSeoKeywords\(keyword\.value\)\[0\]/);
+  assert.equal((source.match(/focus_keyword:normalizeSeoKeywords\(form\.elements\.focus_keyword\.value\)\.join\(', '\)/g)||[]).length,2);
+  assert.equal((source.match(/seo:\{\.\.\.\(loaded\.seo\|\|\{\}\)/g)||[]).length,2);
+});
+
+test('Rich-editor links stay visibly styled and selected text is preserved when linking', () => {
+  const source=read('v2/assets/js/admin.js');
+  const css=read('v2/assets/css/admin.css');
+  assert.match(css,/\.rich-page a:not\(\.article-btn\),\.rich-preview a:not\(\.article-btn\)\{color:#0759a6;text-decoration:underline/);
+  assert.match(source,/if\(tag==='a'\).*el\.setAttribute\('href',url\)/);
+  assert.match(source,/if\(editingLink&&visual\.contains\(editingLink\)\)\{editingLink\.setAttribute\('href',href\);\}/);
+  assert.match(source,/anchor\.append\(range\.extractContents\(\)\)/);
+  assert.match(source,/editingLink\.remove\(\)/);
+});
+
 test('Admin client has no Pages CMS/Git/Cloudflare terminology and uses internal V2 APIs', () => {
   const source=read('v2/assets/js/admin.js');
   assert.doesNotMatch(source,/Pages CMS|GitHub|Cloudflare|branch|commit/i);
