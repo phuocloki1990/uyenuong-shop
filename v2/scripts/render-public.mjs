@@ -1,3 +1,4 @@
+import {validateContentHtml} from './safe-html.mjs';
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const nav = [
@@ -25,34 +26,42 @@ const icon = name => {
 };
 
 function header(site, active = '') {
-  const links = nav.map(([key,label,href]) => `<a${key===active?' aria-current="page" class="active"':''} href="${href}">${label}</a>`).join('');
+  const menu=(site.header?.menu||nav.map(([key,label,href])=>({label,href,visible:true}))).filter(item=>item.visible!==false);
+  const links = menu.map(({label,href}) => `<a${((href==='/'?'home':href.split('/')[1])===active)?' aria-current="page" class="active"':''} href="${href}">${label}</a>`).join('');
   return `<header class="site-header">
     <div class="shell header-row">
       <a class="brand" href="/" aria-label="${html(site.name)} – Trang chủ">
-        <img src="/assets/images/logo-header.jpg" alt="${html(site.name)}" width="900" height="250">
+        <img src="${html(site.header?.logo||'/assets/images/logo-header.jpg')}" alt="${html(site.name)}" width="900" height="250">
       </a>
       <nav class="desktop-nav" aria-label="Điều hướng chính">${links}</nav>
       <div class="header-actions">
-        <a class="hotline" href="tel:${html(site.hotline)}"><small>Hotline tư vấn</small><strong>${html(site.hotline_display)}</strong></a>
+        <a class="hotline" href="tel:${html(site.hotline)}"><small>${html(site.header?.hotline_label||'Hotline tư vấn')}</small><strong>${html(site.hotline_display)}</strong></a>
         <a class="cart-link" href="/gio-hang/" aria-label="Xem giỏ hàng">${icon('bag')}<span data-cart-count aria-live="polite" aria-atomic="true">0</span></a>
-        <a class="btn btn-primary btn-small desktop-zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Chat Zalo</a>
+        <a class="btn btn-primary btn-small desktop-zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}${html(site.header?.zalo_label||'Chat Zalo')}</a>
         <button class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="mobile-menu">${icon('menu')}</button>
       </div>
     </div>
-    <nav class="mobile-nav" id="mobile-menu" aria-label="Điều hướng điện thoại" hidden>${links}<div class="mobile-nav-contact"><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a><a href="${html(site.zalo)}" target="_blank" rel="noopener">Chat Zalo</a></div></nav>
+    <nav class="mobile-nav" id="mobile-menu" aria-label="Điều hướng điện thoại" hidden>${links}<div class="mobile-nav-contact"><a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a><a href="${html(site.zalo)}" target="_blank" rel="noopener">${html(site.header?.zalo_label||'Chat Zalo')}</a></div></nav>
   </header>`;
 }
 
 function footer(site) {
-  const fanpages = site.fanpages.map(p => `<li><a href="${html(p.url)}" target="_blank" rel="noopener">${html(p.label)}</a></li>`).join('');
-  return `<footer class="site-footer" id="thong-tin-shop">
-    <div class="shell footer-grid">
-      <div class="footer-about"><a class="footer-brand" href="/">${html(site.name)}</a><p>Bánh phu thê, mâm quả cưới và bánh phục linh tại TP.HCM.</p></div>
-      <div><h2>Liên hệ đặt hàng</h2><ul><li class="footer-address">${html(site.address)}</li><li>Hotline/Zalo:&nbsp;<a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a></li></ul></div>
-      <div><h2>Kênh chính thức</h2><ul><li><a href="tel:${html(site.hotline)}">Hotline: ${html(site.hotline_display)}</a></li><li><a href="${html(site.zalo)}" target="_blank" rel="noopener">Zalo: ${html(site.hotline_display)}</a></li>${fanpages}</ul></div>
-    </div>
-    <div class="shell footer-bottom"><span>© 2026 ${html(site.name)}.</span></div>
-  </footer>`;
+  const config=site.footer||{};
+  const columns=config.columns||[{type:'about',title:'Giới thiệu Shop',visible:true},{type:'contact',title:'Liên hệ đặt hàng',visible:true},{type:'channels',title:'Kênh chính thức',visible:true}];
+  const visible=columns.filter(c=>c.visible!==false);
+  function column(col){
+    const heading=html(col.title||'Thông tin');
+    if(col.type==='about') return `<div class="footer-about"><a class="footer-brand" href="/">${html(site.name)}</a><p>${html(config.about||site.brand_line)}</p></div>`;
+    if(col.type==='contact') return `<div><h2>${heading}</h2><ul><li class="footer-address">${html(site.address)}</li><li>Hotline/Zalo:&nbsp;<a href="tel:${html(site.hotline)}">${html(site.hotline_display)}</a></li></ul></div>`;
+    if(col.type==='channels'){
+      const pages=(site.fanpages||[]).filter(p=>p.visible!==false).map(p=>`<li><a href="${html(p.url)}" target="_blank" rel="noopener">${html(p.text||p.label)}</a></li>`).join('');
+      return `<div><h2>${heading}</h2><ul><li><a href="tel:${html(site.hotline)}">Hotline: ${html(site.hotline_display)}</a></li><li><a href="${html(site.zalo)}" target="_blank" rel="noopener">Zalo: ${html(site.hotline_display)}</a></li>${pages}</ul></div>`;
+    }
+    if(col.type==='links')return `<div><h2>${heading}</h2><ul>${(col.items||[]).map(item=>`<li><a href="${html(item.url)}"${item.url.startsWith('http')?' target="_blank" rel="noopener"':''}>${html(item.label)}</a></li>`).join('')}</ul></div>`;
+    return '';
+  }
+  const copyright=(config.copyright||'© {year} {shop}.').replaceAll('{year}',String(new Date().getFullYear())).replaceAll('{shop}',site.name);
+  return `<footer class="site-footer" id="thong-tin-shop"><div class="shell footer-grid customizable-footer" data-columns="${visible.length}">${visible.map(column).join('')}</div><div class="shell footer-bottom"><span>${html(copyright)}</span></div></footer>`;
 }
 function floating(site) {
   return `<div class="floating-contact" aria-label="Liên hệ nhanh"><a href="tel:${html(site.hotline)}">${icon('phone')}<span>Gọi Shop</span></a><a class="zalo" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}<span>Zalo</span></a></div>`;
@@ -89,6 +98,11 @@ function localBusinessSchema(site) {
   };
 }
 
+function productSchema(site, product) {
+  const schema={ '@context':'https://schema.org', '@type':'Product',name:product.name,description:product.short_description,url:absoluteUrl(site,`/${product.slug}/`),image:[product.main_image,...product.gallery].map(src=>absoluteUrl(site,src)),brand:{'@type':'Brand',name:site.name}};
+  if(product.price?.mode==='fixed'&&Number.isFinite(product.price.amount)) schema.offers={'@type':'Offer',url:schema.url,priceCurrency:'VND',price:product.price.amount};
+  return schema;
+}
 function faqSchema(items) {
   return {
     '@context':'https://schema.org',
@@ -111,7 +125,7 @@ export function renderShell({ site, title, description, canonicalPath, active=''
 function productImage(product, eager=false) {
   const images = [product.main_image, ...product.gallery.filter(src => src !== product.main_image)];
   const thumbs = images.length > 1 ? `<div class="thumb-row" aria-label="Ảnh ${html(product.name)}">${images.map((src,i)=>`<button type="button" class="thumb${i===0?' active':''}" data-gallery-src="${html(src)}" aria-label="Xem ảnh ${i+1} của ${html(product.name)}" aria-pressed="${i===0?'true':'false'}"><img src="${html(src)}" alt=""${imageSizeAttrs(src)} loading="lazy" decoding="async"></button>`).join('')}</div>` : '';
-  return `<div class="product-gallery"><div class="main-image"><img src="${html(product.main_image)}" alt="${html(product.name)}"${imageSizeAttrs(product.main_image)}${eager?' fetchpriority="high"':' loading="lazy"'} decoding="async"></div>${thumbs}</div>`;
+  return `<div class="product-gallery"><div class="main-image"><img src="${html(product.main_image)}" alt="${html(product.main_image_alt||product.name)}"${imageSizeAttrs(product.main_image)}${eager?' fetchpriority="high"':' loading="lazy"'} decoding="async"></div>${thumbs}</div>`;
 }
 function optionGroup(group) {
   const hasDefault = group.options.some(option => option.default);
@@ -190,7 +204,8 @@ function articleCard(article, variant = '') {
   return `<article class="guide-card ${html(variant)}"><a class="guide-image" href="/cam-nang/${html(article.slug)}/"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}"${imageSizeAttrs(article.cover.src)} loading="lazy" decoding="async"></a><div class="guide-body"><span class="guide-kicker">Cẩm nang cưới hỏi</span><h3><a href="/cam-nang/${html(article.slug)}/">${html(article.title)}</a></h3><p>${html(article.excerpt)}</p><a class="guide-link" href="/cam-nang/${html(article.slug)}/">Đọc bài viết ${icon('arrow')}</a></div></article>`;
 }
 function productRelatedArticles(product, articles = []) {
-  const related = publishedArticles(articles).filter(article => article.related_products.includes(product.id)).slice(0,3);
+  const selected = new Set(product.related_articles || []);
+  const related = publishedArticles(articles).filter(article => selected.has(article.id)).slice(0,3);
   if (!related.length) return '';
   return `<section class="section guide-related-section product-guides"><div class="shell"><div class="section-head compact split-head"><div><span class="eyebrow">Tham khảo</span><h2>Cẩm nang cưới hỏi</h2></div><a href="/cam-nang/">Xem tất cả ${icon('arrow')}</a></div><div class="product-guide-grid product-guide-grid-${related.length}">${related.map(article => articleCard(article,'product-guide')).join('')}</div></div></section>`;
 }
@@ -219,9 +234,9 @@ function articleRelatedArticles(article, articles = []) {
 export function renderProductPage(site, product, products = [], articles = []) {
   const configurator = product.type==='composite' ? compositeConfigurator(product) : product.type==='variant' ? variantConfigurator(product) : simpleConfigurator(product);
   const secondaryFields = noteField(product);
-  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>${html(product.name)}</span></div><section class="section product-top"><div class="shell product-grid">${productImage(product,true)}<div class="product-config"><span class="eyebrow">Sản phẩm Shop Uyên Ương</span><div class="product-title-row"><h1>${html(product.name)}</h1><div class="price" data-product-price>${html(product.price.display_text)}</div></div><p class="lead">${html(product.short_description)}</p><form data-product-form data-product-id="${html(product.id)}" data-product-name="${html(product.name)}" data-product-type="${html(product.type)}">${configurator}${secondaryFields}${productSummary(product)}<div class="cta-row product-actions"><button type="button" class="btn btn-primary product-cart-cta" data-add-to-cart>${icon('bag')}Thêm vào giỏ hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Liên hệ Shop</a></div><div class="cart-action-note" role="status" aria-live="polite" data-cart-action-note hidden><span data-cart-action-text></span><a class="cart-action-link" href="/gio-hang/">Xem giỏ hàng →</a></div><p class="microcopy">Shop khuyến nghị đặt trước 3–5 ngày. Đơn sẽ được xác nhận trước khi chuẩn bị.</p></form></div></div></section>${infoBlocks(product)}${productRelatedArticles(product,articles)}${relatedProducts(product,products)}`;
-  const seoDescription = product.id === 'banh-phuc-linh' ? 'Bánh phục linh tại TP.HCM. Chọn 2 vị hoặc 5 vị và số lượng mong muốn. Quy cách khác được Shop báo giá khi xác nhận.' : product.seo.description;
-  return renderShell({site,title:product.seo.title,description:seoDescription,canonicalPath:`/${product.slug}/`,active:product.slug,body,bodyClass:`product-page product-${html(product.type)}`,ogImage:product.main_image});
+  const body = `<div class="shell breadcrumb"><a href="/">${icon('home')}<span>Trang chủ</span></a><span>/</span><span>${html(product.name)}</span></div><section class="section product-top"><div class="shell product-grid">${productImage(product,true)}<div class="product-config"><span class="eyebrow">Sản phẩm Shop Uyên Ương</span><div class="product-title-row"><h1>${html(product.name)}</h1><div class="price" data-product-price>${html(product.price.display_text)}</div></div><p class="lead">${html(product.short_description)}</p><form data-product-form data-product-id="${html(product.id)}" data-product-name="${html(product.name)}" data-product-type="${html(product.type)}">${configurator}${secondaryFields}${productSummary(product)}<div class="cta-row product-actions"><button type="button" class="btn btn-primary product-cart-cta" data-add-to-cart>${icon('bag')}Thêm vào giỏ hàng</button><a class="btn btn-outline" href="${html(site.zalo)}" target="_blank" rel="noopener">${icon('chat')}Liên hệ Shop</a></div><div class="cart-action-note" role="status" aria-live="polite" data-cart-action-note hidden><span data-cart-action-text></span><a class="cart-action-link" href="/gio-hang/">Xem giỏ hàng →</a></div><p class="microcopy">Shop khuyến nghị đặt trước 3–5 ngày. Đơn sẽ được xác nhận trước khi chuẩn bị.</p></form></div></div></section>${infoBlocks(product)}${product.content_html?.trim()?`<section class="section product-seo-content"><div class="shell article-content">${validateContentHtml(product.content_html)}</div></section>`:""}${productRelatedArticles(product,articles)}${relatedProducts(product,products)}`;
+  const seoDescription = product.seo.description;
+  return renderShell({site,title:product.seo.title,description:seoDescription,canonicalPath:`/${product.slug}/`,active:product.slug,body,bodyClass:`product-page product-${html(product.type)}`,ogImage:product.main_image,extraSchemas:[productSchema(site,product)]});
 }
 
 function homeGuideSection(articles = []) {
@@ -260,7 +275,7 @@ function homePrice(product) {
 function homeProductCard(product, { primary = false } = {}) {
   if (!product) return '';
   const note = product.id === 'banh-phu-the' ? '<p class="home-product-note">Nhận từ 20 bánh · Hộp giấy hoặc lá dừa</p>' : '';
-  return `<article class="home-product-card${primary?' home-product-card-primary':''}"><a class="home-product-card-image" href="/${html(product.slug)}/"><img src="${html(product.main_image)}" alt="${html(product.name)}"${imageSizeAttrs(product.main_image)} loading="lazy" decoding="async"></a><div class="home-product-card-copy"><div class="home-product-title"><h3>${html(product.name)}</h3><span>${html(homePrice(product))}</span></div><p>${html(product.short_description)}</p>${note}<div class="home-product-actions"><a class="btn btn-outline" href="/${html(product.slug)}/">Xem sản phẩm</a><button class="btn btn-primary" type="button" data-home-quick-add="${html(product.id)}">Chọn để đặt</button></div></div></article>`;
+  return `<article class="home-product-card${primary?' home-product-card-primary':''}"><a class="home-product-card-image" href="/${html(product.slug)}/"><img src="${html(product.main_image)}" alt="${html(product.main_image_alt||product.name)}"${imageSizeAttrs(product.main_image)} loading="lazy" decoding="async"></a><div class="home-product-card-copy"><div class="home-product-title"><h3>${html(product.name)}</h3><span>${html(homePrice(product))}</span></div><p>${html(product.short_description)}</p>${note}<div class="home-product-actions"><a class="btn btn-outline" href="/${html(product.slug)}/">Xem sản phẩm</a><button class="btn btn-primary" type="button" data-home-quick-add="${html(product.id)}">Chọn để đặt</button></div></div></article>`;
 }
 export function renderHome(site, products, articles = []) {
   const byId = new Map(products.filter(p=>p.status==='published').map(p=>[p.id,p]));
@@ -280,10 +295,10 @@ export function renderGuideHub(site, articles = []) {
 export function renderCategoryHub(site, category, articles = []) {
   const list = publishedArticles(articles).filter(article => article.category === category.id);
   const body = `<div class="shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(category.name)}</span></div><section class="section guide-hub category-hub"><div class="shell"><div class="page-intro"><span class="eyebrow">Chuyên mục</span><h1>${html(category.name)}</h1>${category.description?`<p>${html(category.description)}</p>`:''}</div>${list.length?`<div class="guide-list-more category-list">${list.map(article=>articleCard(article,'compact')).join('')}</div>`:`<div class="empty-content"><h2>Chưa có bài viết</h2><p>Các bài thuộc chuyên mục này sẽ hiển thị khi được xuất bản.</p></div>`}</div></section>`;
-  return renderShell({site,title:`${category.name} | ${site.name}`,description:category.description||`Bài viết ${category.name} tại ${site.name}.`,canonicalPath:`/cam-nang/${category.slug}/`,active:'cam-nang',body,bodyClass:'guide-hub-page category-hub-page'});
+  return renderShell({site,title:category.seo?.title||`${category.name} | ${site.name}`,description:category.seo?.description||category.description||`Bài viết ${category.name} tại ${site.name}.`,canonicalPath:`/cam-nang/${category.slug}/`,active:'cam-nang',body,bodyClass:'guide-hub-page category-hub-page'});
 }
 export function renderArticlePage(site, article, articles = [], products = []) {
-  const body = `<div class="shell article-shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(article.title)}</span></div><article class="article-page"><header class="shell article-shell article-header"><div class="article-heading"><h1>${html(article.title)}</h1><p>${html(article.excerpt)}</p></div><figure class="article-cover"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}"${imageSizeAttrs(article.cover.src)} fetchpriority="high" decoding="async"></figure></header><div class="shell article-shell article-layout"><div class="article-content">${article.blocks.map(renderArticleBlock).join('')}${articleRelatedProducts(article,products)}</div></div><div class="shell article-shell article-footer-related">${articleRelatedArticles(article,articles)}</div></article>`;
+  const body = `<div class="shell article-shell breadcrumb"><a href="/">Trang chủ</a><span>/</span><a href="/cam-nang/">Cẩm nang</a><span>/</span><span>${html(article.title)}</span></div><article class="article-page"><header class="shell article-shell article-header"><div class="article-heading"><h1>${html(article.title)}</h1><p>${html(article.excerpt)}</p></div><figure class="article-cover"><img src="${html(article.cover.src)}" alt="${html(article.cover.alt)}"${imageSizeAttrs(article.cover.src)} fetchpriority="high" decoding="async"></figure></header><div class="shell article-shell article-layout"><div class="article-content">${validateContentHtml(article.content_html)}${articleRelatedProducts(article,products)}</div></div><div class="shell article-shell article-footer-related">${articleRelatedArticles(article,articles)}</div></article>`;
   return renderShell({site,title:article.seo.title,description:article.seo.description,canonicalPath:`/cam-nang/${article.slug}/`,active:'cam-nang',body,bodyClass:'article-detail-page',ogImage:article.cover.src,ogType:'article'});
 }
 export function renderContact(site) {

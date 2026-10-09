@@ -1,3 +1,4 @@
+import {imagePathsFromHtml} from './safe-html.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -42,10 +43,11 @@ function collectOutputs(root = repoRoot) {
   for (const product of products) {
     imagePaths.add(product.main_image);
     for (const imagePath of product.gallery) imagePaths.add(imagePath);
+    for (const imagePath of imagePathsFromHtml(product.content_html)) imagePaths.add(imagePath);
   }
   for (const article of articles) {
     imagePaths.add(article.cover.src);
-    for (const block of article.blocks) if (block.type === 'image') imagePaths.add(block.src);
+    for (const imagePath of imagePathsFromHtml(article.content_html)) imagePaths.add(imagePath);
   }
   for (const publicPath of imagePaths) {
     const relative = publicPath.replace(/^\//, '');

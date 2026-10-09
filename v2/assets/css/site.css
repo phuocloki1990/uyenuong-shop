@@ -317,3 +317,24 @@ html.motion-ready .home-page [data-reveal].is-visible{opacity:1;transform:none}
   color:#786961;
   opacity:1;
 }
+/* Rich article and product copy - shared, without modifying the buying widget */
+.article-content .article-btn,.product-seo-content .article-btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;border-radius:8px;padding:10px 18px;margin:6px 0}
+.article-content .article-note{border-left:4px solid var(--primary);background:var(--surface-soft);padding:16px;margin:20px 0}
+.article-content table{border-collapse:collapse;display:block;max-width:100%;overflow-x:auto;margin:18px 0}
+.article-content td,.article-content th{border:1px solid var(--border);padding:10px 12px;min-width:100px;vertical-align:top}
+.article-content figure{margin:20px 0;text-align:center}
+.article-content figure img{max-width:100%;height:auto}
+.article-content figcaption{font-size:.85em;color:var(--muted)}
+.article-content .align-left{margin-right:auto}.article-content .align-right{margin-left:auto}.article-content .align-center{margin-left:auto;margin-right:auto}
+.product-seo-content{padding-block:24px 48px}.product-seo-content .article-content{max-width:960px}
+/* Existing 3-column Footer remains unchanged; support an optional fourth configured group. */
+.customizable-footer[data-columns="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:980px){.customizable-footer[data-columns="4"]{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.customizable-footer[data-columns="4"]{grid-template-columns:1fr}}
+
+/* Word-like paragraph presets, deliberately not additional H1 elements */
+.article-content .article-title,.rich-page .article-title,.rich-preview .article-title{font-size:1.45em;font-weight:700;line-height:1.4}
+.article-content .article-subtitle,.rich-page .article-subtitle,.rich-preview .article-subtitle{font-size:1.1em;color:var(--muted,#665);line-height:1.6}
+.article-content .align-left,.rich-page .align-left,.rich-preview .align-left{text-align:left}
+.article-content .align-center,.rich-page .align-center,.rich-preview .align-center{text-align:center}
+.article-content .align-right,.rich-page .align-right,.rich-preview .align-right{text-align:right}

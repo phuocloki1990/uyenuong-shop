@@ -10,36 +10,6 @@
     "alt": "Mâm quả cưới với các lễ vật được chọn theo nhu cầu"
   },
   "excerpt": "Một số điểm nên thống nhất trước khi chọn lễ vật, ngày nhận và gửi yêu cầu cho Shop.",
-  "blocks": [
-    {
-      "type": "h2",
-      "text": "Thống nhất lễ vật trước khi đặt"
-    },
-    {
-      "type": "paragraph",
-      "text": "Trước khi gửi yêu cầu, gia đình nên thống nhất những lễ vật cần chuẩn bị. Việc này giúp phần chọn mâm trên website gọn hơn và hạn chế phải sửa nhiều lần."
-    },
-    {
-      "type": "h2",
-      "text": "Chọn từng lễ vật theo nhu cầu"
-    },
-    {
-      "type": "paragraph",
-      "text": "Trang Mâm quả cưới cho phép chọn trực tiếp từng lễ vật. Số mâm được tính tự động theo số lễ vật đã chọn, không cần nhập một số mâm riêng."
-    },
-    {
-      "type": "h2",
-      "text": "Kiểm tra ngày nhận và ghi chú"
-    },
-    {
-      "type": "paragraph",
-      "text": "Ngày nhận đã chọn ở trang Mâm quả sẽ được mang sang bước Đặt hàng để tham khảo. Tại bước Đặt hàng, gia đình có thể sửa lại và ngày ở bước cuối là thông tin dùng để Shop xác nhận."
-    },
-    {
-      "type": "callout",
-      "text": "Nếu có yêu cầu riêng về lễ vật hoặc cách chuẩn bị, có thể ghi rõ trong phần Ghi chú để Shop liên hệ xác nhận."
-    }
-  ],
   "related_products": [
     "mam-qua-cuoi"
   ],
@@ -51,5 +21,6 @@
     "description": "Các điểm nên thống nhất khi chọn lễ vật, ngày nhận và gửi yêu cầu mâm quả cưới cho Shop."
   },
   "id": "kinh-nghiem-chon-mam-qua-cuoi-cho-gia-dinh",
-  "previous_slugs": []
+  "previous_slugs": [],
+  "content_html": "<h2>Thống nhất lễ vật trước khi đặt</h2>\n<p>Trước khi gửi yêu cầu, gia đình nên thống nhất những lễ vật cần chuẩn bị. Việc này giúp phần chọn mâm trên website gọn hơn và hạn chế phải sửa nhiều lần.</p>\n<h2>Chọn từng lễ vật theo nhu cầu</h2>\n<p>Trang Mâm quả cưới cho phép chọn trực tiếp từng lễ vật. Số mâm được tính tự động theo số lễ vật đã chọn, không cần nhập một số mâm riêng.</p>\n<h2>Kiểm tra ngày nhận và ghi chú</h2>\n<p>Ngày nhận đã chọn ở trang Mâm quả sẽ được mang sang bước Đặt hàng để tham khảo. Tại bước Đặt hàng, gia đình có thể sửa lại và ngày ở bước cuối là thông tin dùng để Shop xác nhận.</p>\n<aside class=\"article-callout\"><p>Nếu có yêu cầu riêng về lễ vật hoặc cách chuẩn bị, có thể ghi rõ trong phần Ghi chú để Shop liên hệ xác nhận.</p></aside>"
 }

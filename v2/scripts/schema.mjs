@@ -1,3 +1,4 @@
+import {validateContentHtml} from './safe-html.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -130,6 +131,8 @@ function validateProduct(product, filename) {
   if (!statusValues.has(product.status)) fail(`${file}.status: không hợp lệ`);
   if (!typeValues.has(product.type)) fail(`${file}.type: không hợp lệ`);
   validateImagePath(product.main_image, `${file}.main_image`);
+  if (product.content_html != null) validateContentHtml(product.content_html, `${file}.content_html`, {allowEmpty:true});
+  if (product.seo?.focus_keyword != null) optionalString(product.seo.focus_keyword, `${file}.seo.focus_keyword`);
   if (!Array.isArray(product.gallery)) fail(`${file}.gallery: phải là mảng`);
   product.gallery.forEach((imagePath, i) => validateImagePath(imagePath, `${file}.gallery[${i}]`));
   requiredString(product.short_description, `${file}.short_description`);
@@ -229,8 +232,7 @@ function validateArticle(article, filename) {
   validateImagePath(article.cover.src, `${file}.cover.src`);
   requiredString(article.cover.alt, `${file}.cover.alt`);
   requiredString(article.excerpt, `${file}.excerpt`);
-  if (!Array.isArray(article.blocks) || article.blocks.length < 1) fail(`${file}.blocks: cần ít nhất 1 block`);
-  article.blocks.forEach((block, i) => validateArticleBlock(block, file, i));
+  validateContentHtml(article.content_html, `${file}.content_html`);
   if (!Array.isArray(article.related_products) || !Array.isArray(article.related_articles)) fail(`${file}: related_* phải là mảng`);
   article.related_products.forEach((productId, i) => validateSlug(productId, `${file}.related_products[${i}]`));
   article.related_articles.forEach((articleId, i) => validateSlug(articleId, `${file}.related_articles[${i}]`));
@@ -249,6 +251,15 @@ function validateSite(site) {
     requiredString(page.label, `settings/site.json.fanpages[${i}].label`);
     requiredString(page.url, `settings/site.json.fanpages[${i}].url`);
   }
+  const validLink = href => typeof href==='string' && ((href.startsWith('/') && !href.startsWith('//') && !href.includes('..')) || /^https:\/\/[^\s<>"']+$/i.test(href));
+  if (!isObject(site.header)||!Array.isArray(site.header.menu)||!site.header.menu.length) fail('settings/site.json.header.menu: bắt buộc');
+  validateImagePath(site.header.logo,'settings/site.json.header.logo');
+  site.header.menu.forEach((item,i)=>{requiredString(item.label,`header.menu[${i}].label`);if(!validLink(item.href))fail(`header.menu[${i}].href: URL không hợp lệ`);if(typeof item.visible!=='boolean')fail('header menu visible không hợp lệ');});
+  if (!isObject(site.footer)||!Array.isArray(site.footer.columns)||!site.footer.columns.length) fail('settings/site.json.footer.columns: bắt buộc');
+  requiredString(site.footer.about,'footer.about');requiredString(site.footer.copyright,'footer.copyright');
+  site.footer.columns.forEach((col,i)=>{if(!['about','contact','channels','links'].includes(col.type))fail(`footer.columns[${i}].type không hợp lệ`);requiredString(col.title,`footer.columns[${i}].title`);if(typeof col.visible!=='boolean')fail('footer visible không hợp lệ');if(col.type==='links'){if(!Array.isArray(col.items))fail('footer links phải là mảng');col.items.forEach((link,j)=>{requiredString(link.label,`footer.columns[${i}].items[${j}].label`);if(!validLink(link.url))fail('footer link URL không hợp lệ');});}});
+  for(const [i,page] of site.fanpages.entries()){if(page.text!=null)optionalString(page.text,`fanpages[${i}].text`);if(page.visible!=null&&typeof page.visible!=='boolean')fail('fanpages.visible không hợp lệ');}
+  if(site.media_meta!=null){if(!isObject(site.media_meta))fail('media_meta không hợp lệ');for(const [image,item] of Object.entries(site.media_meta)){if(!/^\/assets\/images\/[a-z0-9_./-]+\.(?:jpe?g|png|webp)$/i.test(image)||image.includes('..')||!isObject(item)||typeof item.alt!=='string'||item.alt.length>200||typeof item.caption!=='string'||item.caption.length>300)fail('media_meta chứa dữ liệu không hợp lệ');}}
   if (!isObject(site.seo)) fail('settings/site.json.seo: bắt buộc');
   requiredString(site.seo.title, 'settings/site.json.seo.title');
   requiredString(site.seo.description, 'settings/site.json.seo.description');

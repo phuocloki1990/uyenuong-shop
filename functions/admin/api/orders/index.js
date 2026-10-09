@@ -102,6 +102,9 @@ export async function onRequestGet(context) {
       `;
     }
 
+    const countResult = await env.DB.prepare(`SELECT COUNT(*) AS total FROM orders ${where}`).bind(...binds).first();
+    const total = Number(countResult?.total || 0);
+
     binds.push(limit);
 
     const limitIndex =
@@ -178,8 +181,8 @@ export async function onRequestGet(context) {
     return json({
       success: true,
       orders,
-      count:
-        orders.length
+      count: orders.length,
+      total, limit, offset
     });
 
   } catch (error) {

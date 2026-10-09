@@ -9,15 +9,77 @@
   "fanpages": [
     {
       "label": "Mâm quả cưới HCM",
-      "url": "https://www.facebook.com/mamquacuoihcm/"
+      "url": "https://www.facebook.com/mamquacuoihcm/",
+      "text": "Mâm quả cưới HCM",
+      "visible": true
     },
     {
       "label": "Bánh phục linh HCM",
-      "url": "https://www.facebook.com/Banhphuclinhhcm/"
+      "url": "https://www.facebook.com/Banhphuclinhhcm/",
+      "text": "Bánh phục linh HCM",
+      "visible": true
     }
   ],
   "seo": {
     "title": "Shop Uyên Ương - Bánh phu thê & mâm quả cưới tại TP.HCM",
     "description": "Shop Uyên Ương nhận bánh phu thê, mâm quả cưới và bánh phục linh tại TP.HCM. Chọn sản phẩm trên website, Shop sẽ liên hệ xác nhận trước khi chuẩn bị."
+  },
+  "header": {
+    "logo": "/assets/images/logo-header.jpg",
+    "hotline_label": "Hotline tư vấn",
+    "zalo_label": "Chat Zalo",
+    "menu": [
+      {
+        "label": "Trang chủ",
+        "href": "/",
+        "visible": true
+      },
+      {
+        "label": "Bánh phu thê",
+        "href": "/banh-phu-the/",
+        "visible": true
+      },
+      {
+        "label": "Mâm quả cưới",
+        "href": "/mam-qua-cuoi/",
+        "visible": true
+      },
+      {
+        "label": "Bánh phục linh",
+        "href": "/banh-phuc-linh/",
+        "visible": true
+      },
+      {
+        "label": "Cẩm nang",
+        "href": "/cam-nang/",
+        "visible": true
+      },
+      {
+        "label": "Liên hệ",
+        "href": "/lien-he/",
+        "visible": true
+      }
+    ]
+  },
+  "footer": {
+    "about": "Bánh phu thê, mâm quả cưới và bánh phục linh tại TP.HCM.",
+    "copyright": "© {year} {shop}.",
+    "columns": [
+      {
+        "type": "about",
+        "title": "Giới thiệu Shop",
+        "visible": true
+      },
+      {
+        "type": "contact",
+        "title": "Liên hệ đặt hàng",
+        "visible": true
+      },
+      {
+        "type": "channels",
+        "title": "Kênh chính thức",
+        "visible": true
+      }
+    ]
   }
 }

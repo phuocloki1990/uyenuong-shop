@@ -10,47 +10,6 @@
     "alt": "Mâm quả cưới tại Shop Uyên Ương"
   },
   "excerpt": "Các lễ vật thường được lựa chọn và cách chọn thành phần theo nhu cầu của từng gia đình.",
-  "blocks": [
-    {
-      "type": "h2",
-      "text": "Các lễ vật thường được lựa chọn"
-    },
-    {
-      "type": "paragraph",
-      "text": "Thành phần mâm quả có thể thay đổi theo nhu cầu và cách chuẩn bị của từng gia đình. Trên website, gia đình có thể chọn từng lễ vật cần dùng thay vì phải chọn theo một gói cố định."
-    },
-    {
-      "type": "list",
-      "items": [
-        "Trầu cau",
-        "Bánh phu thê",
-        "Trái cây / ngũ quả",
-        "Xôi gấc",
-        "Trà, rượu",
-        "Các lễ vật khác theo nhu cầu"
-      ]
-    },
-    {
-      "type": "h2",
-      "text": "Cách chọn thành phần mâm"
-    },
-    {
-      "type": "paragraph",
-      "text": "Nên thống nhất trước những lễ vật gia đình cần, sau đó chọn trực tiếp từng mục trên trang Mâm quả cưới. Mỗi lễ vật được chọn tương ứng một mâm."
-    },
-    {
-      "type": "callout",
-      "text": "Nếu chọn Bánh phu thê trong mâm quả, có thể chọn quy cách Hộp giấy hoặc Lá dừa mà không làm thay đổi số mâm."
-    },
-    {
-      "type": "h2",
-      "text": "Khi nào nên gửi yêu cầu cho Shop?"
-    },
-    {
-      "type": "paragraph",
-      "text": "Shop khuyến nghị đặt trước 3–5 ngày để có thời gian xác nhận lễ vật, ngày nhận và các ghi chú cần thiết trước khi chuẩn bị."
-    }
-  ],
   "related_products": [
     "mam-qua-cuoi",
     "banh-phu-the"
@@ -63,5 +22,6 @@
     "description": "Tìm hiểu các lễ vật thường được lựa chọn trong mâm quả cưới và cách chọn thành phần theo nhu cầu gia đình."
   },
   "id": "mam-qua-cuoi-thuong-co-nhung-gi",
-  "previous_slugs": []
+  "previous_slugs": [],
+  "content_html": "<h2>Các lễ vật thường được lựa chọn</h2>\n<p>Thành phần mâm quả có thể thay đổi theo nhu cầu và cách chuẩn bị của từng gia đình. Trên website, gia đình có thể chọn từng lễ vật cần dùng thay vì phải chọn theo một gói cố định.</p>\n<ul><li>Trầu cau</li><li>Bánh phu thê</li><li>Trái cây / ngũ quả</li><li>Xôi gấc</li><li>Trà, rượu</li><li>Các lễ vật khác theo nhu cầu</li></ul>\n<h2>Cách chọn thành phần mâm</h2>\n<p>Nên thống nhất trước những lễ vật gia đình cần, sau đó chọn trực tiếp từng mục trên trang Mâm quả cưới. Mỗi lễ vật được chọn tương ứng một mâm.</p>\n<aside class=\"article-callout\"><p>Nếu chọn Bánh phu thê trong mâm quả, có thể chọn quy cách Hộp giấy hoặc Lá dừa mà không làm thay đổi số mâm.</p></aside>\n<h2>Khi nào nên gửi yêu cầu cho Shop?</h2>\n<p>Shop khuyến nghị đặt trước 3–5 ngày để có thời gian xác nhận lễ vật, ngày nhận và các ghi chú cần thiết trước khi chuẩn bị.</p>"
 }

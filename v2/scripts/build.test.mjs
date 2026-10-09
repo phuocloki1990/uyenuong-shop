@@ -170,7 +170,7 @@ test('V2 builder copies product images from data instead of a hard-coded product
 });
 
 
-test('Phase II.3 loads one general category and three published articles with block content', () => {
+test('Phase II.3 loads one general category and three published articles with HTML content', () => {
   const { articles, categories } = loadV2Content(repoRoot);
   assert.equal(categories.length, 1);
   assert.equal(categories[0].public_hub, false);
@@ -181,7 +181,7 @@ test('Phase II.3 loads one general category and three published articles with bl
   ]);
   for (const article of articles) {
     assert.equal(article.status, 'published');
-    assert.ok(article.blocks.some(block => block.type === 'h2'));
+    assert.match(article.content_html, /<h2>/);
     assert.ok(article.related_products.length >= 1);
   }
 });
@@ -233,7 +233,7 @@ test('Home reserves a silent Fanpage section between products and Cẩm nang', (
   assert.doesNotMatch(home + client, /FACEBOOK_PAGE_ACCESS_TOKEN|FACEBOOK_PAGE_ID/);
 });
 
-test('Article renderer uses flat clean article URLs and structured blocks', () => {
+test('Article renderer uses flat clean URLs and validated rich HTML', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const article = articles.find(item => item.slug === 'mam-qua-cuoi-thuong-co-nhung-gi');
   const output = renderArticlePage(site, article, articles, products);
@@ -247,7 +247,7 @@ test('Article renderer uses flat clean article URLs and structured blocks', () =
   assert.doesNotMatch(output, /\.html/);
 });
 
-test('Product pages discover related Cẩm nang from article data without editing product JSON', () => {
+test('Product pages honor related articles selected in Product Editor', () => {
   const { site, products, articles } = loadV2Content(repoRoot);
   const product = products.find(item => item.id === 'mam-qua-cuoi');
   const output = renderProductPage(site, product, products, articles);
@@ -274,7 +274,7 @@ test('builder copies article cover and inline images from content data', () => {
   const { articles } = loadV2Content(repoRoot);
   for (const article of articles) {
     assert.ok(result.outputs.has(article.cover.src.replace(/^\//,'')), article.cover.src);
-    for (const block of article.blocks) if (block.type === 'image') assert.ok(result.outputs.has(block.src.replace(/^\//,'')), block.src);
+    for (const src of [...article.content_html.matchAll(/<img[^>]*src="(\/assets\/images\/[^"]+)"/g)].map(m=>m[1])) assert.ok(result.outputs.has(src.replace(/^\//,'')), src);
   }
 });
 

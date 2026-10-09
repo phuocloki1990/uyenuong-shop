@@ -1,3 +1,4 @@
+import {validateContentHtml} from '../../v2/scripts/safe-html.mjs';
 const OWNER = 'phuocloki1990';
 const REPO = 'uyenuong-shop';
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -91,7 +92,8 @@ function validateProduct(data, storageKey='') {
   data.previous_slugs=validatePreviousSlugs(data.previous_slugs||[],slug,'previous_slugs',{reserved:true});
   required(data.name,'name');if(!STATUS.has(data.status))throw bad('status không hợp lệ');if(!TYPES.has(data.type))throw bad('type không hợp lệ');
   validateImage(data.main_image,'main_image');if(!Array.isArray(data.gallery))throw bad('gallery phải là mảng');data.gallery.forEach((x,i)=>validateImage(x,`gallery[${i}]`));
-  required(data.short_description,'short_description');
+  if(data.main_image_alt!=null&&typeof data.main_image_alt!=='string')throw bad('main_image_alt phải là chuỗi');
+  required(data.short_description,'short_description');if(data.content_html!=null)validateContentHtml(data.content_html,'content_html',{allowEmpty:true});
   if(!isObj(data.price)||!['contact','fixed','hybrid'].includes(data.price.mode))throw bad('price không hợp lệ');
   required(data.price.display_text,'price.display_text');
   if(data.price.mode==='fixed'&&(!Number.isFinite(data.price.amount)||data.price.amount<0))throw bad('price.amount không hợp lệ');
@@ -130,9 +132,13 @@ function validateProduct(data, storageKey='') {
   return data;
 }
 
-function validateArticle(data, storageKey=''){if(!isObj(data))throw bad('Bài viết phải là object.');const id=validateSlug(data.id,'id');const slug=validateSlug(data.slug);if(storageKey&&id!==storageKey)throw bad('ID bài viết phải ổn định sau khi tạo.');data.previous_slugs=validatePreviousSlugs(data.previous_slugs||[],slug,'previous_slugs');required(data.title,'title');validateSlug(data.category,'category');if(!STATUS.has(data.status))throw bad('status không hợp lệ');if(typeof data.featured!=='boolean')throw bad('featured phải là boolean');if(!Number.isInteger(data.featured_order)||data.featured_order<0)throw bad('featured_order không hợp lệ');if(!isObj(data.cover))throw bad('cover bắt buộc');validateImage(data.cover.src,'cover.src');required(data.cover.alt,'cover.alt');required(data.excerpt,'excerpt');if(!Array.isArray(data.blocks)||!data.blocks.length)throw bad('blocks cần ít nhất một block');const types=new Set(['paragraph','h2','h3','list','image','callout']);data.blocks.forEach((b,i)=>{if(!isObj(b)||!types.has(b.type))throw bad(`blocks[${i}] không hợp lệ`);if(['paragraph','h2','h3','callout'].includes(b.type))required(b.text,`blocks[${i}].text`);if(b.type==='list'){if(!Array.isArray(b.items)||!b.items.length)throw bad(`blocks[${i}].items cần dữ liệu`);b.items.forEach((x,j)=>required(x,`blocks[${i}].items[${j}]`));}if(b.type==='image'){validateImage(b.src,`blocks[${i}].src`);required(b.alt,`blocks[${i}].alt`);optional(b.caption,`blocks[${i}].caption`);}});if(!Array.isArray(data.related_products)||!Array.isArray(data.related_articles))throw bad('related_* phải là mảng');if(!isObj(data.seo))throw bad('seo bắt buộc');required(data.seo.title,'seo.title');required(data.seo.description,'seo.description');return data;}
-function validateCategory(data, storageKey=''){if(!isObj(data))throw bad('Chuyên mục phải là object.');const slug=validateSlug(data.slug);const id=validateSlug(data.id,'id');if(storageKey&&id!==storageKey)throw bad('ID chuyên mục phải ổn định sau khi tạo.');data.previous_slugs=validatePreviousSlugs(data.previous_slugs||[],slug,'previous_slugs');required(data.name,'name');if(!STATUS.has(data.status))throw bad('status không hợp lệ');optional(data.description,'description');if(typeof data.public_hub!=='boolean')throw bad('public_hub phải là boolean');return data;}
-function validateSettings(data){if(!isObj(data))throw bad('Cài đặt phải là object.');for(const f of ['name','brand_line','canonical_domain','address','hotline','hotline_display','zalo'])required(data[f],f);if(!String(data.canonical_domain).startsWith('https://'))throw bad('canonical_domain phải dùng https');if(!Array.isArray(data.fanpages))throw bad('fanpages phải là mảng');data.fanpages.forEach((p,i)=>{required(p?.label,`fanpages[${i}].label`);required(p?.url,`fanpages[${i}].url`)});if(!isObj(data.seo))throw bad('seo bắt buộc');required(data.seo.title,'seo.title');required(data.seo.description,'seo.description');return data;}
+function validateArticle(data, storageKey=''){if(!isObj(data))throw bad('Bài viết phải là object.');const id=validateSlug(data.id,'id');const slug=validateSlug(data.slug);if(storageKey&&id!==storageKey)throw bad('ID bài viết phải ổn định sau khi tạo.');data.previous_slugs=validatePreviousSlugs(data.previous_slugs||[],slug,'previous_slugs');required(data.title,'title');validateSlug(data.category,'category');if(!STATUS.has(data.status))throw bad('status không hợp lệ');if(typeof data.featured!=='boolean')throw bad('featured phải là boolean');if(!Number.isInteger(data.featured_order)||data.featured_order<0)throw bad('featured_order không hợp lệ');if(!isObj(data.cover))throw bad('cover bắt buộc');validateImage(data.cover.src,'cover.src');required(data.cover.alt,'cover.alt');required(data.excerpt,'excerpt');validateContentHtml(data.content_html,'content_html');if(!Array.isArray(data.related_products)||!Array.isArray(data.related_articles))throw bad('related_* phải là mảng');if(data.media_meta!=null){if(!isObj(data.media_meta))throw bad('media_meta không hợp lệ');for(const [key,value] of Object.entries(data.media_meta)){if(!/^\/assets\/images\/[a-z0-9_./-]+\.(?:jpe?g|png|webp)$/i.test(key)||key.includes('..')||!isObj(value)||typeof value.alt!=='string'||value.alt.length>200||typeof value.caption!=='string'||value.caption.length>300)throw bad('media_meta không hợp lệ');}}if(!isObj(data.seo))throw bad('seo bắt buộc');required(data.seo.title,'seo.title');required(data.seo.description,'seo.description');return data;}
+function validateCategory(data, storageKey=''){if(!isObj(data))throw bad('Chuyên mục phải là object.');const slug=validateSlug(data.slug);const id=validateSlug(data.id,'id');if(storageKey&&id!==storageKey)throw bad('ID chuyên mục phải ổn định sau khi tạo.');data.previous_slugs=validatePreviousSlugs(data.previous_slugs||[],slug,'previous_slugs');required(data.name,'name');if(!STATUS.has(data.status))throw bad('status không hợp lệ');optional(data.description,'description');if(typeof data.public_hub!=='boolean')throw bad('public_hub phải là boolean');if(data.seo!=null){if(!isObj(data.seo))throw bad('category.seo không hợp lệ');optional(data.seo.title,'seo.title');optional(data.seo.description,'seo.description');}return data;}
+function validateSettings(data){if(!isObj(data))throw bad('Cài đặt phải là object.');for(const f of ['name','brand_line','canonical_domain','address','hotline','hotline_display','zalo'])required(data[f],f);if(!String(data.canonical_domain).startsWith('https://'))throw bad('canonical_domain phải dùng https');if(!Array.isArray(data.fanpages))throw bad('fanpages phải là mảng');data.fanpages.forEach((p,i)=>{required(p?.label,`fanpages[${i}].label`);required(p?.url,`fanpages[${i}].url`)});if(!isObj(data.header)||!Array.isArray(data.header.menu)||!data.header.menu.length)throw bad('header.menu bắt buộc');
+const linkSafe=url=>typeof url==='string'&&((url.startsWith('/')&&!url.startsWith('//')&&!url.includes('..'))||/^https:\/\/[^\s<>"']+$/.test(url));
+validateImage(data.header.logo,'header.logo');data.header.menu.forEach((m,i)=>{required(m.label,`header.menu[${i}].label`);if(!linkSafe(m.href)||typeof m.visible!=='boolean')throw bad('Menu chứa URL hoặc trạng thái không hợp lệ.');});
+if(!isObj(data.footer)||!Array.isArray(data.footer.columns)||!data.footer.columns.length)throw bad('footer.columns bắt buộc');required(data.footer.about,'footer.about');required(data.footer.copyright,'footer.copyright');data.footer.columns.forEach((c,i)=>{if(!['about','contact','channels','links'].includes(c.type))throw bad('footer.type không hợp lệ');required(c.title,`footer.columns[${i}].title`);if(typeof c.visible!=='boolean')throw bad('footer.visible không hợp lệ');if(c.type==='links'){if(!Array.isArray(c.items))throw bad('footer.items không hợp lệ');c.items.forEach(x=>{required(x.label,'footer.item.label');if(!linkSafe(x.url))throw bad('footer.item.url không hợp lệ');});}});
+if(data.media_meta!=null){if(!isObj(data.media_meta))throw bad('media_meta không hợp lệ');for(const [key,value] of Object.entries(data.media_meta)){if(!/^\/assets\/images\/[a-z0-9_./-]+\.(?:jpe?g|png|webp)$/i.test(key)||key.includes('..')||!isObj(value)||typeof value.alt!=='string'||value.alt.length>200||typeof value.caption!=='string'||value.caption.length>300)throw bad('media_meta không hợp lệ');}}if(!isObj(data.seo))throw bad('seo bắt buộc');required(data.seo.title,'seo.title');required(data.seo.description,'seo.description');return data;}
 export function validateDocument(kind,data,storageKey=''){if(kind==='products')return validateProduct(data,storageKey);if(kind==='articles')return validateArticle(data,storageKey);if(kind==='categories')return validateCategory(data,storageKey);if(kind==='settings')return validateSettings(data);throw bad('Loại nội dung không hợp lệ.');}
 
 function normalizeSlugHistory(data,current){const currentSlug=String(data.slug||'').trim();const oldSlug=String(current?.data?.slug||'').trim();const existing=Array.isArray(current?.data?.previous_slugs)?current.data.previous_slugs:[];const set=new Set(existing.filter(slug=>slug&&slug!==currentSlug));if(oldSlug&&oldSlug!==currentSlug)set.add(oldSlug);data.previous_slugs=[...set];return data;}
@@ -164,7 +170,9 @@ export async function listMedia(config){
     try{docs.push(...(await listDocuments(config,kind)).map(x=>x.data));}
     catch(error){if(error.status!==404)throw error;}
   }
-  const serialized=docs.map(x=>JSON.stringify(x));const items=[];
+  const settings=docs.find(x=>x&&x.canonical_domain);
+  const meta=settings?.media_meta||{};
+  const serialized=docs.map(x=>JSON.stringify(x?.canonical_domain?{...x,media_meta:undefined}:x));const items=[];
   for(const [group,folder] of groups){
     let result;
     try{result=await githubJson(`${contentUrl(folder)}?ref=${encodeURIComponent(config.branch)}`,{headers:headers(config.token),cache:'no-store'},'Không thể đọc thư viện ảnh.');}
@@ -172,10 +180,20 @@ export async function listMedia(config){
     if(!Array.isArray(result))continue;
     for(const file of result.filter(x=>x.type==='file'&&IMAGE_FILE.test(x.name))){
       const publicPath=`/${file.path}`;
-      items.push({group,group_label:{products:'Sản phẩm',articles:'Cẩm nang',categories:'Chuyên mục',site:'Website'}[group],name:file.name,path:file.path,url:publicPath,sha:file.sha,size:Number(file.size)||0,usage_count:serialized.reduce((n,text)=>n+(text.includes(publicPath)?1:0),0)});
+      items.push({group,group_label:{products:'Sản phẩm',articles:'Cẩm nang',categories:'Chuyên mục',site:'Website'}[group],name:file.name,path:file.path,url:publicPath,sha:file.sha,size:Number(file.size)||0,alt:meta[publicPath]?.alt||'',caption:meta[publicPath]?.caption||'',usage_count:serialized.reduce((n,text)=>n+(text.includes(publicPath)?1:0),0)});
     }
   }
   return items.sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+}
+
+export async function saveMediaMetadata(config,{url,alt='',caption=''}) {
+  const target=String(url||'');
+  if(!/^\/assets\/images\/[a-z0-9_./-]+\.(?:jpe?g|png|webp)$/i.test(target)||target.includes('..'))throw bad('Đường dẫn ảnh không hợp lệ.');
+  if(typeof alt!=='string'||alt.length>200||typeof caption!=='string'||caption.length>300)throw bad('Alt hoặc chú thích ảnh quá dài.');
+  const current=await getDocument(config,'settings','site');
+  const data={...current.data,media_meta:{...(current.data.media_meta||{})}};
+  data.media_meta[target]={alt:alt.trim(),caption:caption.trim()};
+  return saveDocument(config,{kind:'settings',slug:'site',sha:current.sha,data});
 }
 
 export async function uploadMedia(config,{group,file}){

@@ -184,10 +184,11 @@ export async function onRequestPatch(context) {
       );
     }
 
+    const expectedUpdatedAt = String(body.expected_updated_at ?? "");
     const existing =
       await env.DB
         .prepare(`
-          SELECT id
+          SELECT id, updated_at
           FROM orders
           WHERE id = ?1
           LIMIT 1
@@ -206,22 +207,28 @@ export async function onRequestPatch(context) {
       );
     }
 
-    await env.DB
+    if (String(existing.updated_at ?? "") !== expectedUpdatedAt) {
+      return json({success:false,message:"Đơn hàng đã thay đổi ở nơi khác. Vui lòng tải lại trước khi lưu."},409);
+    }
+
+    const result = await env.DB
       .prepare(`
         UPDATE orders
         SET
           status = ?1,
           internal_note = ?2,
           updated_at =
-            CURRENT_TIMESTAMP
-        WHERE id = ?3
+            strftime('%Y-%m-%d %H:%M:%f','now')
+        WHERE id = ?3 AND COALESCE(updated_at, '') = ?4
       `)
       .bind(
         status,
         internalNote,
-        id
+        id,
+        expectedUpdatedAt
       )
       .run();
+    if (!result.meta?.changes) return json({success:false,message:"Dữ liệu đơn hàng đã thay đổi. Tải lại trước khi lưu."},409);
 
     return json({
       success: true,
