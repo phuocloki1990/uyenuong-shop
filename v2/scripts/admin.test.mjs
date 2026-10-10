@@ -79,7 +79,8 @@ test('Article and product editors share the accessible, bounded rich-editor surf
   assert.doesNotMatch(css,/\.rich-toolbar\{[^}]*position:sticky/);
   assert.match(source,/visual\.addEventListener\('keydown'/);
   assert.match(source,/function setBlockStyle\(style\)/);
-  assert.match(source,/function cleanClipboardHtml\(markup\)/);
+  assert.match(source,/normalizePastedHtml\(html\)/);
+  assert.match(source,/validateRichHtml\(normalized\.html\)/);
   assert.match(source,/function openLinkTool\(\)/);
   assert.match(source,/function undoEditor\(\)/);
   assert.match(source,/function redoEditor\(\)/);
@@ -110,8 +111,8 @@ test('Rich-editor links stay visibly styled and selected text is preserved when 
   const source=read('v2/assets/js/admin.js');
   const css=read('v2/assets/css/admin.css');
   assert.match(css,/\.rich-page a:not\(\.article-btn\),\.rich-preview a:not\(\.article-btn\)\{color:#0759a6;text-decoration:underline/);
-  assert.match(source,/if\(tag==='a'\).*el\.setAttribute\('href',url\)/);
-  assert.match(source,/if\(editingLink&&visual\.contains\(editingLink\)\)\{editingLink\.setAttribute\('href',href\);\}/);
+  assert.match(source,/editingLink\.setAttribute\('href',href\)/);
+  assert.match(source,/anchor\.setAttribute\('href',href\)/);
   assert.match(source,/anchor\.append\(range\.extractContents\(\)\)/);
   assert.match(source,/editingLink\.remove\(\)/);
 });

@@ -57,6 +57,12 @@ function richEditor() {
     <label class="rich-source" data-rich-source-wrap hidden>Mã HTML bài viết<textarea data-rich-source rows="16" spellcheck="false" aria-label="Mã HTML bài viết"></textarea></label>
     <div class="rich-preview" data-rich-preview hidden role="region" aria-label="Xem trước nội dung"></div>
     <div class="rich-bottom"><span data-rich-count>0 từ</span><span data-rich-warning role="status"></span></div>
+    <dialog class="rich-normalize-dialog" data-rich-normalize-dialog aria-labelledby="rich-normalize-title">
+      <div class="preview-top"><strong id="rich-normalize-title">Xem thay đổi chuẩn hóa HTML</strong><button type="button" data-rich-normalize-cancel>Quay lại</button></div>
+      <p class="rich-normalize-summary" data-rich-normalize-summary></p>
+      <div class="rich-normalize-diff"><section><h3>HTML hiện tại</h3><pre data-rich-normalize-before></pre></section><section><h3>Bản sau chuẩn hóa</h3><pre data-rich-normalize-after></pre></section></div>
+      <div class="rich-normalize-actions"><button type="button" class="button button-secondary" data-rich-normalize-cancel>Tiếp tục chỉnh sửa</button><button type="button" class="button button-primary" data-rich-normalize-accept>Áp dụng bản chuẩn hóa</button></div>
+    </dialog>
   </div>`;
 }
 function relatedPicker(name, label, items, labelKey='name') {
@@ -72,7 +78,7 @@ function topbar(title) {
   return `<header class="admin-topbar"><button class="admin-menu" type="button" data-admin-menu aria-controls="admin-sidebar" aria-expanded="false">Menu</button><div class="admin-breadcrumb"><small>BẢNG ĐIỀU KHIỂN</small><span aria-hidden="true">›</span><strong>Hệ thống Shop Uyên Ương</strong></div><div class="topbar-actions"><span class="site-status" data-publish-status>Đang kiểm tra cập nhật…</span><a class="button button-secondary button-small" href="/" target="_blank" rel="noopener">Xem website</a></div></header>`;
 }
 export function renderAdminShell({ title, active, body, pageData = null }) {
-  return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${esc(title)} | Admin Shop Uyên Ương</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/css/admin.css"></head><body><div class="admin-app">${sidebar(active)}<div class="admin-main">${topbar(title)}<main class="admin-content">${body}</main></div></div><div class="admin-toast" role="status" aria-live="polite" hidden></div>${imagePickerDialog()}${pageData?`<script type="application/json" id="admin-page-data">${jsonScript(pageData)}</script>`:''}<script src="/assets/js/admin.js" defer></script></body></html>`;
+  return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${esc(title)} | Admin Shop Uyên Ương</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/css/admin.css"></head><body><div class="admin-app">${sidebar(active)}<div class="admin-main">${topbar(title)}<main class="admin-content">${body}</main></div></div><div class="admin-toast" role="status" aria-live="polite" hidden></div>${imagePickerDialog()}${pageData?`<script type="application/json" id="admin-page-data">${jsonScript(pageData)}</script>`:''}<script type="module" src="/assets/js/admin.js"></script></body></html>`;
 }
 function pageHead(title, description, action='') { return `<div class="page-head"><div><h1>${esc(title)}</h1>${description?`<p>${esc(description)}</p>`:''}</div>${action}</div>`; }
 function statusChip(status) { return `<span class="status status-${esc(status)}">${esc(statusLabels[status]||status)}</span>`; }
