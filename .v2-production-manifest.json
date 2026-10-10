@@ -16,6 +16,7 @@
     "assets/css/site.css",
     "assets/js/admin.js",
     "assets/js/product-catalog.js",
+    "assets/js/safe-html.mjs",
     "assets/js/site.js",
     "banh-phu-the/index.html",
     "banh-phuc-linh/index.html",
